@@ -5,7 +5,6 @@ numbered: false
 
 # Prefacio {.unnumbered}
 
-Agradecimientos opcionales, dedicatorias, notas sobre financiamiento, etc.
 
 ::: {=latex}
 \mainmatter

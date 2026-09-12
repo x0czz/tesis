@@ -108,6 +108,7 @@
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
 \usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -169,13 +170,13 @@
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \ifLuaTeX
-\usepackage[bidi=basic]{babel}
+\usepackage[bidi=basic,shorthands=off]{babel}
 \else
-\usepackage[bidi=default]{babel}
+\usepackage[bidi=default,shorthands=off]{babel}
 \fi
-% get rid of language-specific shorthands (see #6817):
-\let\LanguageShortHands\languageshorthands
-\def\languageshorthands#1{}
+\ifLuaTeX
+  \usepackage{selnolig} % disable illegal ligatures
+\fi
 
 
 \setlength{\emergencystretch}{3em} % prevent overfull lines
@@ -429,7 +430,7 @@
 \makeatother
 \subtitle{Tesis, informes e investigaciones}
 \author{Nombre Apellido}
-\date{17 de noviembre de 2025}
+\date{11 de septiembre de 2026}
 \begin{document}
 \frontmatter
 \maketitle
@@ -538,9 +539,9 @@
 \small\textbf{Palabras clave:} Sociologia, educacion, Chile \normalsize
 
 Resumen en español (200-300). Expón propósito, método, resultados clave
-y conclusiones. Puede incluir citas como Xie
-(\citeproc{ref-xie2017bookdown}{2017}) y se actualizarán
-automáticamente.
+y conclusiones. Puede incluir citas como
+(\citeproc{ref-xie2017bookdown}{\textbf{xie2017bookdown?}}) y se
+actualizarán automáticamente.
 
 \bookmarksetup{startatroot}
 
@@ -549,25 +550,323 @@ automáticamente.
 
 \markboth{Prefacio}{Prefacio}
 
-Agradecimientos opcionales, dedicatorias, notas sobre financiamiento,
-etc.
-
 \mainmatter
 
 \bookmarksetup{startatroot}
 
 \chapter{Introducción}\label{introducciuxf3n}
 
-Motivación, preguntas de investigación, Objetivo general y específicos,
-contribución esperada, estructura del documento.
+\subsection{Introduccion}\label{introduccion}
+
+La preocupación por la preparación ciudadana de los jóvenes en el
+cotexto local ha impulsado diversas iniciativas curriculares y
+legislativas durannte el ultimo tiempo. Sin embargo, la evidencia ha
+dado cuennta de un escenario con importantes desafíos. De acuerdo con el
+Estudio Internacional de Educación Cívica y Formación Ciudadana
+(ICCSref2016), los estudiantes chilenos de 8° básico alcanzaron un
+puntaje promedio de 482 puntos en conocimiento cívico, situándose
+significativamente por debajo de la media internacional de 517 puntos.
+Este rendimiento se mantuvo estancado entre los ciclos 2009 y 2016, a
+diferencia de otros países de la región como Colombia y México que
+registraron avances significativos. En cuanto al compromiso cívico,
+existe una brecha marcada entre el entorno escolar y el espacio público
+exterior. Si bien dentro de las escuelas se registran altos y buenos
+niveles de participación; como el voto en elecciones escolares y el
+involucramiento en la toma de decisiones, fuera del colegio la discusión
+sobre temas políticos contingentes y la participación en redes sociales
+caen por debajo del promedio internacional. Del mismo modo, las
+expectativas de participación electoral futura en la adultez se
+mantienen congeladas en 50 puntos (bajo la media internacional de 51)
+desde 2009.
+
+Si bien la Ley N° 20.911, promulgada el año 2016 mandató la
+implementación de Planes de Formación Ciudadana en todos los colegios
+teniedo altas expectativas sobre el rol de la escuela en la promocion de
+la ciudadania activa, la evidencia empírica invita a matizar el alcance
+real de la institución escolar. El análisis de
+(\citeproc{ref-pdf_d}{\textbf{pdf\_d?}}) sobre los datos de ICCS revela
+que la escuela incide de manera diferenciada en la formación ciudadana.
+Gran parte de la diferencia de los puntajes en conocimento civico se
+debe a diferencias entre escuelas; pero estas mismas diferencias on
+explican de manera significativa en las actitudes y disposiciones de los
+estudiantes.
+
+Esto evidencia que la escuela es efectiva transmitiendo contenidos
+cognitivos, pero tiene capacidades limitadas para moldear valores y
+actitudes, los cuales se encuentran fuertemente condicionados por la
+familia, los pares y el entorno comunitario. Sin embargo, la escuela
+chilena es carazteristica por su particular economía moral,
+caracterizada por su fuerte orientacion meritocratica, inculcando la
+idea de que el rendimiento y el éxito académico responden exclusivamente
+al talento y esfuerzo individual (Canales, 2022; Crawford 2010;
+Wiederkehr et al.~2015).
+
+La promocion de los valores meritocratticos en la escuela chilena ha
+sido señalada como un factor que erosiona la noción del bien común y la
+solidaridad, promoviendo la competencia individual y la
+auto-responsabilización frente al desempeño escolar (Batruch et
+al.~2023; Castillo 2024; Darnon et al.~2018; Wiederkehr et al.~2015). La
+internalización de estas creencias meritocráticas puede llevar a los
+estudiantes a justificar las desigualdades sociales y a disminuir su
+disposición hacia la acción colectiva como medio de transformación
+social.
+
+De este modo, el presente trabajo pretende analizar la relacion
+contradicción de fondo; los esfuerzos de la escuela por formar
+ciudadanías democráticas compiten cotidianamente con una socialización
+implícita orientada a la competencia y al mérito individual que erosiona
+la noción del bien común. Analizar la adscripción al mérito resulta, por
+lo tanto, indispensable para explicar cómo se configuran realmente las
+actitudes y comportamientos cívicos de las nuevas generaciones.
+
+\subsection{Antecedentes}\label{antecedentes}
+
+Chile figura como un escenario sociopolítico y económico caracterizado
+por desigualdades persistentes, consolidadas a partir del despliegue de
+las reformas neoliberales implementadas desde los años ochenta
+(\citeproc{ref-palet_desiguales_2017}{Palet et~al., 2017}). La
+literatura ha descrito consistentemente el caso de chile como un régimen
+de bienestar ``liberal-informal'' debido a la particular
+mercantilización de las esferas de reproducción
+(\citeproc{ref-ferre_welfare_2023}{Ferre, 2023}). El país exhibe altos
+niveles de desigualdad económica que se ubican de manera sistemática
+entre los más altos tanto de latinoamerica como de la OCDE
+(\citeproc{ref-palet_desiguales_2017}{Palet et~al., 2017}). Pese a esta
+persistencia de la desigualdad y al hecho de qu , la subjetividad moral
+de la población es caracteristica por una fuerte y paradójica adhesión
+cultural a la ideología del mérito personal
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019}). Las
+conclusiones obtenindas a partir de los aalisis en las encuestas panel
+como el Estudio Social Longitudinal de Chile (ELSOC) reportan de manera
+consistente que cerca del 75\% al 80\% de los chilenos considera que
+``el trabajo duro es un medio esencial para surgir en la vida''
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019}). Sin
+embargo, esta alta valoración del ideal meritocrático coexiste con una
+con una contradicción a nivel subjetivo; solo una porcion menor de la
+población (aproximadamente un 26\% a 30\%) siente que en la práctica las
+personas en Chile son efectivamente recompensadas por sus esfuerzos
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019};
+\citeproc{ref-luismaldonado_meritocracia_2021}{Maldonado et~al., 2021}).
+
+Esta paradoja meritocrática convive con una particular configuracion en
+el campo relacionado a la ciudadania y la socialización política de las
+generacionnes mmas jovenes. El sistema educativo chileno ha operado
+históricamente bajo las reglas de un cuasi-mercado escolar altamente
+segregado por nivel socioeconómico, estructurado a partir del
+financiamiento compartido, el incentivo a la selección de alumnos y la
+competencia de matrículas basada en rendición de cuentas
+(\citeproc{ref-verger_recontextualizacion_2016}{Verger et~al., 2016}).
+En este contexto institucional, la escuela chilena ha promovido
+intensamente lo que desde la sociología de la educacion se denonimna
+como el ``mito meritocrático''
+(\citeproc{ref-canalesceron_sujeto_2022}{Canales Cerón et~al., 2022};
+\citeproc{ref-crawford_schooling_2010}{Crawford, 2010}), infundiendo en
+los estudiantes la creencia de que el rendimiento académico es un
+reflejo transparente y neutro de sus propios talentos y esfuerzos
+individuales (\citeproc{ref-wiederkehr_belief_2015}{Wiederkehr et~al.,
+2015}). De forma simultánea, Chile enfrenta un prolongado déficit en
+participación y competencias en cuanto a formacion cívica y ciudadanía,
+ambitos en los que posee una de las tasas de votación juvenil más bajas
+a nivel mundial tras la implementación del voto voluntario
+(\citeproc{ref-somma_no_2020}{Somma et~al., 2020}). Sumado a lo
+anterior, los estudiantes de octavo básico en pruebas internacionales
+como el Estudio Internacional de Educación Cívica y Ciudadana (ICCS
+2016) promediaron un puntaje de 482 puntos, ubicándose
+significativamente por debajo del estándar global de 517 puntos
+(\citeproc{ref-schulz_becoming_2018}{Schulz et~al., 2018}).
+
+A partir de la reincorporación obligatoria en 2020 de la asignatura de
+Formación Ciudadana en la enseñanza media (Ley N° 20.911), una de las
+principales interrogantes que surgen es por la realizibilidad de poder
+realmente formar ciudadaníos comprometidos con los principios de
+equidad, solidaridad y cohesión, en un entorno educativo cuya economía
+moral sigue estando anclada en la competencia.
+
+La literatura ha anteriormente señalado una profunda tensión estructural
+entre los principios de la meritocracia escolar y los objetivos de la
+formación ciudadana (\citeproc{ref-castillo_socialization_2024}{Castillo
+et~al., 2024}). Mientras que la ideología meritocrática define la
+distribución de bienes y recompensas en función del talento, la
+competencia y el esfuerzo individual
+(\citeproc{ref-castillo_socialization_2024}{Castillo et~al., 2024};
+\citeproc{ref-young_triunfo_}{Young, s.~f.}), la educación ciudadana
+busca cultivar la pertenencia cívica, la solidaridad, el bien común y la
+cooperación comunitaria. Cuando la institución escolar sobrevalora el
+logro individual a través del denominado ``mito o cuento
+meritocrático'', genera en los estudiantes de menor estatus
+socioeconómico dinámicas de auto-responsabilización frente al desempeño
+o fracaso escolar (\citeproc{ref-darnon_where_2018}{Darnon et~al.,
+2018}; \citeproc{ref-wiederkehr_belief_2015}{Wiederkehr et~al., 2015}).
+
+Esta atribución interna conduce a que los alumnos desaventajados
+asimilen su posición como merecida, invisibilizando las barreras
+socioestructurales de origen, promoviendo sentimientos de culpa y
+autodesvalorización (\citeproc{ref-wiederkehr_belief_2015}{Wiederkehr
+et~al., 2015}), y debilitando la disposición hacia la acción colectiva
+como vía legítima de transformación social
+(\citeproc{ref-batruch_belief_2023}{Batruch et~al., 2023};
+\citeproc{ref-palet_desiguales_2017}{Palet et~al., 2017}). Asimismo, las
+creencias meritocráticas operan como un canal directo de legitimación de
+las desigualdades que altera las preferencias normativas de los jóvenes
+(\citeproc{ref-batruch_belief_2023}{Batruch et~al., 2023};
+\citeproc{ref-castillo_socialization_2024}{Castillo et~al., 2024}).
+
+La evidencia empírica en población escolar chilena demuestra que
+percibir que la meritocracia funciona en la sociedad o en la escuela
+incrementa la adhesión a las preferencias de justicia de mercado, es
+decir, la aceptación moral de que el acceso a servicios sociales
+esenciales como salud, educación y pensiones deba estar condicionado a
+la capacidad de pago individual
+(\citeproc{ref-castillo_socialization_2024}{Castillo et~al., 2024}). Del
+mismo modo, la Creencia en la Meritocracia Escolar (BSM) actúa como una
+ideología de justificación del sistema que reduce la percepción de
+injusticia frente a la estratificación social y disminuye el apoyo a
+políticas redistributivas o de acción afirmativa
+(\citeproc{ref-batruch_belief_2023}{Batruch et~al., 2023};
+\citeproc{ref-darnon_where_2018}{Darnon et~al., 2018};
+\citeproc{ref-wiederkehr_belief_2015}{Wiederkehr et~al., 2015}). De este
+modo, la internalización temprana del mérito sustituye la concepción de
+los servicios básicos como derechos ciudadanos igualitarios por una
+aceptación de la provisión diferenciada de bienestar según el éxito
+mercantil (\citeproc{ref-castillo_socialization_2024}{Castillo et~al.,
+2024}).
+
+En contraste con la sobrevaloración del logro individualista, la
+percepción de la escuela como un espacio procedimental y
+distributivamente justo ejerce un impacto positivo en la conducta cívica
+de los estudiantes (\citeproc{ref-resh_sense_2010}{Resh, 2010};
+\citeproc{ref-resh_sense_2017}{Resh \& Sabbagh, 2017}). La investigación
+demuestra que cuando los alumnos evalúan que las notas y las relaciones
+interpersonales con sus profesores responden a criterios de justicia y
+reconocimiento, disminuyen los comportamientos de indisciplina y
+violencia escolar (\citeproc{ref-resh_sense_2017}{Resh \& Sabbagh,
+2017}), e incrementan significativamente su participación en proyectos
+prosociales, la vinculación comunitaria y el voluntariado
+(\citeproc{ref-resh_sense_2017}{Resh \& Sabbagh, 2017})
+
+El origen socioeconómico de los estudiantes, y el acceso al capital
+cultural en el hogar constituye uno de los predictores más consistentes
+del conocimiento cívico
+(\citeproc{ref-abendschon_political_2017}{Abendschön \& Tausendpfund,
+2017}; \citeproc{ref-_pdf_c}{{«({PDF}) {Desigualdad} y {Conocimiento
+Cívico}»}, s.~f.}; \citeproc{ref-schulz_becoming_2018}{Schulz et~al.,
+2018}). Los estudiantes provenientes de familias de mayor estatus
+obtienen consistentemente mayores puntajes en las evaluaciones de
+conocimiento cívico; al mismo tiempo que manifiestan mayores
+expectativas de participación política y cívica en la adultez
+(\citeproc{ref-castillo_social_2014}{J. Castillo et~al., 2014};
+\citeproc{ref-jerome_systematic_2024}{Jerome et~al., 2024};
+\citeproc{ref-_pdf_c}{{«({PDF}) {Desigualdad} y {Conocimiento Cívico}»},
+s.~f.}). La frecuencia con la que se discuten temas sociales en el hogar
+y el interés político de los padres son factores de peso para predecir
+el comportamiento cívico y el aprendizaje de las nuevas generaciones
+(\citeproc{ref-flanagan_adolescents_2014}{Flanagan et~al., 2014};
+\citeproc{ref-isac_contribution_2013}{{Isac et~al.}, 2013};
+\citeproc{ref-jerome_systematic_2024}{Jerome et~al., 2024};
+\citeproc{ref-lee_processes_2012}{Lee et~al., 2012}).
+
+A nivel escolar, el clima expuesto a la discusión representa una de las
+herramientas didacticas de mayor impacto para la formacion ciudadana
+(\citeproc{ref-campbell_voice_2008}{Campbell, 2008};
+\citeproc{ref-isac_contribution_2013}{{Isac et~al.}, 2013};
+\citeproc{ref-jerome_systematic_2024}{Jerome et~al., 2024};
+\citeproc{ref-schulz_becoming_2018}{Schulz et~al., 2018}). Aquellas
+aulas de clase donde los profesores incentivan el diálogo
+critico/reflexivo respecto a múltiples perspectivas ante temas
+controvertidos y respetan la expresión de opiniones diversas potencian
+sustantivamente el conocimiento cívico de los estudiantes
+(\citeproc{ref-jerome_systematic_2024}{Jerome et~al., 2024};
+\citeproc{ref-schulz_becoming_2018}{Schulz et~al., 2018}). Además, este
+ambiente deliberativo fortalece la autoeficacia cívica de los jóvenes,
+la conciencia crítica, sus actitudes hacia la igualdad de derechos y sus
+intenciones de involucramiento en actividades comunitarias y políticas
+futuras (\citeproc{ref-isac_contribution_2013}{{Isac et~al.}, 2013};
+\citeproc{ref-jerome_systematic_2024}{Jerome et~al., 2024};
+\citeproc{ref-schulz_becoming_2018}{Schulz et~al., 2018}).
+
+El género de los estudiantes muestra un comportamiento diferenciado
+según la dimensión cívica analizada
+(\citeproc{ref-abendschon_political_2017}{Abendschön \& Tausendpfund,
+2017}; \citeproc{ref-schulz_becoming_2018}{Schulz et~al., 2018}). En las
+evaluaciones internacionales, las mujeres obtienen, en promedio, mejores
+resultados en conocimiento cívico que sus pares masculinos
+(\citeproc{ref-schulz_becoming_2018}{Schulz et~al., 2018}). Asimismo,
+las estudiantes reportan una adscripción significativamente más alta a
+los principios de igualdad de derechos y una mayor predisposición a
+participar en actividades comunitarias
+(\citeproc{ref-abendschon_political_2017}{Abendschön \& Tausendpfund,
+2017}; \citeproc{ref-resh_sense_2017}{Resh \& Sabbagh, 2017};
+\citeproc{ref-schulz_becoming_2018}{Schulz et~al., 2018}). En cambio,
+los hombres suelen manifestar niveles ligeramente superiores de
+conocimiento o interés en áreas específicas de participación política
+formal en ciertos contextos iniciales de desarrollo
+(\citeproc{ref-abendschon_political_2017}{Abendschön \& Tausendpfund,
+2017}).
+
+A nivel escuela, el nivel socioeconomimco de la escuela establecimiento
+influye directamente en las competencias de los estudiantes,
+observándose que las escuelas que concentran poblaciones de mayor
+estatus promedio registran niveles superiores de conocimiento y
+expectativas de participación
+(\citeproc{ref-jerome_systematic_2024}{Jerome et~al., 2024};
+\citeproc{ref-schulz_becoming_2018}{Schulz et~al., 2018}). No obstante,
+el contexto escolar también modera la relación entre las creencias
+individuales y las actitudes normativas: en escuelas de alto rendimiento
+académico promedio (SIMCE) o de mayor nivel socioeconómico, la relación
+positiva entre la percepción meritocrática individual y la aceptación de
+la justicia de mercado se atenúa
+(\citeproc{ref-castillo_socialization_2024}{Castillo et~al., 2024}).
+
+\subsection{Metodo}\label{metodo}
+
+\subsubsection{Datos}\label{datos}
+
+El analisis esta basado en la informacion proporcionada por el la
+encuesta EDUMER, {[}rellenar con informacion tecnicade la ecuesta.{]}
+
+\subsubsection{Analisis}\label{analisis}
+
+En el presente estudio empleará dos tipos de análisis. En primer lugar,
+se realizarán análisis descriptivos como gráficos univariados y
+bivariados de los indicadores principales, así como también
+correlaciones para analizar el comportamiento de las variables a nivel
+muestral. Estos análisis entregarán un panorama previo respecto al
+comportamiento de las variables y al cumplimiento de los supuestos
+necesarios para los modelos posteriores.
+
+En segundo lugar, considerando la naturaleza longitudinal y anidada de
+los datos; observaciones (mediciones repetidas) anidadas en estudiantes,
+y estudiantes a su vez anidados en colegios, se efectuará un análisis
+multivariado empleando como técnica modelos de regresión jerárquica.
+Esta estrategia de análisis resulta pertinente por dos motivos. Primero,
+permite corregir la no independencia de las observaciones propia de esta
+estructura de datos, la cual vulnera el supuesto de independencia de los
+residuos característico de los modelos de regresión convencionales
+(OLS): las mediciones repetidas de un mismo estudiante, así como las de
+estudiantes que comparten colegio, tienden a estar correlacionadas entre
+sí. Segundo, el enfoque multinivel permite capturar explícitamente el
+efecto de variables contextuales de colegio, es decir, características
+propias del establecimiento que podrían incidir en los resultados
+observados. De este modo, los modelos jerárquicos permiten descomponer
+la varianza total del fenómeno en los distintos niveles de anidamiento
+(ocasión de medición, estudiante y colegio), estimando de forma
+simultánea efectos fijos asociados a predictores de interés en cada
+nivel, incluyendo los de nivel colegio y efectos aleatorios (por
+definir) asociados a la variabilidad entre estudiantes y entre colegios.
+
+Se calcularán dos conjuntos de modelos jerárquicos, uno para cada
+variable dependiente del estudio, ambas construidas como índices: el
+primero utilizando como variable dependiente un índice de conocimiento
+cívico, y el segundo utilizando como variable dependiente un índice de
+actitudes cívicas.
 
 \bookmarksetup{startatroot}
 
 \chapter{Antecedentes conceptuales y
 empíricos}\label{antecedentes-conceptuales-y-empuxedricos}
 
-Sintetiza la literatura relevante. Usa referencias como Desmond \&
-Wilmers (\citeproc{ref-desmond2019poverty}{2019}).
+Sintetiza la literatura relevante. Usa referencias como
+(\citeproc{ref-desmond2019poverty}{\textbf{desmond2019poverty?}}).
 
 \section{Marco conceptual}\label{marco-conceptual}
 
@@ -606,19 +905,20 @@ vitae efficitur nisl hendrerit nec.
 
 \subsection{Ejemplos APA 7}\label{ejemplos-apa-7}
 
-Según Desmond \& Wilmers (\citeproc{ref-desmond2019poverty}{2019}), los
-patrones de segregación residencial configuran los límites de
+Según (\citeproc{ref-desmond2019poverty}{\textbf{desmond2019poverty?}}),
+los patrones de segregación residencial configuran los límites de
 oportunidad urbana y permiten introducir la sintaxis de cita narrativa
 dentro del flujo del texto.
 
 Los matices culturales del gusto pueden reforzar desigualdades cuando se
 institucionalizan en jerarquías de prestigio académico
-(\citeproc{ref-bourdieu2012}{Bourdieu, 2012, p. 35}), lo que ilustra la
+(\citeproc{ref-bourdieu2012}{\textbf{bourdieu2012?}}), lo que ilustra la
 cita parentética con número de página.
 
 Para contrastar hallazgos se pueden reunir múltiples referencias en un
-mismo paréntesis analítico (\citeproc{ref-desmond2019poverty}{Desmond \&
-Wilmers, 2019}; \citeproc{ref-xie2017bookdown}{Xie, 2017}), destacando
+mismo paréntesis analítico
+(\citeproc{ref-desmond2019poverty}{\textbf{desmond2019poverty?}};
+\citeproc{ref-xie2017bookdown}{\textbf{xie2017bookdown?}}), destacando
 cómo distintos diseños metodológicos convergen en un mecanismo causal
 compartido.
 
@@ -628,7 +928,7 @@ cotidianos que traducen capital cultural en prácticas concretas,
 reescribiendo así el mapa de posibilidades percibidas por cada agente
 social en contextos urbanos desiguales. Este entramado simbólico orienta
 aspiraciones futuras y limita adaptaciones comunitarias.
-(\citeproc{ref-bourdieu2012}{Bourdieu, 2012, p. 87})
+(\citeproc{ref-bourdieu2012}{\textbf{bourdieu2012?}})
 \end{quote}
 
 \section{Resumen del capítulo}\label{resumen-del-capuxedtulo}
@@ -642,7 +942,7 @@ y estableció proposiciones para guiar el análisis empírico posterior.
 
 \chapter{Metodología}\label{metodologuxeda}
 
-\section{Datos}\label{datos}
+\section{Datos}\label{datos-1}
 
 Texto de muestra para describir las fuentes de datos utilizadas.
 
@@ -844,19 +1144,148 @@ Síntesis y proyecciones futuras.
 
 \chapter{Referencias}\label{referencias}
 
-\phantomsection\label{refs}
+\protect\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
-\bibitem[\citeproctext]{ref-bourdieu2012}
-Bourdieu, P. (2012). \emph{La distinci{ó}n: Criterio y bases sociales
-del gusto}. Taurus.
+\bibitem[\citeproctext]{ref-abendschon_political_2017}
+Abendschön, S., \& Tausendpfund, M. (2017). Political {Knowledge} of
+{Children} and the {Role} of {Sociostructural Factors}. \emph{American
+Behavioral Scientist}, \emph{61}(2), 204-221.
+\url{https://doi.org/10.1177/0002764216689122}
 
-\bibitem[\citeproctext]{ref-desmond2019poverty}
-Desmond, M., \& Wilmers, N. (2019). The Racialized Geography of Housing.
-\emph{American Journal of Sociology}.
+\bibitem[\citeproctext]{ref-batruch_belief_2023}
+Batruch, A., Jetten, J., Van De Werfhorst, H., Darnon, C., \& Butera, F.
+(2023). Belief in {School Meritocracy} and the {Legitimization} of
+{Social} and {Income Inequality}. \emph{Social Psychological and
+Personality Science}, \emph{14}(5), 621-635.
+\url{https://doi.org/10.1177/19485506221111017}
 
-\bibitem[\citeproctext]{ref-xie2017bookdown}
-Xie, Y. (2017). \emph{bookdown: Authoring Books and Technical Documents
-with R Markdown}. Chapman; Hall/CRC.
+\bibitem[\citeproctext]{ref-campbell_voice_2008}
+Campbell, D. E. (2008). Voice in the {Classroom}: {How} an {Open
+Classroom Climate Fosters Political Engagement Among Adolescents}.
+\emph{Political Behavior}, \emph{30}(4), 437-454.
+\url{https://doi.org/10.1007/s11109-008-9063-z}
+
+\bibitem[\citeproctext]{ref-canalesceron_sujeto_2022}
+Canales Cerón, M., Orellana Calderón, V. S., Guajardo Mañán, F., Canales
+Cerón, M., Orellana Calderón, V. S., \& Guajardo Mañán, F. (2022).
+{Sujeto y cotidiano en la era neoliberal: el caso de la educación
+chilena}. \emph{Revista mexicana de ciencias políticas y sociales},
+\emph{67}(244), 285-307.
+\url{https://doi.org/10.22201/fcpys.2448492xe.2022.244.70386}
+
+\bibitem[\citeproctext]{ref-castillo_socialization_2024}
+Castillo, J. C., Salgado, M., Carrasco, K., \& Laffert, A. (2024). The
+{Socialization} of {Meritocracy} and {Market Justice Preferences} at
+{School}. \emph{Societies}, \emph{14}(11), 214.
+\url{https://doi.org/10.3390/soc14110214}
+
+\bibitem[\citeproctext]{ref-castillo_meritocracia_2019}
+Castillo, J. C., Torres, A., Atria, J., \& Maldonado, L. (2019).
+Meritocracia y Desigualdad Económica: {Percepciones}, Preferencias e
+Implicancias. \emph{Revista Internacional de Sociología}, \emph{77}(1),
+e117. \url{https://doi.org/10.3989/ris.2019.77.1.17.114}
+
+\bibitem[\citeproctext]{ref-castillo_social_2014}
+Castillo, J., Miranda, D., Bonhomme, M., Cox, C., \& Bascopé, M. (2014).
+Social Inequality and Changes in Students' Expected Political
+Participation in {Chile}. \emph{Education, Citizenship and Social
+Justice}, \emph{9}, 140-156.
+\url{https://doi.org/10.1177/1746197914520650}
+
+\bibitem[\citeproctext]{ref-crawford_schooling_2010}
+Crawford, K. (2010). Schooling, {Citizenship} and the {Myth} of the
+{Meritocracy}. \emph{Citizenship, Social and Economics Education},
+\emph{9}(1), 3-13. \url{https://doi.org/10.2304/csee.2010.9.1.3}
+
+\bibitem[\citeproctext]{ref-darnon_where_2018}
+Darnon, C., Wiederkehr, V., Dompnier, B., \& Martinot, D. (2018).
+{«{Where} There Is a Will, There Is a Way»}: {Belief} in School
+Meritocracy and the Social-class Achievement Gap. \emph{British Journal
+of Social Psychology}, \emph{57}(1), 250-262.
+\url{https://doi.org/10.1111/bjso.12214}
+
+\bibitem[\citeproctext]{ref-ferre_welfare_2023}
+Ferre, J. C. (2023). Welfare Regimes in Twenty-First-Century {Latin
+America}. \emph{Journal of International and Comparative Social Policy},
+\emph{39}(2), 101-127. \url{https://doi.org/10.1017/ics.2023.16}
+
+\bibitem[\citeproctext]{ref-flanagan_adolescents_2014}
+Flanagan, C. A., Kim, T., Pykett, A., Finlay, A., Gallay, E. E., \&
+Pancer, M. (2014). Adolescents' Theories about Economic Inequality:
+{Why} Are Some People Poor While Others Are Rich? \emph{Developmental
+Psychology}, \emph{50}(11), 2512-2525.
+\url{https://doi.org/10.1037/a0037934}
+
+\bibitem[\citeproctext]{ref-isac_contribution_2013}
+{Isac, M. M., Maslowski, R., Creemers, B., \& van der Werf, G.} (2013).
+The Contribution of Schooling to Secondary-School Students' Citizenship
+Outcomes across Countries. \emph{School Effectiveness and School
+Improvement}. \url{https://doi.org/10.1080/09243453.2012.751035}
+
+\bibitem[\citeproctext]{ref-jerome_systematic_2024}
+Jerome, L., Hyder, F., Hilal, Y., \& Kisby, B. (2024). A Systematic
+Literature Review of Research Examining the Impact of Citizenship
+Education on Active Citizenship Outcomes. \emph{Review of Education},
+\emph{12}(2), e3472. \url{https://doi.org/10.1002/rev3.3472}
+
+\bibitem[\citeproctext]{ref-lee_processes_2012}
+Lee, N.-J., Shah, D. V., \& McLeod, J. M. (2012). Processes of
+{Political Socialization}. \emph{Communication Research}.
+\url{https://doi.org/10.1177/0093650212436712}
+
+\bibitem[\citeproctext]{ref-luismaldonado_meritocracia_2021}
+Maldonado, L., Castillo, J. C., Julio Iturra-Sanhueza, Rivas, F. J. M.,
+\& Atria, J. (2021). \emph{Meritocracia y Redistribución En {Chile}:
+Señales de La Opinión Pública}.
+\url{https://doi.org/10.17605/OSF.IO/G4EK8}
+
+\bibitem[\citeproctext]{ref-palet_desiguales_2017}
+Palet, A., Aguirre, P. de, \& PNUD Chile (Eds.). (2017).
+\emph{{Desiguales: orígenes, cambios y desafíos de la brecha social en
+Chile}}. PNUD : Uqbar Editores.
+
+\bibitem[\citeproctext]{ref-_pdf_c}
+({PDF}) {Desigualdad} y {Conocimiento Cívico}: {Chile} En {Comparación
+Internacional}. (s.~f.). En \emph{{ResearchGate}}.
+
+\bibitem[\citeproctext]{ref-resh_sense_2010}
+Resh, N. (2010). Sense of Justice about Grades in School: Is It
+Stratified like Academic Achievement? \emph{Social Psychology of
+Education}, \emph{13}(3), 313-329.
+\url{https://doi.org/10.1007/s11218-010-9117-z}
+
+\bibitem[\citeproctext]{ref-resh_sense_2017}
+Resh, N., \& Sabbagh, C. (2017). Sense of Justice in School and Civic
+Behavior. \emph{Social Psychology of Education}, \emph{20}(2), 387-409.
+\url{https://doi.org/10.1007/s11218-017-9375-0}
+
+\bibitem[\citeproctext]{ref-schulz_becoming_2018}
+Schulz, W., Ainley, J., Fraillon, J., Losito, B., Agrusti, G., \&
+Friedman, T. (2018). \emph{Becoming {Citizens} in a {Changing World}:
+{IEA International Civic} and {Citizenship Education Study} 2016
+{International Report}}. Springer International Publishing.
+\url{https://doi.org/10.1007/978-3-319-73963-2}
+
+\bibitem[\citeproctext]{ref-somma_no_2020}
+Somma, N., Bargsted, M., Disi Pavlic, R., \& Medel, R. (2020). No Water
+in the Oasis: The {Chilean Spring} of 2019--2020. \emph{Social Movement
+Studies}, \emph{20}, 1-8.
+\url{https://doi.org/10.1080/14742837.2020.1727737}
+
+\bibitem[\citeproctext]{ref-verger_recontextualizacion_2016}
+Verger, A., Bonal, X., \& Zancajo, A. (2016). Recontextualización de
+Políticas y (Cuasi)Mercados Educativos. {Un} Análisis de Las Dinámicas
+de Demanda y Oferta Escolar En {Chile}. \emph{Education Policy Analysis
+Archives}, \emph{24}, 27. \url{https://doi.org/10.14507/epaa.24.2098}
+
+\bibitem[\citeproctext]{ref-wiederkehr_belief_2015}
+Wiederkehr, V., Bonnot, V., Krauth-Gruber, S., \& Darnon, C. (2015).
+Belief in School Meritocracy as a System-Justifying Tool for Low Status
+Students. \emph{Frontiers in Psychology}, \emph{6}.
+\url{https://doi.org/10.3389/fpsyg.2015.01053}
+
+\bibitem[\citeproctext]{ref-young_triunfo_}
+Young, M. (s.~f.). \emph{{Triunfo de la meritocracia}}.
 
 \end{CSLReferences}
 

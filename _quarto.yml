@@ -49,7 +49,7 @@ book:
     # Guarda anexos extensos en apendices/ y listalos aqui.
 
 csl: refs/apa.csl                # Estilo de citas (cambia a otro .csl si lo prefieres)
-bibliography: refs/referencias.bib
+bibliography: refs/Mi biblioteca.bib
 link-citations: true             # Enlaces desde el texto hacia la bibliografia
 reference-location: section      # Citas agrupadas al final de cada seccion
 
