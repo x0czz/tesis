@@ -64,7 +64,7 @@ format:
     code-copy: true              # Boton copiar codigo
     code-tools: true             # Menu con toggles para mostrar/ocultar codigo
     df-print: paged              # Usa "kable" o "default" si prefieres otra salida
-    css: assets/styles.scss      # Punto central para tus estilos personalizados
+    css: assets/styles.css       # Punto central para tus estilos personalizados
     favicon: assets/favicon-2025-20251031.svg  # Cache-bust del favicon anterior
     anchor-sections: true
     smooth-scroll: true
