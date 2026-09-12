@@ -4,6 +4,11 @@ _book/
 _site/
 .DS_Store
 docs/
+!docs/
+docs/*
+!docs/assets/
+docs/assets/*
+!docs/assets/styles.css
 _freeze/
 *.Rmd
 *.utf8.md

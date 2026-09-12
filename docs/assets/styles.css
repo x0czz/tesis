@@ -1,0 +1,258 @@
+/* =========================================================
+   Reportes FACSO - estilos base
+   ========================================================= */
+
+:root {
+  --ink: #111827;
+  --ink-soft: #475569;
+  --paper: #ffffff;
+  --line: #e5e7eb;
+  --facso: #002f6c;
+  --facso-2: #84a7d8;
+  --accent: #d91a2a;
+
+  /* Valores bootstrap para heredar tema */
+  --bs-body-bg: var(--paper);
+  --bs-body-color: var(--ink);
+}
+
+html,
+body {
+  min-height: 100vh;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "TeX Gyre Termes", "Noto Serif", Georgia, serif;
+  line-height: 1.5;
+  font-size: 12pt;
+}
+
+img,
+svg,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Source Sans Pro", system-ui, -apple-system, "Segoe UI", Arial,
+    sans-serif;
+  letter-spacing: 0.2px;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: clamp(1.7rem, 2.7vw, 2.1rem);
+  margin: 2rem 0 0.9rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(1.4rem, 2vw, 1.6rem);
+  margin: 1.6rem 0 0.75rem;
+  font-weight: 650;
+}
+
+h3 {
+  font-size: clamp(1.15rem, 1.6vw, 1.3rem);
+  margin: 1.2rem 0 0.55rem;
+  font-weight: 600;
+}
+
+.quarto-title-block .title {
+  font-size: clamp(2rem, 3.4vw, 2.4rem);
+  font-weight: 800;
+  margin-bottom: 0.3rem;
+}
+
+.quarto-title-block .subtitle {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: clamp(1.05rem, 1.8vw, 1.2rem);
+  margin-top: 0.08rem;
+}
+
+.quarto-title-block .chapter-number {
+  display: inline-block;
+  margin-right: 0;
+}
+
+nav.quarto-page-breadcrumbs .chapter-number {
+  display: inline-block;
+  margin-right: 0;
+}
+
+.keywords-line {
+  display: inline-block;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin-bottom: 1rem;
+}
+
+.keywords-line strong {
+  color: var(--ink);
+}
+
+.content p,
+.page-columns p,
+#quarto-document-content p,
+.quarto-article p,
+p {
+  margin: 0.9rem 0;
+  text-align: justify !important;
+  text-justify: inter-word;
+}
+
+li {
+  margin: 0.2rem 0;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: var(--line);
+  margin: 2rem 0;
+}
+
+a {
+  color: #0f6cbd;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: #084b8a;
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: 2px dashed var(--facso-2);
+  outline-offset: 2px;
+}
+
+blockquote {
+  border-left: 4px solid var(--facso);
+  padding: 0.6rem 1rem;
+  color: #374151;
+  background: #f9fafb;
+}
+
+.callout {
+  border: 1px solid var(--line);
+  border-left-width: 5px;
+  border-radius: 12px;
+}
+
+.callout-note {
+  border-left-color: #0f6cbd;
+}
+
+.callout-important {
+  border-left-color: var(--accent);
+}
+
+.callout-warning {
+  border-left-color: #d97706;
+}
+
+.callout-tip {
+  border-left-color: #16a34a;
+}
+
+.table {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  border-color: var(--line);
+  vertical-align: top;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background: #fafafa;
+}
+
+.figure {
+  margin: 1.2rem 0;
+}
+
+.figure .figure-caption,
+.table-caption {
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 0.4rem;
+}
+
+pre,
+code,
+kbd,
+samp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+pre {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+}
+
+code {
+  background: #f3f4f6;
+  border-radius: 6px;
+  padding: 0.1rem 0.35rem;
+}
+
+.footnotes {
+  border-top: 1px solid var(--line);
+  margin-top: 2rem;
+  padding-top: 1rem;
+}
+
+.footnote-ref {
+  text-decoration: none;
+}
+
+@media print {
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+}
+
+.sidebar .sidebar-title .sidebar-logo img {
+  max-width: 150px;
+  height: auto;
+  display: block;
+  margin: 0.5rem auto 1rem;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  margin: 2.5rem 0 1.5rem;
+}
+
+.logo img {
+  width: min(42vw, 440px);
+  height: auto;
+  image-rendering: -webkit-optimize-contrast;
+}
