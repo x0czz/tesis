@@ -35,6 +35,10 @@ jobs:
           Rscript -e 'install.packages(c("knitr","rmarkdown"), repos="https://cloud.r-project.org")'
       - name: Render
         run: quarto render
+      - name: Render presentation
+        run: |
+          quarto render presentacion_tesis.qmd
+          cp presentacion_tesis.html docs/presentacion_tesis.html
       - name: Check gh-pages branch
         id: ghpages
         run: |
