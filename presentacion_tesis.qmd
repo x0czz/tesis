@@ -361,7 +361,7 @@ Interacción entre variables del mismo nivel (H2) y entre niveles (H9). Se contr
 ## Datos y muestra
 
 - **Panel EDUMER**: estudiantes de 6° básico a 2° medio.
-- **12 establecimientos** y alrededor de **32 a 35 cursos**; el curso se identifica combinando establecimiento (`d2`) y curso (`d3_def`).
+- **12 establecimientos** y alrededor de **35 cursos**; el curso se identifica combinando establecimiento (`d2`) y curso (`d3_def`).
 - Análisis bivariado actual con la **Ola 2** (n ≈ 670 con dato en las variables dependientes).
 - Con 12 establecimientos **no se estiman efectos contextuales de escuela**; el contexto se define a nivel de **curso**, y la dependencia del establecimiento entra como control.
 - Códigos 88 y 99 se tratan como datos perdidos.
@@ -406,9 +406,8 @@ Se analizan por separado, sin índice.
 ::: {.column width="45%"}
 **1. Bivariado (Ola 2)**
 
-- Asociación ordinal: **rho de Spearman** con IC 95%
-- % de acuerdo (categorías 3 y 4) con IC 95%
-- A nivel de curso: Spearman sobre medias
+- Asociación ordinal: **rho de Spearman** 95%
+
 :::
 ::: {.column width="55%"}
 **2. Modelos mixtos (próxima etapa)**
