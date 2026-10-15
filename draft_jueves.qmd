@@ -1,0 +1,570 @@
+---
+title: "Percepciones de recompensa al esfuerzo y al talento: antecedentes, variables y análisis bivariado"
+lang: es
+bibliography: "refs/Mi biblioteca.bib"   # exportar desde Zotero (Better BibTeX) con las mismas claves
+format:
+  html:
+    toc: true
+    embed-resources: true
+  docx:
+    toc: true
+execute:
+  echo: false
+  warning: false
+  message: false
+fig-width: 7.5
+fig-height: 4
+fig-dpi: 150
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(haven)
+library(tidyverse)
+library(scales)
+
+# ---- Carga de datos ----
+base_dir <- if (dir.exists("input")) {
+  "input"
+} else {
+  normalizePath("C:/Users/InBOT/Downloads", winslash = "/", mustWork = FALSE)
+}
+
+load_dataset <- function(dataset_name) {
+  candidates <- c(file.path(base_dir, paste0(dataset_name, ".sav")),
+                  file.path(base_dir, paste0(dataset_name, ".RData")))
+  for (file_path in candidates) {
+    if (!file.exists(file_path)) next
+    if (grepl("\\.sav$", file_path, ignore.case = TRUE)) return(read_sav(file_path))
+    env <- new.env(parent = emptyenv())
+    load(file_path, envir = env)
+    objs <- ls(env)
+    if (length(objs) == 0L) stop("El archivo RData está vacío: ", file_path)
+    return(get(objs[[1]], envir = env))
+  }
+  stop("No se encontró el archivo para ", dataset_name, ". Busqué .sav y .RData en: ", base_dir)
+}
+
+data_long <- load_dataset("edumer_students_long")
+
+# ---- Identidad gráfica EDUMER ----
+rojo <- "#D32F2F"; rojo_o <- "#7F1D1D"; carbon <- "#4A4A4A"; tinta <- "#2B2B2B"; gris <- "#E6E6E6"
+dv_lab  <- c(p1_1 = "Esfuerzo recompensado", p1_2 = "Talento recompensado")
+col_dv  <- setNames(c(carbon, rojo), dv_lab)
+etq_lik <- c("1 Muy en desacuerdo", "2 En desacuerdo", "3 De acuerdo", "4 Muy de acuerdo")
+rampa3  <- c("#F6D5D5", "#D32F2F", "#7F1D1D")
+rampa4  <- c("#F6D5D5", "#E89A9A", "#D32F2F", "#7F1D1D")
+etq_educ   <- c("No terminó básica", "Básica", "Media", "Técnico/profesional", "Universidad", "Posgrado")
+etq_libros <- c("0-10", "11-25", "26-100", "100-200", "201-500", "Más de 500")
+etq_lik_c  <- c("Muy en desacuerdo", "En desacuerdo", "De acuerdo", "Muy de acuerdo")
+
+theme_set(
+  theme_minimal(base_size = 12) +
+    theme(text = element_text(colour = tinta),
+          plot.title = element_text(face = "bold", size = 13, colour = rojo),
+          plot.subtitle = element_text(colour = carbon, size = 10),
+          plot.caption = element_text(colour = carbon, size = 8, hjust = 0),
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_line(colour = gris, linewidth = 0.3),
+          strip.text = element_text(face = "bold", colour = tinta),
+          strip.background = element_rect(fill = "#FBEAEA", colour = NA),
+          legend.position = "top", legend.title = element_blank())
+)
+
+# ---- Ola 2 completa (misma base de los contrastes bivariados) ----
+ola2 <- data_long %>%
+  zap_labels() %>%
+  mutate(across(everything(), ~ ifelse(. %in% c(88, 99), NA, .))) %>%
+  group_by(id_estudiante) %>%
+  fill(d3_def, .direction = "downup") %>%
+  ungroup() %>%
+  filter(ola == 2) %>%
+  mutate(class_id = cur_group_id(), .by = c(d2, d3_def)) %>%
+  mutate(
+    ola = factor("Ola 2", levels = c("Ola 1", "Ola 2")),
+    # estatus socioeconómico: promedio de la educación de la madre y del padre
+    ed_parent = case_when(
+      !is.na(p26) & !is.na(p27) ~ (p26 + p27) / 2,
+      !is.na(p26) ~ as.numeric(p26),
+      !is.na(p27) ~ as.numeric(p27),
+      TRUE ~ NA_real_),
+    # nota merecida: quien declara que su promedio fue el merecido (p5 = 2) tiene C = A
+    p6 = case_when(p5 == 2 ~ p4, TRUE ~ p6),
+    J  = log(p4 / p6),
+    # versiones categóricas para graficar
+    estatus = cut(ed_parent, c(0, 2.5, 3.5, 4.5, 6),
+                  labels = c("Básica o menos", "Media", "Técnica o profesional", "Universitaria o más")),
+    madre   = factor(p26, 1:6, etq_educ),
+    libros  = factor(p30, 1:6, etq_libros),
+    nota_b  = cut(p4, c(0, 5, 5.5, 6, 6.5, 7), right = FALSE, include.lowest = TRUE,
+                  labels = c("< 5,0", "5,0 a 5,4", "5,5 a 5,9", "6,0 a 6,4", "6,5 a 7,0")),
+    j_b     = cut(J, c(-Inf, -0.05, 0.05, Inf),
+                  labels = c("Sub-recompensado", "Nota justa (J = 0)", "Sobre-recompensado")),
+    perc_esf  = factor(p2_1, 1:4, etq_lik_c),
+    perc_tal  = factor(p2_2, 1:4, etq_lik_c),
+    bsm_f     = factor(p2_3, 1:4, etq_lik_c)
+  )
+
+# ---- Funciones gráficas ----
+# Distribución de respuestas (barras 100%), Ola 2
+dist_cat <- function(df, vars, items, etq, colores, titulo) {
+  tab <- df %>%
+    select(all_of(vars)) %>%
+    pivot_longer(everything(), names_to = "item", values_to = "resp") %>%
+    filter(!is.na(resp)) %>%
+    count(item, resp) %>%
+    group_by(item) %>% mutate(N = sum(n), pct = n / N) %>% ungroup() %>%
+    mutate(etiq = paste0(items[match(item, vars)], " (n=", N, ")"),
+           etiq = factor(etiq, levels = unique(etiq[order(match(item, vars))])),
+           resp = factor(resp, levels = seq_along(etq), labels = etq),
+           oscuro = as.integer(resp) > ceiling(length(etq) / 2))
+  ggplot(tab, aes(x = pct, y = etiq, fill = resp)) +
+    geom_col(width = 0.62, colour = "white", linewidth = 0.5, position = position_stack(reverse = TRUE)) +
+    geom_text(aes(label = ifelse(pct >= 0.05, percent(pct, accuracy = 1), ""), colour = oscuro),
+              position = position_stack(vjust = 0.5, reverse = TRUE), size = 3) +
+    scale_colour_manual(values = c("TRUE" = "#ffffff", "FALSE" = tinta), guide = "none") +
+    scale_fill_manual(values = setNames(colores, etq), guide = guide_legend(nrow = 2, byrow = TRUE)) +
+    scale_x_continuous(labels = percent, expand = c(0, 0)) +
+    scale_y_discrete(limits = rev, labels = label_wrap(45)) +
+    labs(title = titulo, subtitle = "% de respuestas válidas, Ola 2", x = NULL, y = NULL) +
+    theme(plot.margin = margin(5.5, 18, 5.5, 5.5))
+}
+
+# Histograma, Ola 2
+hist_ola <- function(df, v, binwidth, titulo, xlab, ref = NULL) {
+  x <- df %>% filter(!is.na(.data[[v]]))
+  m <- mean(x[[v]])
+  p <- ggplot(x, aes(x = .data[[v]])) +
+    geom_histogram(binwidth = binwidth, fill = rojo, colour = "white", linewidth = 0.3) +
+    geom_vline(xintercept = m, linetype = "dashed", colour = tinta) +
+    annotate("text", x = m, y = Inf, label = paste0("media = ", round(m, 2)),
+             vjust = 1.6, hjust = -0.15, size = 3, colour = carbon, fontface = "italic") +
+    labs(title = titulo, subtitle = paste0("Ola 2 (n = ", nrow(x), ")"), x = xlab, y = "Estudiantes")
+  if (!is.null(ref)) p <- p + geom_vline(xintercept = ref, colour = carbon, linewidth = 0.4)
+  p
+}
+
+w_ic <- function(k, n, lado, z = 1.96) {
+  p <- k / n
+  centro <- (p + z^2 / (2 * n)) / (1 + z^2 / n)
+  mitad  <- z * sqrt(p * (1 - p) / n + z^2 / (4 * n^2)) / (1 + z^2 / n)
+  if (lado == "lo") centro - mitad else centro + mitad
+}
+
+largo_dv <- function(d, x, dvs = c("p1_1", "p1_2")) {
+  d |> select(ola, nivel = all_of(x), all_of(dvs)) |>
+    pivot_longer(all_of(dvs), names_to = "dv", values_to = "y") |>
+    filter(!is.na(nivel), y %in% 1:4) |>
+    mutate(dv = factor(dv_lab[dv], levels = dv_lab))
+}
+
+# % de acuerdo (3-4) con IC de Wilson, según un predictor categórico/ordinal
+acuerdo_segun <- function(d, x, titulo, xlab = NULL, dvs = c("p1_1", "p1_2")) {
+  r <- largo_dv(d, x, dvs) |>
+    group_by(ola, dv, nivel) |>
+    summarise(n = n(), k = sum(y >= 3), .groups = "drop") |>
+    mutate(p = k / n, lo = w_ic(k, n, "lo"), hi = w_ic(k, n, "hi"))
+  ggplot(r, aes(nivel, p, colour = dv, group = dv)) +
+    geom_linerange(aes(ymin = lo, ymax = hi), position = position_dodge(.35), linewidth = .5) +
+    geom_line(position = position_dodge(.35), linewidth = .5, alpha = .7) +
+    geom_point(aes(size = n), position = position_dodge(.35)) +
+    scale_colour_manual(values = col_dv, name = NULL) +
+    scale_size_area(max_size = 5, guide = "none") +
+    scale_y_continuous(labels = percent, limits = c(0, 1)) +
+    scale_x_discrete(labels = label_wrap(12)) +
+    labs(title = titulo, x = xlab %||% x, y = "% de acuerdo",
+         caption = "Puntos: % de acuerdo (3-4) con IC 95% de Wilson. Tamaño del punto = n.")
+}
+
+# Asociación ordinal: tau-b de Kendall (por defecto) o rho de Spearman, con IC 95% (aproximación de Fisher)
+asoc <- function(x, y, min_n = 10, metodo = c("kendall", "spearman")) {
+  metodo <- match.arg(metodo)
+  ok <- complete.cases(x, y); x <- x[ok]; y <- y[ok]; n <- length(x)
+  if (n < min_n || sd(x) == 0 || sd(y) == 0)
+    return(tibble(n = n, coef = NA_real_, ic_inf = NA_real_, ic_sup = NA_real_, p = NA_real_))
+  ct <- suppressWarnings(cor.test(x, y, method = metodo, exact = FALSE))
+  r  <- unname(ct$estimate)
+  se <- if (metodo == "kendall") sqrt(0.437 / (n - 4)) else sqrt(1.06 / (n - 3))
+  tibble(n = n, coef = r, ic_inf = tanh(atanh(r) - 1.96 * se), ic_sup = tanh(atanh(r) + 1.96 * se), p = ct$p.value)
+}
+
+# Contexto: curso (Ola 2)
+curso2 <- ola2 %>% group_by(class_id) %>%
+  summarise(n_est = n(), ses_cm = mean(ed_parent, na.rm = TRUE), ses_de = sd(ed_parent, na.rm = TRUE),
+            p1_1_cm = mean(p1_1, na.rm = TRUE), p1_2_cm = mean(p1_2, na.rm = TRUE), .groups = "drop")
+
+disp_curso <- function(x, xlab, titulo) {
+  r <- curso2 |> select(class_id, n_est, xc = all_of(x), p1_1_cm, p1_2_cm) |>
+    pivot_longer(c(p1_1_cm, p1_2_cm), names_to = "dv", values_to = "y") |>
+    mutate(dv = factor(unname(c(p1_1_cm = dv_lab[["p1_1"]], p1_2_cm = dv_lab[["p1_2"]])[dv]), levels = dv_lab)) |>
+    filter(!is.na(xc), !is.na(y))
+  est <- r |> group_by(dv) |>
+    summarise(rho = cor(xc, y, method = "spearman"),
+              p = suppressWarnings(cor.test(xc, y, method = "spearman", exact = FALSE)$p.value),
+              n = n(), .groups = "drop") |>
+    mutate(lab = sprintf("rho = %.2f; p = %.2f; %d cursos", rho, p, n))
+  ggplot(r, aes(xc, y)) +
+    geom_smooth(method = "lm", formula = y ~ x, se = FALSE, colour = carbon, linetype = "dashed", linewidth = .5) +
+    geom_point(aes(size = n_est), colour = rojo, alpha = .8) +
+    geom_text(data = est, aes(x = -Inf, y = Inf, label = lab), hjust = -.05, vjust = 1.5, size = 3,
+              colour = carbon, inherit.aes = FALSE) +
+    scale_size_area(max_size = 6, guide = "none") +
+    scale_y_continuous(expand = expansion(mult = c(0.05, 0.18))) +
+    facet_wrap(~ dv) +
+    labs(title = titulo, x = xlab, y = "Media del curso (1 a 4)",
+         caption = "Un punto = un curso de la Ola 2. Tamaño = n de estudiantes. Línea punteada: tendencia lineal descriptiva.")
+}
+```
+
+# Antecedentes.
+
+La meritocracia es un principio de asignación que legitima la distribución desigual de los recursos en las sociedades modernas [@castillo_meritocracia_2019], y en Chile el ideal meritocrático goza de amplio consenso: el 84% de la población está de acuerdo con que quienes trabajan duro merecen ganar más que quienes no lo hacen, y el 93% con que la mejor forma de progresar es esforzarse [@undp_desiguales_2017]. La idea de que el esfuerzo individual y el talento bastan para explicar el éxito o el fracaso ha permeado la educación, el trabajo y el debate público. Sin embargo, un análisis más detenido muestra que este principio, lejos de operar como un mecanismo de justicia social, legitima las desigualdades como merecidas y traslada a los propios individuos la responsabilidad de sus dificultades [@mijs_unfulfillable_2018].
+
+Desde una perspectiva crítica, el mérito no puede entenderse como un atributo puramente individual. Los criterios de mérito son construcciones sociales situadas, definidas en contextos históricos específicos y favorables a quienes tienen el poder de definirlos [@mijs_unfulfillable_2018; @crawford2010]. Además, el desempeño individual está condicionado por factores que exceden la voluntad personal, como las dotaciones y oportunidades de partida y la familia de origen [@mijs_unfulfillable_2018]. En Chile, a ello se suma un sistema educativo altamente segmentado, cuya estructura organizativa y de financiamiento ha operado como un canal de transmisión del nivel socioeconómico entre padres e hijos [@undp_desiguales_2017]. Más aún, al atribuir el éxito escolar al mérito individual, la escuela transforma diferencias de clase y de género en diferencias de mérito que aparecen como legítimas, equitativas y justas [@wiederkehr_belief_2015a].
+
+En Chile, desde inicios de los años ochenta, las reformas que instalaron la lógica de mercado en áreas como la educación [@verger_recontextualizacion_2016a; @madariaga2020] coincidieron con un nuevo énfasis meritocrático en la sociedad [@undp_desiguales_2017]. La educación fue organizada bajo lógicas de mercado, con financiamiento por voucher, competencia entre escuelas y selección de estudiantes [@verger_recontextualizacion_2016a; @contreras_when_2010]. Esa lógica se reforzó mediante la evaluación estandarizada y la publicación de resultados, que presentan el desempeño de los establecimientos como mérito propio e invisibilizan las condiciones de partida de sus estudiantes [@falabella2014]. Mientras tanto, el esfuerzo personal ocupa un lugar central en las explicaciones que los chilenos dan de sus trayectorias [@undp_desiguales_2017]. No obstante, el sistema escolar chileno está altamente segregado por nivel socioeconómico [@valenzuela_socioeconomic_2014]. La promesa de igualdad de oportunidades convive así con condiciones de partida desiguales [@crawford2010; @mijs_unfulfillable_2018].
+
+La sociología de la educación ha advertido ampliamente sobre este fenómeno. Pierre Bourdieu señalaba que los sistemas educativos no operan sobre sujetos en igualdad de condiciones, sino sobre individuos que ya han incorporado distintos volúmenes de capital cultural [@bourdieu_reproduction_1990]. Bajo esta lógica, la escuela promueve la creencia en el mérito para que tanto los grupos de mayor como los de menor estatus acepten que los resultados desiguales son merecidos [@wiederkehr_belief_2015a]. El fracaso educativo no solo excluye materialmente, sino que tiende a ser interpretado como responsabilidad individual: en un experimento con estudiantes de quinto básico, la activación del discurso del mérito en el contexto escolar amplió la brecha de rendimiento entre niños de distinto nivel socioeconómico, a través de una mayor adhesión a la creencia en la meritocracia escolar, que se asoció a un peor desempeño entre quienes provenían de hogares de menor nivel socioeconómico [@darnon_where_2018].
+
+Este proceso tiene consecuencias que trascienden el ámbito educativo. En Chile, un modelo que privilegia al sector privado en la provisión de pensiones, salud y educación ha politizado las desigualdades de mercado desde el retorno a la democracia, en la medida en que las expectativas de movilidad social y bienestar chocan con el carácter excluyente del sistema [@somma_social_2020]. Esa brecha entre promesa y experiencia se inscribe en un escenario de desafección institucional y baja confianza en élites e instituciones, en el que el debilitamiento del sistema de partidos abre espacio a *outsiders* y liderazgos populistas [@somma_social_2020]. Este malestar resulta relevante para comprender el escenario político actual. Cabe plantear, como conjetura que excede los alcances de este estudio, que el avance de la ultraderecha en Chile no responde únicamente a factores ideológicos o culturales, sino también a la frustración frente a un modelo que prometió movilidad social y entregó precariedad. Cuando el esfuerzo deja de percibirse como una vía creíble de progreso, esa frustración puede canalizarse hacia discursos que desplazan la responsabilidad desde la estructura económica hacia el Estado, las políticas redistributivas y los movimientos feministas y de derechos.
+
+La dimensión de género también atraviesa esta discusión. La escuela transforma diferencias de clase y de género en diferencias de mérito individual y, entre las niñas, la creencia en la meritocracia escolar se asocia con una mayor creencia en una sociedad meritocrática y justa [@wiederkehr_belief_2015a]. A ello se agrega que las experiencias de evaluación difieren según el género: las mujeres obtienen mejores notas, mientras que los hombres reportan un mayor sentido de injusticia respecto de sus calificaciones [@resh_sense_2010]. Así, la meritocracia no solo distribuye recompensas materiales de manera desigual, sino que también individualiza la responsabilidad y debilita las bases de la acción colectiva: la marca de fracaso personal erosiona los fundamentos para la protesta [@mijs_unfulfillable_2018], y la expansión de la lógica de mercado, al aumentar la responsabilidad individual, debilita los vínculos de solidaridad social [@canales2022].
+
+El problema no es la valoración del esfuerzo, sino su absolutización ideológica. Como advirtió Max Weber, la ética del esfuerzo puede convertirse en un mecanismo de legitimación del privilegio cuando quienes se encuentran en posiciones ventajosas necesitan justificar moralmente su situación [@weber_protestant_2002]. En línea con ello, el efecto legitimador de la creencia en la meritocracia escolar sobre la desigualdad económica es más fuerte entre las personas más educadas, para quienes cumple la función de justificar la posición que ocupan en la jerarquía y de reafirmar el mérito de su alto estatus [@batruch_belief_2023]. En sociedades altamente desiguales, la meritocracia cumple precisamente esa función: ofrecer una explicación moral que hace tolerable la desigualdad. Revisar críticamente este relato es una tarea urgente para comprender las tensiones de la democracia chilena en un escenario de creciente polarización política.
+
+Ahora bien, la legitimidad de la meritocracia no depende solo de que se la valore, sino de que se perciba que funciona, es decir, que el esfuerzo y el talento son efectivamente lo que se recompensa: quienes perciben que el sistema funciona de manera meritocrática tienden a percibir menos desigualdad económica [@castillo_meritocracia_2019]. En esa percepción se juega la credibilidad cotidiana del relato meritocrático, y es allí donde la brecha entre promesa y experiencia se vuelve visible. En el ámbito escolar, esta percepción comienza a formarse tempranamente: ya entre estudiantes de 8° básico se observa una alta percepción de meritocracia, asociada a la justificación de la desigualdad [@castillo_socialization_2024], en línea con la evidencia sobre la creencia en la meritocracia escolar en población escolar [@wiederkehr_belief_2015a]. Por ello, este estudio se centra en cómo los y las estudiantes perciben la recompensa al esfuerzo y al talento, y en qué factores se asocian a esas percepciones.
+
+### Antecedentes empíricos
+
+#### Meritocracia y percepciones de recompensa
+
+Desde la sociología de la estratificación y la economía moral de la justicia distributiva, la meritocracia se define como un principio de asignación de recursos, estatus y recompensas según el cual las posiciones en la jerarquía social se determinan por los méritos individuales. Estos se entienden como la suma de talento y esfuerzo ($\text{Mérito} = \text{Talento} + \text{Esfuerzo}$), y no por factores adscriptivos como la clase de origen, la riqueza heredada, el género o las redes de influencia [@young_triunfo_; @castillo_meritocracia_2019]. El concepto fue acuñado originalmente en una sátira distópica en la que la selección educativa por mérito concentra el talento en la élite y priva a los sectores excluidos de dirigentes y de una ideología propia, de modo que su capacidad de protesta se debilita [@young_triunfo_]. Posteriormente fue incorporado por la teoría funcionalista y por políticas educativas inspiradas en la lógica del capital humano como un ideal normativo de eficiencia y equidad distributiva [@mijs_unfulfillable_2018].
+
+En la discusión contemporánea se distingue entre una perspectiva descriptiva, centrada en el grado real de movilidad y de ruptura de la herencia social, y una perspectiva subjetiva. Esta última se descompone en preferencias meritocráticas, el deseo normativo sobre cómo debería distribuirse el bienestar, y percepciones meritocráticas, la evaluación de cómo opera efectivamente el sistema [@castillo_meritocracia_2019]. Ambas dimensiones son distintas y no se asocian de manera significativa entre sí, y presentan asociaciones opuestas con la desigualdad económica percibida: a mayor preferencia por la meritocracia, mayor desigualdad percibida, y a mayor percepción de que el sistema funciona, menor desigualdad percibida, lo que sugiere una mayor tolerancia a las diferencias económicas entre quienes perciben que la distribución basada en el mérito opera adecuadamente [@castillo_meritocracia_2019]. Dentro de las percepciones, un aspecto central es qué atributos se perciben como efectivamente recompensados, es decir, si la sociedad premia el esfuerzo, el talento o ambos. La distinción importa porque ambos componentes no son moralmente equivalentes: el esfuerzo se concibe como un atributo más controlable que la habilidad y, por tanto, atribuible a la persona [@darnon_where_2018], mientras que el talento se asemeja más a una dotación natural cuya distribución no es merecida y que, en ese sentido, se acerca a lo adscrito [@mijs_unfulfillable_2018]. Esta distinción tiene consecuencias para la atribución del éxito y del fracaso: la saliencia del mérito basado en el esfuerzo favorece la internalización de los resultados [@darnon_where_2018], mientras que recompensar el talento supone premiar una dotación que no depende de quien la posee [@mijs_unfulfillable_2018]. En consonancia con ello, entre estudiantes de 8° básico la importancia atribuida al talento para obtener buenas notas se asocia positivamente con la justificación de la desigualdad de mercado, mientras que la atribuida al esfuerzo se asocia negativamente [@castillo_socialization_2024], lo que respalda analizar ambos componentes por separado.
+
+En la esfera educativa, esta percepción se estructura en torno a la creencia en la meritocracia escolar (BSM), que opera mediante dispositivos de cuantificación como las notas, los ránkings y los diplomas. Estos funcionan como certificados de mérito que determinan en gran medida la posición futura de las personas [@wiederkehr_belief_2015a] y, en tanto números, proyectan un aura de objetividad que sugiere que el mérito es medible y que el estatus, alto o bajo, es merecido [@rohde_assign_2023]. De este modo, transforman las ventajas de origen socioeconómico y de clase en diferencias individuales de mérito [@wiederkehr_belief_2015a]. Así, la meritocracia escolar actúa en la práctica como una ideología de justificación del sistema que enmascara la reproducción de privilegios y promueve la atribución interna del fracaso [@wiederkehr_belief_2015a; @darnon_where_2018], y su efecto no se circunscribe a la escuela: se asocia con una menor percepción de injusticia de la desigualdad de clase y de ingresos y con un menor apoyo a políticas que busquen reducirla [@batruch_belief_2023]. En este marco, la percepción de recompensa al esfuerzo y al talento deja de ser un matiz y pasa a ser un componente central de la socialización meritocrática, en tanto se asocia con la justificación de la desigualdad ya en edad escolar [@castillo_socialization_2024].
+
+#### La escuela como espacio de socialización meritocrática
+
+Desde la sociología de la educación y la economía política de la estratificación, la escuela chilena constituye un campo privilegiado para analizar cómo se forman estas percepciones. La institución escolar no se limita a transmitir contenidos curriculares neutrales, sino que cumple una función de selección: asigna a las personas a posiciones sociales que difieren en riqueza, estatus y prestigio [@wiederkehr_belief_2015a; @rohde_assign_2023]. En ese contexto, promueve una norma de internalidad: la tendencia a explicar los éxitos y fracasos por atributos individuales como el esfuerzo y la capacidad, en lugar de factores estructurales como el origen de clase o el capital cultural. Esta norma se refuerza porque los docentes valoran y premian con mejores calificaciones las explicaciones internas, en particular las basadas en el esfuerzo, y porque los estudiantes recurren a ellas para dar una buena imagen de sí mismos [@wiederkehr_belief_2015a; @darnon_where_2018; @batruch_belief_2023].
+
+Esta socialización se produce a través de tecnologías cotidianas de cuantificación del mérito. Las calificaciones, los ránkings y los diplomas traducen el desempeño pedagógico a un lenguaje numérico presentado como objetivo [@wiederkehr_belief_2015a; @rohde_assign_2023], y a nivel de los establecimientos las pruebas estandarizadas como el SIMCE y las clasificaciones oficiales presentan los resultados como mérito institucional, naturalizando los privilegios de partida [@falabella2014]. Mediante estas prácticas, la escuela sugiere a los y las estudiantes que sus resultados son producto de su propio mérito: los estudiantes llegan a defender las notas como mecanismo para ordenar la sociedad, incluso cuando ellos mismos reciben calificaciones bajas [@rohde_assign_2023].
+
+Al evaluar bajo la ficción de que todos los individuos parten en igualdad de condiciones, la escuela realiza una recontextualización ideológica, que convierte las disparidades de origen socioeconómico y de capital cultural en supuestas diferencias individuales de mérito [@bourdieu_reproduction_1990; @wiederkehr_belief_2015a]. Los certificados académicos funcionan así como instrumentos de autolegitimación. Para los sectores privilegiados, permiten reinterpretar las ventajas heredadas como logros personales merecidos. Para los sectores desaventajados, cumplen una función paliativa y de reducción de la disonancia cognitiva: creer en la meritocracia escolar aparece como la única vía percibida de movilidad ascendente y otorga un sentido subjetivo de control sobre el propio futuro, aunque a costa de culparse a sí mismos cuando el rendimiento es bajo [@wiederkehr_belief_2015a; @darnon_where_2018]. Además, sus efectos no se agotan en el aula: quienes asimilan que la escuela es meritocrática tienden a percibir como menos injustas las desigualdades de clase y de ingresos y a apoyar menos las políticas redistributivas [@batruch_belief_2023] y, entre estudiantes de 8° básico, a aceptar en mayor medida que el acceso a la salud, la educación y las pensiones dependa de la capacidad de pago [@castillo_socialization_2024].
+
+#### El cuasi-mercado escolar chileno
+
+Esta socialización se inscribe en una arquitectura institucional específica. Chile constituye un caso paradigmático de implementación temprana y a gran escala de reformas neoliberales [@verger_recontextualizacion_2016a; @madariaga2020], tal como advirtió Harvey (2005). Bajo la dictadura militar (1973-1990), el Estado reestructuró el sistema de protección social y puso bajo dominio del mercado esferas antes concebidas como derechos sociales, entre ellas las pensiones y la educación [@madariaga2020; @canales2022]. En el ámbito escolar, la reforma de 1981 transformó la provisión estatal sobre tres pilares: la municipalización de la administración de las escuelas públicas, una subvención a la demanda que "sigue al estudiante" y la apertura a proveedores privados, con la competencia por matrícula como supuesto motor de mejora de la calidad [@verger_recontextualizacion_2016a; @contreras_when_2010], según el modelo teórico de Chubb y Moe (1990).
+
+Lejos de revertirse con el retorno a la democracia, esta arquitectura se profundizó. El financiamiento compartido (1993) permitió a los colegios particulares subvencionados cobrar un copago, lo que introdujo un mecanismo de discriminación por precio y estratificó el sistema según la capacidad de pago de los hogares [@valenzuela_socioeconomic_2014; @verger_recontextualizacion_2016a]. La libertad de admisión habilitó además la selección de estudiantes mediante pruebas de ingreso, entrevistas y liquidaciones de sueldo de los apoderados [@contreras_when_2010], y las escuelas compitieron menos por mejorar su pedagogía que por captar a los estudiantes más aventajados y menos costosos de educar (*cream-skimming*) [@contreras_when_2010; @verger_recontextualizacion_2016a]. A ello se sumó el Estado evaluador: el SIMCE, cuyos resultados se publican en los medios desde 1996, y las clasificaciones oficiales de escuelas buscaron informar la elección de las familias y consolidaron la medición estandarizada como criterio para juzgar el valor de los establecimientos [@falabella2014; @verger_recontextualizacion_2016a]. El resultado fue una experiencia de mercadeo educativo, en la que la elección de colegio se convirtió en una inversión económica y en una forma de filiación al estrato social mediante el pago, y en la que se forma un sujeto "emprendedor de sí mismo", para el cual es responsabilidad de cada familia acceder al tipo de educación que su capacidad de pago le permite [@canales2022].
+
+La Ley de Inclusión Escolar (2015) buscó eliminar de forma gradual el copago, el lucro y la selección mediante el Sistema de Admisión Escolar. Iniciativas posteriores como el proyecto "Admisión Justa" intentaron reponer filtros de selección temprana apelando al "esfuerzo individual" y al "mérito de la clase media" como principios ordenadores de la justicia escolar (Carrasco y Honey, 2019). En este escenario, notas, ránkings y procesos de admisión operan como los mecanismos que traducen talento y esfuerzo en recompensas escolares, de modo que lo que los y las estudiantes perciben que la escuela premia, si el esfuerzo, el talento o ambos, pasa a ser un componente central de su socialización meritocrática.
+
+#### Factores asociados a la percepción de recompensa al esfuerzo y al talento
+
+La literatura sobre estratificación y subjetividad meritocrática señala que la percepción de que la sociedad o la escuela recompensan el esfuerzo y el talento está asociada a factores socioestructurales, institucionales y psicosociales. A continuación se revisan según el predictor.
+
+**Estatus socioeconómico del hogar.** El estatus objetivo muestra efectos distintos según se mida por ingreso o por educación. El ingreso familiar per cápita se asocia de forma positiva con la percepción descriptiva de la meritocracia en el modelo base, aunque la asociación deja de ser significativa al incorporar el ingreso relativo al grupo educacional y el estatus subjetivo, lo que responde a la lógica del interés racional: quienes se encuentran en una situación de privilegio perciben una mejor implementación del ideal meritocrático como forma de justificar su estatus [@castillo_meritocracia_2019]. En cambio, al controlar por ingreso, una mayor escolaridad formal se relaciona negativamente con la percepción de que el sistema funciona de manera meritocrática. Los autores proponen como explicaciones posibles, aún no contrastadas directamente, un efecto iluminador de la educación, que entrega una actitud más crítica frente a la distribución de bienes, y dinámicas de deprivación relativa entre quienes no ven retornos proporcionales a sus credenciales [@castillo_meritocracia_2019]. Esta literatura documenta también que quienes se ubican en peldaños superiores de la jerarquía social perciben que la meritocracia funciona mejor [@castillo_meritocracia_2019], un factor que este estudio no puede examinar porque el cuestionario no mide estatus subjetivo ni ingreso.
+
+**Capital cultural y percepción de recompensa al talento.** A diferencia del esfuerzo, que ocupa un lugar central en las narrativas de todos los estratos [@undp_desiguales_2017], cabe esperar que la recompensa al talento sea afirmada en mayor medida por las familias de mayor capital cultural. La escuela promueve normas, prácticas y lenguajes familiares a las clases altas, por lo que sus estudiantes llegan mejor preparados para responder a sus expectativas [@bourdieu_reproduction_1990; @castillo_socialization_2024], y el talento, en tanto dotación individual no merecida [@mijs_unfulfillable_2018], resulta una atribución especialmente funcional para leer esos resultados como capacidad personal. Percibir que el talento es premiado, tanto en la escuela como en la sociedad, se vincula además con una mayor aceptación de que el acceso a la salud, la educación y las pensiones se rija por la capacidad de pago y el mercado [@castillo_socialization_2024].
+
+**Experiencia escolar y creencia en la meritocracia escolar.** En la etapa escolar, la adhesión a la BSM es elevada en todos los grupos, incluso entre estudiantes de bajo nivel socioeconómico, aunque en ellos cumple una función paliativa y de reducción de la disonancia cognitiva y se asocia más estrechamente con la creencia en una sociedad meritocrática y justa [@wiederkehr_belief_2015a]. Para estos estudiantes, convencerse de que la escuela recompensa el trabajo dedicado representa la principal esperanza de movilidad ascendente, a costa de sostener una creencia autodebilitante que los lleva a culparse cuando obtienen bajos resultados [@wiederkehr_belief_2015a; @darnon_where_2018]. Entre adultos, en cambio, el efecto legitimador de la BSM sobre las actitudes frente a la desigualdad es más fuerte entre quienes tienen mayor educación [@batruch_belief_2023], lo que sugiere que su función varía según la posición social.
+
+**Dominio de evaluación y etapa de socialización.** La percepción de recompensa varía según el ámbito evaluado. En el plano escolar existe una adhesión masiva: el 96,8% de los y las estudiantes de 8° básico considera que el esfuerzo es importante para obtener buenas notas, aunque la importancia atribuida no equivale a la recompensa efectiva [@castillo_socialization_2024]. En el ámbito social general, la percepción de recompensa es menor. Entre adultos, solo entre un 26% y un 30% percibe que en Chile el esfuerzo es efectivamente recompensado, mientras que entre un 76% y un 80% considera el trabajo duro importante para salir adelante [@luismaldonado_meritocracia_2021], y los promedios de percepción se ubican por debajo del punto medio de la escala [@castillo_meritocracia_2019]. Entre estudiantes de 8° básico, en cambio, cerca del 62% percibe que el esfuerzo es recompensado en la sociedad y el 64% que lo es el talento [@castillo_socialization_2024]. Si bien los instrumentos y los años difieren, por lo que la comparación es solo indicativa, esta brecha es compatible con la idea de que niños, niñas y adolescentes son socializados intensamente en la lógica del mérito mediante notas y clasificaciones [@wiederkehr_belief_2015a; @rohde_assign_2023].
+
+**Contexto escolar.** A nivel contextual, los y las estudiantes de escuelas de mayor rendimiento en el SIMCE muestran una menor preferencia por la justicia de mercado y, en esas escuelas, la asociación positiva entre la percepción de que en Chile las personas obtienen lo que merecen y la aceptación de la justicia de mercado tiende a atenuarse. Los autores interpretan este patrón como un efecto iluminador de la educación, asociado a una mayor exposición a discusiones y a una comprensión más crítica de la desigualdad, y no observan moderación en las percepciones de esfuerzo y talento [@castillo_socialization_2024].
+
+#### Objetivo e hipótesis
+
+El objetivo de este estudio es analizar qué factores individuales y contextuales se asocian a la percepción de que el esfuerzo es recompensado y a la percepción de que el talento es recompensado. Se parte del supuesto de que la escuela funciona como un dispositivo de socialización meritocrática, que traslada su lógica de recompensa a la lectura que los y las estudiantes hacen de la sociedad. A partir de los antecedentes revisados, se plantean las siguientes hipótesis, formuladas para cada variable dependiente por separado y organizadas por nivel de análisis. En esta etapa se contrastan con los datos de la Ola 2; las hipótesis de evolución temporal (H11 y H12) quedan para el análisis del panel.
+
+#### Hipótesis de transferencia: de las notas a la sociedad
+
+**H1a (transferencia en el esfuerzo).** Los y las estudiantes que perciban en mayor medida que el esfuerzo es recompensado en las notas percibirán en mayor medida que el esfuerzo es recompensado en la sociedad.
+
+**H1b (transferencia en el talento).** Los y las estudiantes que perciban en mayor medida que el talento es recompensado en las notas percibirán en mayor medida que el talento es recompensado en la sociedad.
+
+*Fundamento.* La escuela cumple una función de selección en la que las notas, los ránkings y los diplomas operan como certificados de mérito que determinan la posición futura de las personas, por lo que la equidad percibida de la sociedad pasa a depender de la equidad percibida del sistema escolar [@wiederkehr_belief_2015a]. A través de estas tecnologías de cuantificación, la escuela sugiere que el mérito es medible y que el estatus es merecido [@rohde_assign_2023], e inculca la norma de internalidad mediante la valoración docente de las explicaciones basadas en el esfuerzo [@wiederkehr_belief_2015a; @darnon_where_2018]. Mediante la recontextualización ideológica, además, convierte las disparidades de origen y de capital cultural en supuestas diferencias individuales de capacidad [@bourdieu_reproduction_1990; @wiederkehr_belief_2015a]. Quienes incorporan con mayor intensidad la lógica de recompensa escolar dispondrían de un marco para extenderla a la sociedad, en línea con la evidencia de que la creencia en la meritocracia escolar se asocia con la legitimación de la desigualdad social y de ingresos más allá del ámbito escolar [@batruch_belief_2023].
+
+**H2a-b (función paliativa, exploratoria).** La asociación entre la percepción de recompensa en las notas y en la sociedad (H1a y H1b) será más fuerte entre estudiantes de menor nivel socioeconómico. Para ellos, creer que la escuela recompensa el trabajo y las capacidades cumple una función paliativa y de reducción de la disonancia cognitiva, al ofrecer la principal vía percibida de movilidad ascendente [@wiederkehr_belief_2015a; @mijs_unfulfillable_2018]. Esa dependencia de la creencia escolar los haría más propensos a extenderla a la sociedad, como sugiere la evidencia de que solo entre estudiantes de bajo nivel socioeconómico la creencia en la meritocracia escolar se asocia con la creencia en una sociedad meritocrática y justa, aunque con una interacción solo marginalmente significativa y en una muestra pequeña [@wiederkehr_belief_2015a].
+
+#### Hipótesis de nivel individual
+
+**H3a-b (estatus socioeconómico del hogar).** El nivel educativo de los padres se asociará con la percepción de que el esfuerzo (H3a) y el talento (H3b) son recompensados. La literatura ofrece dos expectativas rivales. Por una parte, la lógica del interés racional y de la autolegitimación del privilegio predice una asociación positiva, pues quienes ocupan posiciones ventajosas necesitan presentar sus condiciones como un logro individual legítimo, lo que se refleja en el efecto positivo del ingreso sobre la percepción descriptiva de la meritocracia [@castillo_meritocracia_2019]. Por otra, el efecto iluminador de la educación predice una asociación negativa, pues la educación formal entregaría una actitud más crítica frente a la distribución de bienes y generaría deprivación relativa cuando las credenciales no obtienen retornos proporcionales; los autores plantean estas explicaciones como posibles y no las contrastaron directamente, y la relación negativa con la escolaridad se observó al controlar por ingreso [@castillo_meritocracia_2019]. Como el cuestionario no mide ingreso, ambos mecanismos no pueden separarse: la educación de los padres captura a la vez la posición de privilegio y el efecto de la escolaridad. Por ello la dirección de la asociación se trata como una pregunta empírica, y el signo observado se interpretará como el resultado neto de ambos mecanismos. Tampoco se formula una hipótesis sobre el estatus subjetivo, que el cuestionario no registra.
+
+**H4 (capital cultural y recompensa al talento).** Un mayor capital cultural del hogar se asociará con una mayor percepción de que el talento es recompensado. La escuela promueve normas, prácticas y lenguajes familiares a las familias de mayor capital cultural, cuyos estudiantes están mejor preparados para responder a sus expectativas [@bourdieu_reproduction_1990; @castillo_socialization_2024]. En ese contexto, resulta plausible que esas familias lean sus resultados como expresión de capacidad individual, y el talento, en tanto dotación no merecida [@mijs_unfulfillable_2018], se vuelve una atribución especialmente funcional para legitimar jerarquías de estatus. A diferencia de la escolaridad formal (H3), el capital cultural remite a recursos y disposiciones que la escuela traduce en diferencias individuales de capacidad [@bourdieu_reproduction_1990].
+
+**H5a-b (experiencia evaluativa).** Un mayor rendimiento académico se asociará con una mayor percepción de que el esfuerzo (H5a) y el talento (H5b) son recompensados. Quienes obtienen mejores notas tienden a percibir su evaluación como más justa [@resh_sense_2010], y las notas, al presentarse como medidas objetivas, sugieren que el estatus alcanzado es merecido [@rohde_assign_2023]. Quienes son favorecidos por estos dispositivos tienen así una experiencia directa de ser premiados y tenderían a interpretar sus resultados como producto de su trabajo y de su capacidad.
+
+**H6a-b (creencia en la meritocracia escolar).** Una mayor adhesión a la BSM se asociará con una mayor percepción de que el esfuerzo (H6a) y el talento (H6b) son recompensados. La BSM es la forma que adopta, en el ámbito educativo, la creencia en que el desempeño se traduce en recompensa, y opera mediante la norma de internalidad [@wiederkehr_belief_2015a; @darnon_where_2018] y la cuantificación del mérito [@rohde_assign_2023]. Su efecto legitimador excede el ámbito escolar [@batruch_belief_2023].
+
+#### Hipótesis de nivel contextual (curso)
+
+**H7a-b (composición socioeconómica del contexto).** Los y las estudiantes de cursos con mayor estatus socioeconómico promedio (educación de los padres) percibirán en mayor medida que el esfuerzo (H7a) y el talento (H7b) son recompensados, más allá de su propio origen. El financiamiento compartido y la libertad de admisión estratificaron el sistema según la capacidad de pago de los hogares [@valenzuela_socioeconomic_2014], y entre estudiantes de 8° básico quienes asisten a escuelas de mayor nivel socioeconómico muestran una mayor justificación de la desigualdad de mercado, más allá de su propio origen familiar [@castillo_socialization_2024]. Cabe esperar que los contextos privilegiados, que concentran a quienes reinterpretan las ventajas heredadas como logros personales merecidos [@castillo_meritocracia_2019], refuercen la percepción de que el esfuerzo y el talento se recompensan.
+
+**H8a-b (clima meritocrático del contexto).** Los y las estudiantes de contextos con mayor adhesión promedio a la BSM percibirán en mayor medida que el esfuerzo (H8a) y el talento (H8b) son recompensados, más allá de su propia adhesión. Los establecimientos elaboran narrativas institucionales de éxito vinculadas a un discurso de meritocracia y de merecimiento [@falabella2014], y se ha propuesto que los ambientes meritocráticos son particularmente propicios para la internalización de los resultados [@darnon_where_2018]. Los contextos donde esta lógica está más extendida deberían, por tanto, intensificar la norma de internalidad en sus miembros, aunque la evidencia disponible sobre este mecanismo proviene de diseños individuales y no de efectos de contexto.
+
+**H9a-b (rendimiento promedio y transferencia, exploratoria).** El rendimiento académico promedio del contexto atenuará las asociaciones de transferencia (H1a y H1b). Se extrapola el hallazgo de que, en escuelas de mayor rendimiento en el SIMCE, la asociación entre la percepción de merecimiento y la aceptación de la justicia de mercado tiende a debilitarse, lo que los autores interpretan como un efecto iluminador de la educación [@castillo_socialization_2024]. Dado que ese estudio no observó moderación para las percepciones de esfuerzo y talento, esta hipótesis tiene carácter exploratorio.
+
+**H10a-b (homogeneidad socioeconómica del contexto, exploratoria).** Los y las estudiantes de contextos socioeconómicamente más homogéneos percibirán en mayor medida que el esfuerzo (H10a) y el talento (H10b) son recompensados. La segregación socioeconómica del sistema escolar es muy elevada [@valenzuela_socioeconomic_2014] y la escolarización comprensiva favorece la socialización conjunta de estudiantes aventajados y desaventajados [@mijs_unfulfillable_2018]. Cabe esperar que la menor diversidad reduzca el contacto entre estudiantes de distinto origen y, con ello, la visibilidad de las barreras de origen, de modo que las diferencias de resultados tiendan a leerse como diferencias individuales de mérito.
+
+#### Hipótesis de evolución temporal
+
+**H11 (cambio intraindividual de la recompensa al esfuerzo).** La percepción de que el esfuerzo es recompensado en la sociedad disminuirá dentro de cada estudiante a medida que avanza en las olas. La percepción de recompensa al esfuerzo es mayor en la etapa escolar (cerca del 62% entre estudiantes de 8° básico) que en la población adulta (entre 26% y 30%) [@castillo_socialization_2024; @luismaldonado_meritocracia_2021], diferencia que es compatible con la intensidad con que se socializa la lógica del mérito mediante notas y clasificaciones [@wiederkehr_belief_2015a; @rohde_assign_2023]. Con panel, esa disminución se observa como cambio dentro de una misma persona.
+
+**H12a y H12b (experiencia evaluativa intraindividual).** Cuando una persona mejora su rendimiento o su justicia percibida en las notas respecto de su propio promedio, aumenta su percepción de que el esfuerzo (H12a) y el talento (H12b) son recompensados en la sociedad. Quienes obtienen mejores notas perciben su evaluación como más justa [@resh_sense_2010], y las notas sugieren que el estatus es merecido [@rohde_assign_2023], por lo que quienes viven la experiencia de ser premiados tienden a interpretar sus resultados como producto de su trabajo y capacidad. Al comparar a cada estudiante consigo mismo, el efecto no queda contaminado por características estables como el origen socioeconómico o el género.
+
+#### Variables
+
+##### Variables dependientes
+
+Las variables dependientes son la percepción de que el esfuerzo es recompensado y la percepción de que el talento es recompensado en la sociedad chilena. Ambas se miden con ítems del cuestionario aplicado a estudiantes de 6° básico a 2° medio. La recompensa al esfuerzo se mide con el ítem "En Chile, las personas son recompensadas por sus esfuerzos" (`p1_1`), y la recompensa al talento con el ítem "En Chile, las personas son recompensadas por su inteligencia y habilidad" (`p1_2`). Ambos tienen cuatro categorías de respuesta, de 1 (muy en desacuerdo) a 4 (muy de acuerdo), de modo que valores más altos indican una mayor percepción de recompensa. Cada ítem se analiza por separado y no se combinan en un índice, porque esfuerzo y talento son componentes distintos del mérito. Se trata además de percepciones descriptivas sobre cómo opera la sociedad, y no de preferencias normativas sobre cómo debería distribuirse la recompensa.
+
+##### Variables independientes de nivel individual
+
+**Percepción de recompensa en las notas.** Se mide con dos ítems de la escala de 1 a 4: la percepción de que el esfuerzo es recompensado en las notas ("En esta escuela, quienes se esfuerzan obtienen buenas notas", `p2_1`) y de que el talento lo es ("En esta escuela, quienes son inteligentes obtienen buenas notas", `p2_2`). Cada ítem se vincula con su equivalente en la sociedad, de modo que `p2_1` corresponde a `p1_1` y `p2_2` a `p1_2`. Estos ítems refieren a la recompensa efectiva y no a la importancia atribuida al esfuerzo o al talento para obtener buenas notas [@castillo_socialization_2024].
+
+**Creencia en la meritocracia escolar.** Se mide con el ítem "En esta escuela, los/as estudiantes obtienen las notas que merecen" (`p2_3`), con la misma escala de 1 a 4. Recoge el merecimiento de las notas en general, por lo que se distingue de `p2_1` y `p2_2`, que miden la recompensa a cada atributo específico.
+
+**Rendimiento académico.** Se mide con el promedio final de notas del año anterior (`p4`), declarado por el o la estudiante en la escala de 1,0 a 7,0.
+
+**Justicia percibida en las notas.** La evaluación de justicia de las propias calificaciones se mide con la función de evaluación de justicia de Jasso [@jasso_1978; @jasso_2007], que compara la recompensa recibida con la recompensa que la persona considera justa y que ha sido aplicada previamente a las calificaciones escolares [@resh_sense_2010]. La recompensa recibida es el promedio declarado ($A$, `p4`) y la recompensa justa es el promedio que el o la estudiante cree merecer ($C$, `p6`). El indicador individual de justicia se calcula como:
+
+$$J = \ln\left(\frac{A}{C}\right)$$
+
+El indicador vale cero cuando la persona considera que su promedio fue el merecido, toma valores positivos cuando se considera sobrerrecompensada (el promedio recibido supera al merecido) y valores negativos cuando se considera subrecompensada. La razón logarítmica hace que sobrerrecompensa y subrecompensa de igual magnitud relativa tengan el mismo valor absoluto con signo opuesto, y que $J$ sea invariante ante reescalamientos proporcionales de las notas. Dado que la escala chilena de 1,0 a 7,0 tiene un mínimo distinto de cero, esta propiedad se cumple solo de manera aproximada. La pregunta `p6` solo se formula a quienes declaran que su promedio no fue el merecido (`p5`). Para quienes lo consideran merecido (`p5` = 2), $C = A$ y, por tanto, $J = 0$. Además de $J$, se utiliza su valor absoluto como medida de la magnitud de la injusticia percibida, sin importar su dirección. Se complementa con la evaluación de las notas obtenidas respecto del tiempo dedicado al estudio (`p7`: menos, igual o más de lo que merece).
+
+**Estatus socioeconómico del hogar.** Como el cuestionario no incluye ingreso ni estatus subjetivo, el estatus se aproxima con el nivel educativo de los padres. Este se mide con el último nivel completado por la madre (`p26`) y por el padre (`p27`), en seis categorías que van desde "no terminó la educación básica" hasta "estudios de posgrado". El indicador es el promedio de ambos niveles y, si solo uno responde, el de esa persona. Los códigos 88 y 99 se tratan como datos perdidos.
+
+**Capital cultural.** Se mide con el número de libros en el hogar (`p30`), en seis categorías, desde entre 0 y 10 hasta más de 500. Se analiza por separado del estatus socioeconómico, porque remite a recursos y disposiciones y no a la escolaridad formal, y ambas variables entran juntas en los modelos para distinguir sus asociaciones.
+
+**Nivel y edad.** El nivel del estudiante (`nivel_estudiante`) va de 6° básico a 2° medio. La edad en años se calcula a partir del año y mes de nacimiento (`p21_ano` y `p21_mes`) y de la fecha de aplicación (`fecha`).
+
+##### Variables de nivel contextual
+
+Los contextos se definen a nivel de curso. El curso se identifica combinando el establecimiento (`d2`) con el curso (`d3_def`), ya que las etiquetas de curso se repiten entre colegios. Como la muestra incluye solo 12 establecimientos, estos no permiten estimar efectos contextuales con poder suficiente, por lo que el establecimiento se considera como nivel de agrupación y mediante la dependencia educativa. Todas las variables contextuales se construyen a partir de las respuestas de los y las estudiantes de cada curso.
+
+**Composición socioeconómica.** Se obtiene agregando el estatus socioeconómico individual (educación de los padres), es decir, su promedio entre los y las estudiantes de cada curso. Para separar el efecto del contexto del efecto del origen propio, el estatus individual se centra en la media de su curso, y la media del curso entra por separado en los modelos. Se fija un mínimo de [COMPLETAR] estudiantes con información válida por curso, y los cursos que no lo alcanzan se excluyen de los modelos contextuales.
+
+**Homogeneidad socioeconómica.** Se mide con la desviación estándar del mismo indicador dentro de cada curso. Valores más bajos indican contextos más homogéneos, y se aplica el mismo umbral mínimo de estudiantes.
+
+**Clima meritocrático.** Se mide con el promedio de `p2_3` entre los demás estudiantes del curso, excluyendo a la propia persona, de modo que el clima no incluye la respuesta individual.
+
+**Rendimiento promedio.** Se mide con el promedio de las notas declaradas (`p4`) por curso.
+
+**Selección escolar.** La base no contiene información sobre selección ni copago, por lo que no se formula una hipótesis al respecto. Si se incorpora una fuente externa, se vincularía a cada estudiante por el establecimiento (`d2`), aunque con 12 establecimientos su efecto sería difícil de distinguir del propio establecimiento.
+
+##### Variables de control
+
+Los modelos incluyen variables de control individuales y del establecimiento. Entre las primeras se encuentra el género (`p20`), porque las experiencias de evaluación difieren entre hombres y mujeres, tanto en las notas obtenidas como en el sentido de injusticia respecto de ellas [@resh_sense_2010], y porque la escuela transforma las diferencias de género en diferencias de mérito, con efectos distintos sobre la creencia en una sociedad meritocrática [@wiederkehr_belief_2015a]. También se incluyen el nivel del estudiante (`nivel_estudiante`), haber nacido en Chile (`p22_1`) y la pertenencia a un pueblo originario (`p24`, dicotomizada entre pertenecer a alguno y a ninguno).
+
+Entre las variables del establecimiento se incluye la dependencia educativa, es decir, si el colegio es municipal, particular subvencionado o particular pagado [COMPLETAR: clasificación de cada establecimiento a partir de `d2`]. Esta variable captura una característica estructural del cuasi-mercado escolar chileno, que estratificó el sistema según la capacidad de pago de los hogares [@valenzuela_socioeconomic_2014]. Su inclusión permite que los efectos de la composición socioeconómica y del clima meritocrático no se confundan con el tipo de establecimiento al que asisten los y las estudiantes.
+
+Por último, los modelos incluyen la condición experimental (`asignacion`), porque el cuestionario contiene un módulo de información sobre el tipo de colegio asignado al azar.
+
+
+
+## Descripción de las variables
+
+Antes del análisis bivariado se describen las variables cuya distribución condiciona la interpretación de los resultados: las dos variables dependientes, la percepción de recompensa en las notas, que es el predictor central, y el índice de justicia. Todas las figuras de este documento se construyen con los y las estudiantes de la Ola 2, la misma base de los contrastes bivariados; el uso de la Ola 1 y del panel queda para una etapa posterior.
+
+Las percepciones de recompensa en la sociedad se describen en @fig-dv-dist, y la percepción de recompensa en las notas en @fig-notas-dist, que permite examinar la concentración de las respuestas en las categorías de acuerdo, es decir, el posible efecto techo de los ítems escolares.
+
+```{r}
+#| label: fig-dv-dist
+#| fig-cap: "Distribución de las percepciones de recompensa en la sociedad, Ola 2"
+#| fig-height: 3.6
+dist_cat(ola2, c("p1_1", "p1_2"),
+         c("Esfuerzo recompensado en Chile (p1_1)", "Inteligencia y habilidad recompensadas en Chile (p1_2)"),
+         etq_lik, rampa4, "Percepción de recompensa en la sociedad")
+```
+
+```{r}
+#| label: fig-notas-dist
+#| fig-cap: "Distribución de la percepción de recompensa en las notas, Ola 2"
+#| fig-height: 5
+dist_cat(ola2, c("p2_1", "p2_2", "p2_3"),
+         c("En esta escuela, quienes se esfuerzan obtienen buenas notas (p2_1)",
+           "En esta escuela, quienes son inteligentes obtienen buenas notas (p2_2)",
+           "En esta escuela, los/as estudiantes obtienen las notas que merecen (p2_3)"),
+         etq_lik, rampa4, "Percepción de recompensa en las notas")
+```
+
+El rendimiento declarado tiene una media de 5,96 y una mediana de 6,0. La justicia percibida en las notas (J) se describe en @fig-rend: la mediana y los cuartiles primero y tercero del índice son iguales a cero, de modo que `r sprintf("%.0f", 100*mean(ola2$J == 0, na.rm = TRUE))`% de los estudiantes con dato evalúa su nota como justa. Esta concentración limita la variabilidad del índice y respalda su análisis por tramos.
+
+```{r}
+#| label: fig-rend
+#| fig-cap: "Justicia percibida en las notas (J), Ola 2 (eje recortado a ±0,5; los valores extremos quedan fuera de la vista)"
+#| fig-height: 3.4
+hist_ola(ola2, "J", 0.05, "Justicia percibida en las notas (J)", "J = ln(promedio / promedio merecido); 0 = nota merecida", ref = 0) +
+  coord_cartesian(xlim = c(-0.5, 0.5))
+```
+
+
+## Conclusiones del análisis bivariado
+
+El análisis bivariado de la Ola 2 permite una primera lectura correlacional de las hipótesis antes de su contraste con modelos multinivel. Se utilizaron coeficientes de correlación para variables ordinales (tau de Kendall y rho de Spearman) entre los predictores de cada hipótesis y las percepciones de que el esfuerzo (p1_1) y el talento (p1_2) son recompensados en la sociedad. Para los contrastes a nivel de curso, las variables individuales se agregaron en un valor por curso. Estos resultados describen asociaciones y no equivalen a un contraste definitivo, pues los valores p individuales no consideran la anidación de estudiantes en cursos, por lo que tienden a subestimar la incertidumbre.
+
+Las figuras de esta sección se estiman con los estudiantes de la Ola 2, la misma base de los contrastes reportados, y son descriptivas: no incluyen pruebas de hipótesis. @fig-resumen resume la magnitud de las asociaciones individuales con sus intervalos de confianza, incluida la creencia en la meritocracia escolar (H6); las figuras siguientes se limitan a las hipótesis en que la forma de la relación aporta información adicional. En las figuras, la asociación entre variables ordinales se mide con la tau-b de Kendall, que corrige los empates propios de escalas de pocas categorías; los coeficientes de los párrafos de H3 a H6 se calculan con la misma tau-b, de modo que son comparables con los de las figuras. A nivel de curso se mantiene Spearman, porque las unidades son medias.
+
+```{r}
+#| label: tb-num
+tb <- bind_rows(
+  asoc(ola2$ed_parent, ola2$p1_1) |> mutate(par = "ed_esf"),
+  asoc(ola2$ed_parent, ola2$p1_2) |> mutate(par = "ed_tal"),
+  asoc(ola2$p30, ola2$p1_1)       |> mutate(par = "lib_esf"),
+  asoc(ola2$p30, ola2$p1_2)       |> mutate(par = "lib_tal"),
+  asoc(ola2$p2_3, ola2$p1_1)      |> mutate(par = "bsm_esf"),
+  asoc(ola2$p2_3, ola2$p1_2)      |> mutate(par = "bsm_tal"))
+ft <- function(k) { r <- tb[tb$par == k, ]
+  sprintf("τb = %.2f; IC 95%% [%.2f; %.2f]", r$coef, r$ic_inf, r$ic_sup) |>
+    gsub(pattern = "\\.", replacement = ",") }
+```
+
+```{r}
+#| label: fig-resumen
+#| fig-cap: "Asociaciones bivariadas entre los predictores individuales y las percepciones de recompensa en la sociedad (tau-b de Kendall con IC 95%, Ola 2)"
+#| fig-height: 4.4
+par_asoc <- function(df, hip, predictor, xvar, yvar)
+  asoc(df[[xvar]], df[[yvar]]) |> mutate(hip = hip, predictor = predictor, vd = dv_lab[[yvar]])
+efectos <- bind_rows(
+  par_asoc(ola2, "H1", "Recompensa en las notas (misma dimensión)", "p2_1", "p1_1"),
+  par_asoc(ola2, "H1", "Recompensa en las notas (misma dimensión)", "p2_2", "p1_2"),
+  par_asoc(ola2, "H3", "Estatus: educación de los padres", "ed_parent", "p1_1"),
+  par_asoc(ola2, "H3", "Estatus: educación de los padres", "ed_parent", "p1_2"),
+  par_asoc(ola2, "H4", "Capital cultural: libros en el hogar", "p30", "p1_1"),
+  par_asoc(ola2, "H4", "Capital cultural: libros en el hogar", "p30", "p1_2"),
+  par_asoc(ola2, "H5", "Rendimiento: promedio de notas", "p4", "p1_1"),
+  par_asoc(ola2, "H5", "Rendimiento: promedio de notas", "p4", "p1_2"),
+  par_asoc(ola2, "H5", "Justicia percibida en las notas (J)", "J", "p1_1"),
+  par_asoc(ola2, "H5", "Justicia percibida en las notas (J)", "J", "p1_2"),
+  par_asoc(ola2, "H6", "Creencia en la meritocracia escolar (p2_3)", "p2_3", "p1_1"),
+  par_asoc(ola2, "H6", "Creencia en la meritocracia escolar (p2_3)", "p2_3", "p1_2")
+) |>
+  mutate(etiqueta = paste0(hip, ": ", predictor),
+         etiqueta = factor(etiqueta, levels = rev(unique(etiqueta))),
+         vd = factor(vd, levels = dv_lab))
+ggplot(efectos, aes(coef, etiqueta, colour = vd, xmin = ic_inf, xmax = ic_sup)) +
+  geom_vline(xintercept = 0, colour = "#9a9892", linewidth = .4) +
+  geom_linerange(orientation = "y", position = position_dodge(width = .6), linewidth = .6) +
+  geom_point(position = position_dodge(width = .6), size = 2.6) +
+  scale_colour_manual(values = col_dv) +
+  scale_y_discrete(labels = label_wrap(38)) +
+  labs(title = "Magnitud de las asociaciones bivariadas", x = "tau-b de Kendall", y = NULL,
+       caption = "Barras: IC 95% (aproximación de Fisher). En H1 se muestra solo la dimensión correspondiente (esfuerzo con esfuerzo, talento con talento).")
+```
+
+**Socialización escolar (H1a y H1b).** Ambas hipótesis cuentan con respaldo bivariado. La percepción de que el esfuerzo es recompensado en las notas se asocia positivamente con la percepción de que lo es en la sociedad (τ = 0,17; p < 0,001), y lo mismo ocurre con el talento (τ = 0,10; p = 0,004). La dirección es la esperada, pero la magnitud es baja, especialmente en el caso del talento. En conjunto, el patrón es coherente con la idea de la escuela como dispositivo de socialización de la adscripción meritocrática, aunque la fuerza de esa conexión parece menor de lo que cabría esperar si fuera el principal canal de transmisión.
+
+@fig-h1 muestra el porcentaje de estudiantes de acuerdo con que la sociedad recompensa el esfuerzo o el talento según su percepción en las notas.
+
+```{r}
+#| label: fig-h1
+#| fig-cap: "Recompensa en las notas y recompensa en la sociedad (H1): % de acuerdo en la sociedad según la percepción en las notas"
+#| fig-subcap:
+#|   - "Esfuerzo"
+#|   - "Talento"
+#| layout-ncol: 2
+acuerdo_segun(ola2, "perc_esf", "Esfuerzo", "Esfuerzo recompensado en las notas (p2_1)", dvs = "p1_1")
+acuerdo_segun(ola2, "perc_tal", "Talento", "Talento recompensado en las notas (p2_2)", dvs = "p1_2")
+```
+
+**Origen social (H2, H3 y H4).** El estatus socioeconómico individual (H3), medido por la educación promedio de los padres, no se asocia con ninguna de las dos percepciones (esfuerzo: `r ft("ed_esf")`; talento: `r ft("ed_tal")`). @fig-h3 muestra un acuerdo algo mayor entre quienes tienen padres con educación básica o menos, pero con intervalos amplios y sin gradiente en el resto de las categorías; la versión agregada por curso corresponde a la composición socioeconómica (H7) y se presenta más adelante. El capital cultural, medido por los libros en el hogar (H4), muestra asociaciones negativas muy débiles con ambas percepciones (esfuerzo: `r ft("lib_esf")`; talento: `r ft("lib_tal")`), con intervalos que excluyen el cero. En el caso del talento esto es contrario a lo planteado en H4. La caída se concentra en los hogares con hasta 100 libros; en las categorías superiores el acuerdo con la recompensa al talento se mantiene en torno a 70% y los intervalos son muy amplios por el bajo número de casos. En cuanto a la posible moderación por el nivel educativo de la madre (H2), la asociación entre percepción escolar y social es positiva en casi todas las categorías, salvo en el talento con madre universitaria, donde es cercana a cero. Las mayores magnitudes aparecen en los extremos (educación básica y posgrado), donde hay pocos casos y los intervalos son muy amplios, de modo que no hay un gradiente claro. En consecuencia, el análisis bivariado no sostiene un efecto diferenciado por origen social y estas hipótesis quedan abiertas para el análisis multivariado.
+
+@fig-h2 muestra la asociación de H1 en cada categoría de educación de la madre (H2), y @fig-h3 el porcentaje de acuerdo según el estatus socioeconómico (H3) y el capital cultural (H4).
+
+```{r}
+#| label: fig-h2
+#| fig-cap: "Transferencia de la percepción en las notas a la sociedad según la educación de la madre (H2): tau-b de Kendall con IC 95%"
+#| fig-height: 3.6
+mod_madre <- ola2 |> filter(!is.na(madre)) |>
+  group_by(madre) |>
+  group_modify(~ bind_rows(
+    asoc(.x$p2_1, .x$p1_1) |> mutate(vd = dv_lab[["p1_1"]]),
+    asoc(.x$p2_2, .x$p1_2) |> mutate(vd = dv_lab[["p1_2"]]))) |>
+  ungroup() |> filter(!is.na(coef)) |>
+  mutate(vd = factor(vd, levels = dv_lab))
+ggplot(mod_madre, aes(coef, madre, colour = vd, xmin = ic_inf, xmax = ic_sup)) +
+  geom_vline(xintercept = 0, colour = "#9a9892", linewidth = .4) +
+  geom_linerange(orientation = "y", position = position_dodge(width = .6), linewidth = .6) +
+  geom_point(aes(size = n), position = position_dodge(width = .6)) +
+  scale_colour_manual(values = col_dv) +
+  scale_size_area(max_size = 4, guide = "none") +
+  scale_y_discrete(limits = rev) +
+  labs(title = "Asociación escuela-sociedad según educación de la madre", x = "tau-b de Kendall", y = NULL,
+       caption = "Se omiten categorías con menos de 10 casos. Tamaño del punto = n.")
+```
+
+```{r}
+#| label: fig-h3
+#| fig-cap: "Origen social y percepción de recompensa en la sociedad (H3 y H4): % de acuerdo"
+#| fig-subcap:
+#|   - "Estatus: educación de los padres (promedio)"
+#|   - "Capital cultural: libros en el hogar"
+#| layout-ncol: 2
+acuerdo_segun(ola2, "estatus", "Estatus socioeconómico (H3)", "Educación de los padres (promedio de madre y padre)")
+acuerdo_segun(ola2, "libros", "Capital cultural (H4)", "Libros en el hogar")
+```
+
+```{r}
+#| label: h5-num
+h5 <- bind_rows(
+  asoc(ola2$p4, ola2$p1_1)  |> mutate(par = "p4_esf"),
+  asoc(ola2$p4, ola2$p1_2)  |> mutate(par = "p4_tal"),
+  asoc(ola2$J,  ola2$p1_1)  |> mutate(par = "J_esf"),
+  asoc(ola2$J,  ola2$p1_2)  |> mutate(par = "J_tal"))
+f <- function(k) { r <- h5[h5$par == k, ]; sprintf("τb = %.2f; IC 95%% [%.2f; %.2f]", r$coef, r$ic_inf, r$ic_sup) |> gsub(pattern = "\\.", replacement = ",") }
+```
+
+**Nota recibida y justicia de la evaluación (H5 y H12).** Respecto de la sociedad, el promedio de notas se asocia con la percepción de que se recompensa el talento (`r f("p4_tal")`) y de forma más débil con la del esfuerzo (`r f("p4_esf")`). En este último caso el intervalo `r if (h5$ic_inf[h5$par=="p4_esf"] <= 0) "incluye" else "no incluye"` el cero, de modo que H5 recibe apoyo más claro para el talento que para el esfuerzo. Este patrón se distingue del que se observa en la percepción *escolar*: la nota se asocia con la creencia de que el esfuerzo se recompensa en las notas (ρ = 0,14; p < 0,001), pero no con la de que se recompensa el talento (ρ ≈ 0,00; p = 0,95), contrastes iniciales que aún no se han replicado con tau-b. El índice de justicia de Jasso se asocia con la percepción social de esfuerzo (`r f("J_esf")`) y de talento (`r f("J_tal")`). Este resultado debe interpretarse con cautela, porque la mayoría de los estudiantes se ubica en J = 0, es decir, evalúa su nota como justa, lo que limita la variabilidad del índice. El análisis más informativo es por tramos de J (sub-recompensa, justa, sobre-recompensa) y no como variable continua. Por tramos (@fig-h5, panel b), quienes consideran sub-recompensada su nota muestran menor acuerdo que quienes la consideran justa (alrededor de 46% frente a 63% en esfuerzo, y de 51% frente a 72% en talento), mientras que los sobre-recompensados no se distinguen de los que consideran su nota justa, con intervalos amplios por su bajo número. La asociación del índice proviene entonces de la diferencia entre sub-recompensa y el resto, y no de una relación lineal. Por tramos de nota (panel a) no hay un gradiente nítido: el acuerdo es similar desde 5,5 en adelante, y el tramo inferior a 5,0 tiene muy pocos casos e intervalos muy amplios.
+
+@fig-h5 presenta el porcentaje de acuerdo según el promedio de notas y según los tramos del índice de justicia.
+
+```{r}
+#| label: fig-h5
+#| fig-cap: "Rendimiento y justicia percibida en las notas (H5): % de acuerdo en la sociedad"
+#| fig-subcap:
+#|   - "Promedio de notas declarado"
+#|   - "Justicia percibida (J), por tramos"
+#| layout-ncol: 2
+acuerdo_segun(ola2, "nota_b", "Rendimiento (H5)", "Promedio de notas (p4)")
+acuerdo_segun(ola2, "j_b", "Justicia percibida (H5)", "Evaluación de la propia nota (J)")
+```
+
+**Creencia en la meritocracia escolar (H6).** La asociación es positiva con ambas variables dependientes y más marcada con el talento (`r ft("bsm_tal")`) que con el esfuerzo (`r ft("bsm_esf")`); ambos intervalos excluyen el cero. Es la relación con mayor respaldo entre las que involucran la percepción de recompensa al talento. Debe tomarse como un hallazgo descriptivo, no como una comparación entre los dos tipos de recompensa.
+
+**Hipótesis contextuales (H7 y H10).** A nivel de curso, la heterogeneidad socioeconómica se asocia positivamente con ambas percepciones (ρ = 0,18 para esfuerzo y 0,25 para talento) y la composición socioeconómica negativamente (ρ ≈ −0,21 y −0,22), pero ninguna alcanza significancia (p > 0,16). Con alrededor de 32 a 35 cursos, estas pruebas tienen poca capacidad para detectar efectos pequeños o moderados, de modo que la ausencia de significancia no equivale a ausencia de efecto. Las hipótesis contextuales deben considerarse exploratorias hasta contar con los modelos multinivel. Además, ambas figuras incluyen cursos con muy pocos estudiantes (puntos pequeños) cuyas medias extremas, por ejemplo de 2,0 o 4,0, y desviaciones estándar de hasta 2,0 dependen de pocos casos; los contrastes deben repetirse una vez fijado el mínimo de estudiantes por curso.
+
+@fig-ctx muestra los cursos según su composición y heterogeneidad socioeconómica, con el coeficiente de Spearman de cada panel.
+
+```{r}
+#| label: fig-ctx
+#| fig-cap: "Contexto del curso y percepción de recompensa en la sociedad (H7 y H10)"
+#| fig-subcap:
+#|   - "Composición socioeconómica (media de la educación parental del curso)"
+#|   - "Heterogeneidad socioeconómica (desviación estándar dentro del curso)"
+#| layout-nrow: 2
+#| fig-height: 3.4
+disp_curso("ses_cm", "Educación parental promedio del curso", "Composición socioeconómica")
+disp_curso("ses_de", "Desviación estándar de la educación parental en el curso", "Heterogeneidad socioeconómica")
+```
+
+**Síntesis y alcances.** El análisis bivariado respalda con mayor claridad las hipótesis de socialización escolar (H1a y H1b) y la creencia en la meritocracia escolar (H6). Los resultados para origen social, nota justa y composición del curso son débiles, inconsistentes entre las dos percepciones o no significativos. Los coeficientes son en general bajos, por lo que ninguna asociación por sí sola constituye evidencia fuerte. Dos limitaciones condicionan su interpretación: los contrastes individuales no consideran la estructura jerárquica de los datos, y los contrastes a nivel de curso se basan en pocas unidades. No se reportan resultados bivariados para H8 y H9, y las hipótesis de evolución temporal (H11 y H12) requieren el análisis longitudinal del panel. El análisis multinivel permitirá estimar estas relaciones controlando por el curso y por las variables individuales de control, y evaluar cuáles se mantienen.
+
+
+## Discusión de los resultados bivariados
+
+Los resultados del análisis bivariado ofrecen una primera aproximación a las hipótesis, que se discute a continuación a la luz de la literatura revisada. Dado que se trata de asociaciones de baja magnitud, estimadas sin considerar la anidación de estudiantes en cursos, su interpretación se plantea como lectura provisional que el análisis multinivel deberá contrastar.
+
+**Socialización escolar y transferencia a la sociedad (H1a y H1b).** La asociación positiva, pero de baja magnitud, entre la percepción de recompensa en las notas y en la sociedad es coherente con la idea de la escuela como espacio de socialización meritocrática, aunque sugiere que no opera como único ni principal canal de transmisión. En primer lugar, la evidencia previa indica que la conexión entre la creencia escolar y la lectura de la sociedad no es homogénea: entre estudiantes secundarios, la creencia en la meritocracia escolar se asoció con la creencia en una sociedad meritocrática y justa solo entre quienes provenían de hogares de menor nivel socioeconómico y entre las niñas [@wiederkehr_belief_2015a], de modo que una correlación global moderada puede encubrir asociaciones heterogéneas. En segundo lugar, el esfuerzo ocupa un lugar central en las narrativas biográficas de todos los estratos y en el amplio consenso adulto sobre la importancia del trabajo duro [@undp_desiguales_2017; @luismaldonado_meritocracia_2021], lo que indica que el relato del esfuerzo se alimenta también de fuentes ajenas a la escuela. En tercer lugar, la mayor asociación observada para el esfuerzo que para el talento es consistente con la distinta posición de ambos atributos: el esfuerzo se concibe como más controlable y atribuible a la persona [@darnon_where_2018], y los docentes valoran y premian con mejores calificaciones las explicaciones basadas en el esfuerzo [@wiederkehr_belief_2015a], mientras que el talento, en tanto dotación no merecida [@mijs_unfulfillable_2018], resulta un atributo menos susceptible de ser aprendido mediante la experiencia cotidiana de las notas. Cabe además examinar si los ítems escolares presentan efecto techo, como ocurre con la importancia atribuida al esfuerzo para obtener buenas notas, que concentra más del 95% de acuerdo y presenta el menor tamaño de efecto entre los indicadores de meritocracia [@castillo_socialization_2024]. Por último, aunque un diseño bivariado transversal no permite establecer la dirección de la asociación, la evidencia experimental muestra que elevar la creencia en la meritocracia escolar reduce la percepción de injusticia de la desigualdad social, lo que apoya la dirección propuesta, desde la escuela hacia la sociedad [@batruch_belief_2023].
+
+**Origen social (H2, H3 y H4).** La ausencia de un efecto diferenciado por origen social y la dirección negativa, aunque débil, del capital cultural no sostienen las hipótesis planteadas, pero son consistentes con parte de la literatura. La relación negativa entre escolaridad y percepción de que el sistema funciona de manera meritocrática, al controlar por ingreso, ya había sido observada en población adulta chilena, y sus autores la interpretan como posible efecto iluminador de la educación o deprivación relativa, explicaciones que no fueron contrastadas directamente [@castillo_meritocracia_2019]. Como el cuestionario no mide ingreso, esa separación no es posible aquí, y el signo que arroje la educación de los padres en H3 reflejará el efecto neto de ambos mecanismos. Entre estudiantes de 8° básico, la educación de los padres y los libros en el hogar no se asociaron de forma significativa con la justificación de la desigualdad de mercado en el índice agregado, y el número de libros mostró incluso un efecto negativo en salud y pensiones [@castillo_socialization_2024]. En ese mismo estudio, la relación entre la percepción de meritocracia y la justicia de mercado resultó menos positiva entre estudiantes con padres universitarios y con más libros en el hogar, un patrón que apunta en la dirección de la función paliativa planteada en H2, pero que se estimó con modelos multinivel y sobre un resultado distinto [@castillo_socialization_2024]. La falta de gradiente por origen social en el análisis bivariado admite además una lectura sustantiva: la escuela parece inculcar normas meritocráticas en estudiantes de todos los niveles socioeconómicos, de modo que los estudiantes de menor origen ajustan sus expectativas y aceptan sus resultados como justos, y la percepción de justicia de las notas se estratifica mucho menos por origen que el rendimiento académico [@resh_sense_2010]. Esta interpretación es, no obstante, especulativa incluso en su fuente original, y exige contrastar la moderación en modelos que consideren la anidación y controlen por el rendimiento.
+
+**Nota recibida y justicia de la evaluación (H5 y H12).** La asociación de la nota con la percepción social del talento, más clara que con la del esfuerzo, y su asociación con la percepción de que el esfuerzo se recompensa en las notas, son compatibles con la evidencia de que el rendimiento es el principal predictor de la justicia percibida de las calificaciones [@resh_sense_2010] y con el papel que el esfuerzo cumple en la experiencia escolar. Los docentes premian las explicaciones basadas en el esfuerzo [@wiederkehr_belief_2015a], y los estudiantes con bajas calificaciones tienden a atribuirlas a la falta de esfuerzo y no a la falta de inteligencia, de modo que el esfuerzo constituye su principal vía de mejora [@rohde_assign_2023]. Las notas, además, al presentarse como medidas numéricas, sugieren que el mérito es medible y que el estatus alcanzado es merecido [@rohde_assign_2023]. Respecto del índice de justicia de Jasso, la concentración de la mayoría de los estudiantes en J = 0 contrasta con lo observado en otros contextos, donde cerca de la mitad de los estudiantes se considera subrecompensada [@resh_sense_2010]. Una posible explicación es de diseño: en aquel estudio todos los estudiantes informaron la nota que creían merecer, mientras que en este la pregunta sobre la nota merecida (`p6`) se formula solo a quienes declaran que su promedio no fue el merecido, lo que asigna J = 0 a quienes responden que sí lo fue. Esta limitación respalda la decisión de analizar el indicador por tramos. La distinción entre subrecompensa y sobrerrecompensa, además, tiene fundamento teórico, pues la función de Jasso se plantea sobre la premisa de que la deficiencia se siente con mayor intensidad que un exceso comparable (Jasso, 1980; @resh_sense_2010), por lo que ambos tramos no tendrían por qué asociarse de la misma manera con las percepciones sociales.
+
+**Creencia en la meritocracia escolar (H6).** La asociación positiva con ambas percepciones sociales es coherente con la idea de que creer que la escuela otorga las notas merecidas opera como un marco que se extiende a la lectura de la sociedad: entre estudiantes secundarios, la creencia en la meritocracia escolar se asoció con la creencia en una sociedad meritocrática y justa [@wiederkehr_belief_2015a], y su efecto legitimador excede el ámbito escolar [@batruch_belief_2023]. El patrón es afín al observado entre estudiantes de 8° básico, donde la percepción de que en Chile las personas obtienen lo que merecen se asocia positivamente con la aceptación de la justicia de mercado [@castillo_socialization_2024], aunque se trata de una variable distinta de la analizada aquí. La mayor asociación con el talento que con el esfuerzo debe tomarse con cautela: la literatura revisada no permite anticipar una jerarquía entre ambos atributos, `p2_3` recoge el merecimiento de las notas en general sin distinguir entre esfuerzo y talento, y la diferencia entre ambos coeficientes (ρ = 0,17 y 0,09) es pequeña y no fue contrastada formalmente. Dado que, entre estudiantes secundarios, la conexión entre la creencia escolar y la lectura de la sociedad no fue homogénea [@wiederkehr_belief_2015a], conviene examinar en los modelos multinivel si esta asociación varía según el nivel socioeconómico y el género.
+
+**Hipótesis contextuales (H7, H9 y H10).** La falta de significancia a nivel de curso debe leerse a la luz del escaso número de unidades y de la reducida varianza que suele atribuirse al contexto: en estudiantes de 8° básico, solo entre un 3% y un 5% de la varianza en la justificación de la desigualdad de mercado se asocia al establecimiento, lo que limita la posibilidad de detectar efectos de segundo nivel [@castillo_socialization_2024]. En cuanto a la dirección de los coeficientes, la asociación negativa de la composición socioeconómica con ambas percepciones contrasta con el hallazgo de que los estudiantes de escuelas de mayor nivel socioeconómico justifican en mayor medida la desigualdad de mercado [@castillo_socialization_2024], aunque se trata de un resultado distinto del analizado aquí. La asociación positiva de la heterogeneidad socioeconómica con ambas percepciones va en sentido contrario a lo planteado en H10 (contextos más homogéneos, mayor percepción de recompensa). La literatura revisada documenta la elevada segregación del sistema escolar [@valenzuela_socioeconomic_2014] y la selección de estudiantes por parte de los establecimientos [@contreras_when_2010], pero no ofrece evidencia directa sobre cómo la composición del curso afecta la visibilidad de las barreras de origen, por lo que H10 mantiene su carácter exploratorio. Una vía plausible para los modelos multinivel es la comparación con el grupo de referencia: los estudiantes juzgan la justicia de sus notas en relación con las normas del curso y la escuela [@resh_sense_2010], lo que sugiere explorar el efecto del contexto sobre la justicia percibida y no solo sobre las percepciones sociales.
+
+**Implicancias para el análisis multinivel.** En conjunto, la literatura permite derivar cuatro orientaciones para la etapa siguiente. Primero, mantener el análisis separado del esfuerzo y del talento, dado que su asociación con la experiencia escolar y con la justicia de mercado difiere [@castillo_socialization_2024; @darnon_where_2018; @mijs_unfulfillable_2018]. Segundo, contrastar la heterogeneidad de la transferencia según nivel socioeconómico y género, que es donde la evidencia previa encuentra los efectos más claros [@wiederkehr_belief_2015a]. Tercero, analizar la justicia percibida por tramos y revisar el efecto del filtro de la pregunta sobre la nota merecida. Cuarto, interpretar los efectos contextuales con cautela, dada la baja varianza atribuible al establecimiento y el reducido número de cursos [@castillo_socialization_2024]. Dado el carácter transversal de cada ola, las asociaciones deben seguir leyéndose como correlaciones, y será el aprovechamiento del panel, en las hipótesis de evolución temporal, lo que permitirá aproximarse a la dirección de los procesos descritos.

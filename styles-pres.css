@@ -1,0 +1,7 @@
+.reveal h1, .reveal h2 { font-weight: 600; letter-spacing: -0.01em; }
+.reveal { font-size: 30px; }
+.reveal table { font-size: 0.72em; }
+.reveal .smaller table { font-size: 0.6em; }
+.reveal .callout { font-size: 0.95em; }
+.reveal table { line-height: 1.15; }
+.reveal table td, .reveal table th { padding: 4px 8px; vertical-align: top; }

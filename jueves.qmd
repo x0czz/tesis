@@ -1,0 +1,690 @@
+
+```{r}
+# =====================================================================
+# Descriptivos de las variables del estudio (EDUMER, estudiantes, 2 olas)
+# Entrada : edumer_students_wide.sav
+# Salida  : carpeta descriptivos/ (un .csv por tabla) y las tablas impresas
+# Nota    : la base ancha no trae `fecha` ni `check_atencion`, por lo que
+#           no se puede filtrar por atencion ni calcular la edad exacta.
+# =====================================================================
+library(haven)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+
+base_dir <- if (dir.exists("input")) {
+  "input"
+} else {
+  normalizePath("C:/Users/InBOT/Downloads", winslash = "/", mustWork = FALSE)
+}
+
+load_dataset <- function(dataset_name) {
+  candidates <- c(
+    file.path(base_dir, paste0(dataset_name, ".sav")),
+    file.path(base_dir, paste0(dataset_name, ".RData"))
+  )
+
+  for (file_path in candidates) {
+    if (!file.exists(file_path)) next
+
+    if (grepl("\\.sav$", file_path, ignore.case = TRUE)) {
+      return(read_sav(file_path))
+    }
+
+    env <- new.env(parent = emptyenv())
+    load(file_path, envir = env)
+    objs <- ls(env)
+    if (length(objs) == 0L) stop("El archivo RData está vacío: ", file_path)
+    return(get(objs[[1]], envir = env))
+  }
+
+  stop("No se encontró el archivo para ", dataset_name, ". Busqué .sav y .RData en: ", base_dir)
+}
+
+data_wide <- load_dataset("edumer_students_wide")
+data_long <- load_dataset("edumer_students_long")
+
+# ---- Datos: 88/99 a NA, consentimiento, J, y grupos fijados en la Ola 1 ----
+d <- data_long %>%
+  zap_labels() %>%
+  mutate(
+    ola = factor(as.integer(gsub("\\D", "", as.character(ola))),
+                 levels = 1:2, labels = c("Ola 1", "Ola 2")),
+    across(c(p1_1, p1_2, p2_1, p2_2, p2_3, p5, p7, p26, p27, p30),
+           ~ if_else(.x %in% c(88, 99), NA_real_, as.numeric(.x))),
+    p4 = if_else(p4 >= 1 & p4 <= 7, as.numeric(p4), NA_real_),
+    p6 = if_else(p6 >= 1 & p6 <= 7, as.numeric(p6), NA_real_),
+    C  = case_when(p5 == 2 ~ p4, p5 %in% c(1, 3) ~ p6, TRUE ~ NA_real_),
+    J  = log(p4 / C)
+  ) %>%
+  filter(consentimiento == 1) %>%
+  group_by(id_estudiante) %>%
+  # Muestra analítica: estudiantes observados en las dos olas.
+  filter(all(c("Ola 1", "Ola 2") %in% as.character(ola))) %>%
+  mutate(
+    cohorte = factor(first(nivel_estudiante[ola == "Ola 1"]), levels = 1:4,
+                     labels = c("6° básico", "7° básico", "1° medio", "2° medio")),
+    sexo = factor(first(p20[ola == "Ola 1"]), levels = 1:3,
+                  labels = c("Hombre", "Mujer", "Otro"))
+  ) %>%
+  ungroup()
+
+# ---- Estilo ----
+col_ola <- c("Ola 1" = "#2a78d6", "Ola 2" = "#eb6834")   # azul / naranjo
+tinta <- "#0b0b0b"; tinta2 <- "#52514e"; gris <- "#9a9892"
+theme_set(
+  theme_minimal(base_size = 12) +
+    theme(panel.grid.minor = element_blank(),
+          panel.grid.major = element_line(colour = "#e9e8e4", linewidth = 0.3),
+          axis.text = element_text(colour = tinta2),
+          plot.title = element_text(face = "bold", colour = tinta),
+          plot.subtitle = element_text(colour = tinta2),
+          legend.position = "top", legend.title = element_blank(),
+          strip.text = element_text(face = "bold", colour = tinta))
+)
+etq_lik <- c("Muy en desacuerdo", "En desacuerdo", "De acuerdo", "Muy de acuerdo")
+rampa3 <- c("#86b6ef", "#2a78d6", "#104281")
+rampa4 <- c("#86b6ef", "#5598e7", "#256abf", "#104281")
+rampa6 <- c("#86b6ef", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b")
+
+# ---- Casos completos por gráfico ----
+casos_completos <- function(df, vars) {
+  df %>%
+    group_by(id_estudiante) %>%
+    filter(
+      n_distinct(ola) == 2,
+      all(if_all(all_of(vars), ~ !is.na(.x)))
+    ) %>%
+    ungroup()
+}
+
+# ---- 1. Distribución de respuestas por ola (barras 100%) ----
+dist_cat <- function(df, vars, items, etq, colores, titulo) {
+  tab <- casos_completos(df, vars) %>%
+    select(ola, all_of(vars)) %>%
+    pivot_longer(-ola, names_to = "item", values_to = "resp") %>%
+    filter(!is.na(resp)) %>%
+    count(item, ola, resp) %>%
+    group_by(item, ola) %>%
+    mutate(N = sum(n), pct = n / N) %>%
+    ungroup() %>%
+    mutate(item = factor(item, levels = vars, labels = items),
+           resp = factor(resp, levels = seq_along(etq), labels = etq),
+           eje = paste0(ola, " (n=", N, ")"),
+           oscuro = as.integer(resp) <= ceiling(length(etq) / 2))
+  ggplot(tab, aes(x = pct, y = eje, fill = resp)) +
+    geom_col(width = 0.62, colour = "white", linewidth = 0.5,
+             position = position_stack(reverse = TRUE)) +
+    geom_text(aes(label = ifelse(pct >= 0.05, percent(pct, accuracy = 1), ""),
+                  colour = oscuro),
+              position = position_stack(vjust = 0.5, reverse = TRUE), size = 3) +
+    scale_colour_manual(values = c("TRUE" = tinta, "FALSE" = "#ffffff"), guide = "none") +
+    scale_fill_manual(values = setNames(colores, etq),
+                      guide = guide_legend(nrow = if (length(etq) > 4) 2 else 1)) +
+    scale_x_continuous(labels = percent, expand = c(0, 0)) +
+    scale_y_discrete(limits = rev) +
+    facet_wrap(~ item, ncol = 1, scales = "free_y",
+               labeller = labeller(item = label_wrap_gen(60))) +
+    labs(title = titulo, subtitle = "% de respuestas válidas", x = NULL, y = NULL)
+}
+
+# ---- 2. "Serie de tiempo": media e IC 95% de Ola 1 a Ola 2 ----
+media_ola <- function(df, vars, items, titulo, por = NULL, ylim = c(1, 4)) {
+  vars_completas <- c(vars, por)
+  datos <- casos_completos(df, vars_completas)
+  datos$grupo <- if (is.null(por)) "Total" else as.character(datos[[por]])
+  datos %>%
+    filter(!is.na(grupo)) %>%
+    select(ola, grupo, all_of(vars)) %>%
+    pivot_longer(all_of(vars), names_to = "item", values_to = "x") %>%
+    filter(!is.na(x)) %>%
+    group_by(item, grupo, ola) %>%
+    summarise(n = n(), media = mean(x), ee = sd(x) / sqrt(n), .groups = "drop") %>%
+    mutate(item = factor(item, levels = vars, labels = items)) %>%
+    ggplot(aes(x = ola, y = media, colour = ola)) +
+    geom_path(aes(group = interaction(item, grupo)), colour = gris, linewidth = 0.6) +
+    geom_errorbar(aes(ymin = media - 1.96 * ee, ymax = media + 1.96 * ee),
+                  width = 0.1, linewidth = 0.6) +
+    geom_point(size = 3) +
+    geom_text(aes(label = sprintf("%.2f", media),
+                  hjust = ifelse(ola == "Ola 1", 1.6, -0.6)),
+              size = 3, colour = tinta2) +
+    scale_colour_manual(values = col_ola, guide = "none") +
+    scale_x_discrete(expand = expansion(add = 0.9)) +
+    scale_y_continuous(limits = ylim) +
+    facet_grid(item ~ grupo, labeller = labeller(item = label_wrap_gen(25))) +
+    labs(title = titulo, subtitle = "Media e IC 95% por ola", x = NULL, y = "Media")
+}
+
+# ---- 3. Trayectoria individual Ola 1 -> Ola 2 (matriz de transición) ----
+transicion <- function(df, v, k, titulo) {
+  tab <- df %>%
+    mutate(x = .data[[v]]) %>%
+    select(id_estudiante, ola, x) %>%
+    pivot_wider(names_from = ola, values_from = x) %>%
+    filter(!is.na(`Ola 1`), !is.na(`Ola 2`))
+  n_pares <- nrow(tab)
+  tab %>%
+    count(`Ola 1`, `Ola 2`) %>%
+    group_by(`Ola 1`) %>%
+    mutate(pct = n / sum(n)) %>%
+    ungroup() %>%
+    ggplot(aes(x = factor(`Ola 2`, levels = 1:k),
+               y = factor(`Ola 1`, levels = k:1), fill = pct)) +
+    geom_tile(colour = "white", linewidth = 1) +
+    geom_text(aes(label = percent(pct, accuracy = 1), colour = pct > 0.5), size = 3.2) +
+    scale_colour_manual(values = c("TRUE" = "#ffffff", "FALSE" = tinta), guide = "none") +
+    scale_fill_gradient(low = "#cde2fb", high = "#104281", limits = c(0, 1),
+                        labels = percent, name = "% de la fila") +
+    coord_equal() +
+    labs(title = titulo,
+         subtitle = paste0("Estudiantes con dato en ambas olas (n = ", n_pares,
+                           "). Cada fila suma 100%. 1 = muy en desacuerdo, 4 = muy de acuerdo"),
+         x = "Ola 2", y = "Ola 1")
+}
+
+# ---- Bloque 2: variables dependientes ----
+
+items_dv <- c("Esfuerzo recompensado en Chile (p1_1)",
+              "Inteligencia y habilidad recompensadas en Chile (p1_2)")
+
+dist_cat(d, c("p1_1", "p1_2"), items_dv, etq_lik, rampa4,
+         "Percepción de recompensa en la sociedad")
+media_ola(d, c("p1_1", "p1_2"), items_dv,
+          "Percepción de recompensa en la sociedad: Ola 1 a Ola 2")
+transicion(d, "p1_1", 4, "Esfuerzo en Chile (p1_1): trayectoria individual")
+transicion(d, "p1_2", 4, "Inteligencia y habilidad en Chile (p1_2): trayectoria individual")
+
+# Por curso en la Ola 1 (cohortes) y por género
+media_ola(filter(d, !is.na(cohorte)), c("p1_1", "p1_2"), items_dv,
+          "Por curso en la Ola 1", por = "cohorte")
+media_ola(filter(d, sexo %in% c("Hombre", "Mujer")), c("p1_1", "p1_2"), items_dv,
+          "Por género (sin la categoría 'Otro')", por = "sexo")
+
+# ---- Bloque 3: las demás variables ----
+
+# ---- Percepción de recompensa en las notas ----
+items_notas <- c("Esfuerzo -> buenas notas (p2_1)", "Inteligencia -> buenas notas (p2_2)",
+                 "Estudiantes obtienen las notas que merecen (p2_3)")
+dist_cat(d, c("p2_1", "p2_2", "p2_3"), items_notas, etq_lik, rampa4,
+         "Percepción de recompensa en las notas")
+media_ola(d, c("p2_1", "p2_2", "p2_3"), items_notas,
+          "Percepción de recompensa en las notas: Ola 1 a Ola 2")
+transicion(d, "p2_1", 4, "Esfuerzo -> buenas notas (p2_1): trayectoria individual")
+transicion(d, "p2_2", 4, "Inteligencia -> buenas notas (p2_2): trayectoria individual")
+transicion(d, "p2_3", 4, "Notas merecidas (p2_3): trayectoria individual")
+
+# ---- Rendimiento y justicia percibida ----
+hist_ola <- function(df, v, binwidth, titulo, xlab, ref = NULL) {
+  x <- casos_completos(df, v)
+  m <- x %>% group_by(ola) %>% summarise(media = mean(.data[[v]]), .groups = "drop")
+  p <- ggplot(x, aes(x = .data[[v]], fill = ola)) +
+    geom_histogram(binwidth = binwidth, colour = "white", linewidth = 0.3) +
+    geom_vline(data = m, aes(xintercept = media), linetype = "dashed", colour = tinta) +
+    geom_text(data = m, aes(x = media, y = Inf, label = paste0("media = ", round(media, 2))),
+              vjust = 1.6, hjust = -0.1, size = 3, colour = tinta2, inherit.aes = FALSE) +
+    scale_fill_manual(values = col_ola, guide = "none") +
+    facet_wrap(~ ola, ncol = 1) +
+    labs(title = titulo, x = xlab, y = "Estudiantes")
+  if (!is.null(ref)) p <- p + geom_vline(xintercept = ref, colour = tinta2, linewidth = 0.4)
+  p
+}
+hist_ola(d, "p4", 0.25, "Promedio de notas declarado (p4)", "Promedio (1,0 a 7,0)")
+media_ola(d, "p4", "Promedio declarado (p4)", "Promedio de notas: Ola 1 a Ola 2", ylim = c(1, 7))
+hist_ola(d, "J", 0.05, "Justicia percibida en las notas (J)",
+         "J = ln(promedio / promedio merecido); 0 = nota merecida", ref = 0)
+media_ola(d, "J", "Justicia percibida (J)", "J: Ola 1 a Ola 2", ylim = c(-0.5, 0.5))
+dist_cat(d, c("p5", "p7"),
+         c("Promedio del año pasado respecto de lo merecido (p5)",
+           "Notas respecto del tiempo de estudio (p7)"),
+         c("Menos de lo merecido", "Lo merecido", "Más de lo merecido"), rampa3,
+         "Merecimiento de las propias notas")
+
+# ---- Origen socioeconómico ----
+etq_educ <- c("No terminó básica", "Básica", "Media", "Técnico/profesional", "Universidad", "Posgrado")
+etq_libros <- c("0-10", "11-25", "26-100", "100-200", "201-500", "Más de 500")
+dist_cat(d, c("p26", "p27"), c("Educación de la madre (p26)", "Educación del padre (p27)"),
+         etq_educ, rampa6, "Educación de los padres")
+dist_cat(d, "p30", "Libros en el hogar (p30)", etq_libros, rampa6, "Capital cultural")
+
+# ---- Controles (conteos por ola) ----
+conteo_ola <- function(df, v, etq, titulo) {
+  casos_completos(df, v) %>%
+    count(ola, cat = factor(.data[[v]], levels = seq_along(etq), labels = etq)) %>%
+    group_by(ola) %>% mutate(pct = n / sum(n)) %>% ungroup() %>%
+    ggplot(aes(x = pct, y = cat, fill = ola)) +
+    geom_col(position = position_dodge(width = 0.75), width = 0.65) +
+    geom_text(aes(label = percent(pct, accuracy = 1)),
+              position = position_dodge(width = 0.75), hjust = -0.15, size = 3, colour = tinta2) +
+    scale_x_continuous(labels = percent, expand = expansion(mult = c(0, 0.15))) +
+    scale_y_discrete(limits = rev, labels = label_wrap(30)) +
+    scale_fill_manual(values = col_ola) +
+    labs(title = titulo, x = NULL, y = NULL)
+}
+conteo_ola(d, "p20", c("Hombre", "Mujer", "Otro"), "Género (p20)")
+conteo_ola(d, "nivel_estudiante", c("6° básico", "7° básico", "1° medio", "2° medio"),
+           "Nivel del estudiante")
+
+nombres_colegios <- c("Esc. Capitán José Luis Araneda", "Col. Nuestra Señora del Carmen",
+  "Col. San Alberto", "Col. Santa Isabel de Hungría", "Liceo Reina de Dinamarca",
+  "Col. Compañía de María Seminario", "Col. San Francisco de Sales",
+  "Liceo Miguel Rafael Prado", "Col. Santa Rosa", "Instituto del Puerto, San Antonio",
+  "Liceo Santa Teresa de Los Andes", "Col. San Alberto Hurtado")
+conteo_ola(d, "d2", nombres_colegios, "Estudiantes por establecimiento (d2)")
+
+# ---- Dependientes por establecimiento: Ola 1 a Ola 2 ----
+casos_completos(d, c("d2", "p1_1", "p1_2")) %>%
+  select(ola, d2, p1_1, p1_2) %>%
+  pivot_longer(c(p1_1, p1_2), names_to = "item", values_to = "x") %>%
+  filter(!is.na(x), !is.na(d2)) %>%
+  group_by(item, d2, ola) %>% summarise(media = mean(x), .groups = "drop") %>%
+  mutate(item = factor(item, levels = c("p1_1", "p1_2"), labels = items_dv),
+         colegio = factor(d2, levels = 1:12, labels = nombres_colegios)) %>%
+  group_by(colegio) %>% mutate(orden = mean(media)) %>% ungroup() %>%
+  ggplot(aes(x = media, y = reorder(colegio, orden))) +
+  geom_path(aes(group = interaction(colegio, item)), colour = gris, linewidth = 0.6) +
+  geom_point(aes(colour = ola), size = 3) +
+  scale_colour_manual(values = col_ola) +
+  scale_x_continuous(limits = c(1, 4)) +
+  facet_wrap(~ item, labeller = labeller(item = label_wrap_gen(30))) +
+  labs(title = "Percepción de recompensa por establecimiento: Ola 1 a Ola 2",
+       x = "Media (1 a 4)", y = NULL)
+
+
+
+# ---- Variables que faltaban: nivel socioeconómico, terciles e ids de unidad ----
+d <- d %>%
+  mutate(
+    educ_max = pmax(p26, p27, na.rm = TRUE),
+    educ_max = if_else(is.infinite(educ_max), NA_real_, educ_max)
+  ) %>%
+  group_by(ola) %>%
+  mutate(ses = rowMeans(cbind(as.numeric(scale(educ_max)), as.numeric(scale(p30))),
+                        na.rm = TRUE),
+         ses = if_else(is.nan(ses), NA_real_, ses),
+         ses_ter = factor(ntile(ses, 3), levels = 1:3,
+                          labels = c("NSE bajo", "NSE medio", "NSE alto"))) %>%
+  ungroup() %>%
+  group_by(id_estudiante) %>%
+  mutate(colegio1 = first(d2[ola == "Ola 1"]),
+         curso1 = paste(first(d2[ola == "Ola 1"]), first(d3_def[ola == "Ola 1"]), sep = "_")) %>%
+  ungroup() %>%
+  mutate(
+    curso1 = if_else(grepl("NA", curso1), NA_character_, curso1),
+    p2_1_f = p2_1,
+    p2_2_f = p2_2,
+    p2_3_f = p2_3,
+    educ_f = educ_max,
+    p30_f = p30,
+    p4_f = p4,
+    J_f = J,
+    p5_f = p5,
+    p7_f = p7,
+    ses_media = ses,
+    ses_de = ses
+  )
+
+# ---- Asociación ordinal: Spearman con IC (aprox. de Fisher) y tau-b ----
+asoc <- function(x, y, min_n = 10) {
+  ok <- complete.cases(x, y); x <- x[ok]; y <- y[ok]; n <- length(x)
+  if (n < min_n || sd(x) == 0 || sd(y) == 0)
+    return(tibble(n = n, rho = NA_real_, ic_inf = NA_real_, ic_sup = NA_real_,
+                  p = NA_real_, tau_b = NA_real_))
+  ct <- suppressWarnings(cor.test(x, y, method = "spearman", exact = FALSE))
+  r <- unname(ct$estimate); se <- 1.06 / sqrt(n - 3)
+  tibble(n = n, rho = r, ic_inf = tanh(atanh(r) - 1.96 * se),
+         ic_sup = tanh(atanh(r) + 1.96 * se), p = ct$p.value,
+         tau_b = suppressWarnings(cor(x, y, method = "kendall")))
+}
+
+# ---- Spearman parcial (x, y controlando z) vía residuos de rangos ----
+parcial <- function(x, y, z) {
+  ok <- complete.cases(x, y, z)
+  rx <- rank(x[ok]); ry <- rank(y[ok]); rz <- rank(z[ok])
+  asoc(resid(lm(rx ~ rz)), resid(lm(ry ~ rz)))
+}
+
+# ---- Gráfico de efectos (rho con IC) ----
+forest <- function(tab, titulo, facet = NULL) {
+  p <- tab %>%
+    mutate(par = paste0(hip, ": ", x, " ~ ", y)) %>%
+    ggplot(aes(x = rho, y = par, colour = ola, xmin = ic_inf, xmax = ic_sup)) +
+    geom_vline(xintercept = 0, colour = gris, linewidth = 0.4) +
+    geom_linerange(orientation = "y", position = position_dodge(width = 0.6), linewidth = 0.6) +
+    geom_point(position = position_dodge(width = 0.6), size = 2.8) +
+    scale_colour_manual(values = col_ola) +
+    scale_y_discrete(limits = rev) +
+    labs(title = titulo, subtitle = "Spearman con IC 95% (aproximación de Fisher)",
+         x = "rho", y = NULL)
+  if (!is.null(facet)) p <- p + facet_wrap(facet, nrow = 1)
+  p
+}
+
+
+library(tidyverse)
+
+# ---------- 1. Identidad EDUMER ----------
+rojo   <- "#D32F2F"   # rojo del lápiz / lettering (ajusta con gotero si quieres el tono exacto)
+rojo_o <- "#7F1D1D"   # rojo oscuro
+carbon <- "#4A4A4A"   # Ola 1
+tinta  <- "#2B2B2B"
+gris   <- "#E6E6E6"
+
+col_ola <- c("Ola 1" = carbon, "Ola 2" = rojo)
+rampa4  <- c("#F6D5D5", "#E89A9A", "#D32F2F", "#7F1D1D")   # 1 muy en desacuerdo ... 4 muy de acuerdo
+etq_lik <- c("1 Muy en desacuerdo", "2 En desacuerdo", "3 De acuerdo", "4 Muy de acuerdo")
+
+theme_set(
+  theme_minimal(base_size = 12) +
+    theme(
+      text             = element_text(colour = tinta),
+      plot.title       = element_text(face = "bold", size = 14, colour = rojo),
+      plot.subtitle    = element_text(colour = carbon, size = 10),
+      plot.caption     = element_text(colour = carbon, size = 8, hjust = 0),
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_line(colour = gris, linewidth = 0.3),
+      strip.text       = element_text(face = "bold", colour = tinta),
+      strip.background = element_rect(fill = "#FBEAEA", colour = NA),
+      legend.position  = "top",
+      axis.text.x      = element_text(angle = 0)
+    )
+)
+
+dv_lab <- c(p1_1 = "Esfuerzo recompensado", p1_2 = "Talento recompensado")
+
+# ---------- 2. Preparación mínima ----------
+if (!is.factor(d$ola)) d$ola <- factor(d$ola, levels = c(1, 2), labels = c("Ola 1", "Ola 2"))
+
+w_ic <- function(k, n, lado, z = 1.96) {
+  p <- k / n
+  centro <- (p + z^2 / (2 * n)) / (1 + z^2 / n)
+  mitad  <- z * sqrt(p * (1 - p) / n + z^2 / (4 * n^2)) / (1 + z^2 / n)
+  if (lado == "lo") centro - mitad else centro + mitad
+}
+
+largo_dv <- function(d, x, dvs = c("p1_1", "p1_2")) {
+  d |>
+    select(ola, nivel = all_of(x), all_of(dvs)) |>
+    pivot_longer(all_of(dvs), names_to = "dv", values_to = "y") |>
+    filter(!is.na(nivel), y %in% 1:4) |>
+    mutate(dv = factor(dv_lab[dv], levels = dv_lab))
+}
+
+# ---------- 3. Predictor categórico/ordinal -> % de acuerdo (ambas olas, ambas VD) ----------
+acuerdo_segun <- function(d, x, titulo, xlab = NULL, dvs = c("p1_1", "p1_2")) {
+  caption_n <- "Línea y puntos: % de acuerdo (3-4) con IC 95% de Wilson. Tamaño del punto = n. Sin pruebas de hipótesis."
+
+  r <- largo_dv(d, x, dvs) |>
+    group_by(ola, dv, nivel) |>
+    summarise(n = n(), k = sum(y >= 3), .groups = "drop") |>
+    mutate(p = k / n, lo = w_ic(k, n, "lo"), hi = w_ic(k, n, "hi"))
+
+  ggplot(r, aes(nivel, p, colour = ola, group = ola)) +
+    geom_linerange(aes(ymin = lo, ymax = hi), position = position_dodge(.35), linewidth = .5) +
+    geom_line(position = position_dodge(.35), linewidth = .5, alpha = .7) +
+    geom_point(aes(size = n), position = position_dodge(.35)) +
+    scale_colour_manual(values = col_ola, name = NULL) +
+    scale_size_area(max_size = 5, guide = "none") +
+    scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+    facet_wrap(~dv) +
+    labs(title = titulo, x = xlab %||% x, y = "% de acuerdo", caption = caption_n)
+}
+
+# ---------- 4. Predictor -> distribución completa de la VD (100% apilado) ----------
+cruce_apilado <- function(d, x, titulo, xlab = NULL, dvs = c("p1_1", "p1_2")) {
+  r <- largo_dv(d, x, dvs) |>
+    count(ola, dv, nivel, y) |>
+    group_by(ola, dv, nivel) |>
+    mutate(pct = n / sum(n), ntot = sum(n)) |>
+    ungroup() |>
+    mutate(y = factor(y, levels = 1:4, labels = etq_lik))
+
+  ggplot(r, aes(nivel, pct, fill = y)) +
+    geom_col(width = .8, colour = "white", linewidth = .2) +
+    scale_fill_manual(values = setNames(rampa4, etq_lik), name = NULL) +
+    scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
+    facet_grid(dv ~ ola) +
+    labs(title = titulo, x = xlab %||% x, y = NULL,
+         caption = "Distribución completa de la respuesta (escala ordinal de 4 puntos). Sin pruebas de hipótesis.") +
+    guides(fill = guide_legend(nrow = 1))
+}
+
+# ---------- 5. Predictor continuo individual (ej. J-score) -> % de acuerdo por tramos ----------
+acuerdo_tramos <- function(d, x, titulo, cortes = c(-Inf, -.5, -.1, .1, .5, Inf),
+                           etq = c("Muy sub-recomp.", "Sub-recomp.", "Justo", "Sobre-recomp.", "Muy sobre-recomp."),
+                           xlab = NULL) {
+  d2 <- d |> mutate(.t = cut(.data[[x]], cortes, labels = etq))
+  acuerdo_segun(d2, ".t", titulo, xlab = xlab %||% x)
+}
+
+# ---------- 6. Contextual (colegio): dispersión por ola ----------
+disp_ctx <- function(d, x_ctx, titulo, xlab = NULL, unidad = "colegio1", dvs = c("p1_1", "p1_2")) {
+  r <- d |>
+    select(ola, u = all_of(unidad), xc = all_of(x_ctx), all_of(dvs)) |>
+    pivot_longer(all_of(dvs), names_to = "dv", values_to = "y") |>
+    filter(y %in% 1:4, !is.na(xc)) |>
+    group_by(ola, dv, u) |>
+    summarise(x = mean(xc, na.rm = TRUE), n = n(), p = mean(y >= 3), .groups = "drop") |>
+    mutate(dv = factor(dv_lab[dv], levels = dv_lab))
+
+  ggplot(r, aes(x, p, colour = ola)) +
+    geom_smooth(method = "lm", se = FALSE, linewidth = .5, linetype = "dashed", alpha = .6) +
+    geom_point(aes(size = n), alpha = .85) +
+    geom_text(aes(label = u), size = 2.8, vjust = -1, show.legend = FALSE) +
+    scale_colour_manual(values = col_ola, name = NULL) +
+    scale_size_area(max_size = 6, guide = "none") +
+    scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+    facet_wrap(~dv) +
+    labs(title = titulo, x = xlab %||% x_ctx, y = "% de acuerdo (promedio del colegio)",
+         caption = "Un punto = un colegio (n = 12). Tamaño = n de estudiantes. Línea punteada: tendencia lineal descriptiva.")
+}
+
+# ---------- 7. Panel: cambio del predictor vs cambio de la VD (base ancha w) ----------
+cruce_cambios <- function(w, x, titulo, xlab = NULL, dvs = c("p1_1", "p1_2")) {
+  cl <- function(v) case_when(v < 0 ~ "Baja", v == 0 ~ "Igual", v > 0 ~ "Sube")
+  r <- map_dfr(dvs, function(y) {
+    w |>
+      transmute(
+        cx = cl(.data[[paste0(x, "_w02")]] - .data[[paste0(x, "_w01")]]),
+        cy = cl(.data[[paste0(y, "_w02")]] - .data[[paste0(y, "_w01")]]),
+        dv = dv_lab[[y]]
+      ) |>
+      filter(!is.na(cx), !is.na(cy))
+  }) |>
+    count(dv, cx, cy) |>
+    group_by(dv, cx) |>
+    mutate(pct = n / sum(n), ntot = sum(n)) |>
+    ungroup() |>
+    mutate(cx = factor(cx, levels = c("Baja", "Igual", "Sube")),
+           cy = factor(cy, levels = c("Baja", "Igual", "Sube")),
+           dv = factor(dv, levels = dv_lab))
+
+  ggplot(r, aes(cx, pct, fill = cy)) +
+    geom_col(width = .75, colour = "white") +
+    geom_text(aes(x = cx, y = 1.04, label = paste0("n=", ntot)), size = 2.8, colour = carbon,
+              data = distinct(r, dv, cx, ntot), inherit.aes = FALSE) +
+    scale_fill_manual(values = c(Baja = carbon, Igual = "#E6E6E6", Sube = rojo),
+                      name = "Cambio en la VD (Ola 2 − Ola 1)") +
+    scale_y_continuous(labels = scales::percent) +
+    facet_wrap(~dv) +
+    labs(title = titulo, x = paste0("Cambio en ", xlab %||% x, " (Ola 2 − Ola 1)"), y = NULL,
+         caption = "Solo estudiantes presentes en ambas olas.")
+}
+
+
+# Los gráficos bivariados se estiman únicamente con observaciones de la Ola 2.
+d_bivariados <- d %>%
+  filter(ola == "Ola 2")
+
+# --- Socialización escolar: notas -> sociedad (H1a-b) ---
+acuerdo_segun(d_bivariados,  "p2_1_f", "Recompensa al esfuerzo en las notas vs. en la sociedad", "Esfuerzo recompensado en las notas")
+acuerdo_segun(d_bivariados,  "p2_2_f", "Recompensa al talento en las notas vs. en la sociedad",  "Talento recompensado en las notas")
+cruce_apilado(d_bivariados,  "p2_1_f", "Distribución según percepción en las notas (esfuerzo)")
+cruce_apilado(d_bivariados,  "p2_2_f", "Distribución según percepción en las notas (talento)")
+
+# --- Origen social (H3 y capital cultural, H6) ---
+acuerdo_segun(d_bivariados, "ses_ter", "Percepción de recompensa según nivel socioeconómico (terciles)", "Nivel socioeconómico")
+acuerdo_segun(d_bivariados, "educ_f",  "Percepción de recompensa según educación parental máxima", "Educación parental")
+acuerdo_segun(d_bivariados, "p30_f",   "Percepción de recompensa según libros en el hogar", "Libros en el hogar")
+
+# --- Nota justa / Jasso (H7) ---
+acuerdo_segun(d_bivariados, "p4_f", "Percepción de recompensa según nota esperada", "Nota esperada")
+acuerdo_segun(d_bivariados, "J_f",  "Percepción de recompensa según J-score (nota justa)", "Evaluación de justicia (J)")
+acuerdo_segun(d_bivariados, "p5_f", "Percepción de recompensa según evaluación de la nota", "p5")
+acuerdo_segun(d_bivariados, "p7_f", "Percepción de recompensa según p7", "p7")
+# alternativa continua: acuerdo_tramos(d, "J", "Percepción de recompensa según J-score")
+
+# --- H8 ---
+acuerdo_segun(d_bivariados, "p2_3_f", "Percepción de recompensa según p2_3", "p2_3")
+
+# --- Cohorte (H14/H16) ---
+acuerdo_segun(d_bivariados, "cohorte", "Percepción de recompensa según cohorte", "Cohorte")
+
+# --- Contextual: colegio (12 casos, exploratorio) ---
+disp_ctx(d_bivariados, "ses_media", "Composición socioeconómica del colegio")
+disp_ctx(d_bivariados, "ses_de",    "Heterogeneidad socioeconómica del colegio")
+
+# --- Panel (H15-H17): cambios entre olas ---
+w <- data_wide %>%
+  zap_labels() %>%
+  mutate(across(any_of(c(
+    "p1_1_w01", "p1_1_w02", "p1_2_w01", "p1_2_w02",
+    "p2_1_w01", "p2_1_w02", "p2_2_w01", "p2_2_w02"
+  )), ~ if_else(.x %in% c(88, 99), NA_real_, as.numeric(.x))))
+
+cruce_cambios(w, "p2_1", "Cambio en percepción de esfuerzo en notas vs. cambio en la VD", "p2_1")
+cruce_cambios(w, "p2_2", "Cambio en percepción de talento en notas vs. cambio en la VD",  "p2_2")
+
+
+
+
+#Contrastes de hipotesis a patir de pruebas bivariadas
+options(scipen = 999)
+ola2 <- data_long %>% 
+  filter(ola == 2) %>% 
+  mutate(across(everything(), ~ ifelse(. %in% c(88, 99), NA, .)))
+
+tests <- ola2 %>% select(p1_1, p1_2, p2_1, p2_2)
+
+cor.test(tests$p1_1, tests$p2_1, method = "kendall", exact = FALSE)
+chisq.test(tests$p1_1, tests$p2_1, correct = FALSE)
+
+cor.test(tests$p1_2, tests$p2_2, method = "kendall", exact = FALSE)
+chisq.test(tests$p1_2, tests$p2_2, correct = FALSE)
+
+
+library(broom)
+ola2 %>%
+  group_by(p26) %>%
+  reframe(tidy(cor.test(p1_1, p2_1, method = "kendall", exact = FALSE)))
+
+ola2 %>%
+  group_by(p26) %>%
+  reframe(tidy(cor.test(p1_2, p2_2, method = "kendall", exact = FALSE)))
+
+cor.test(ola2$p30, ola2$p1_1, method = "spearman", exact = FALSE)
+cor.test(ola2$p30, ola2$p1_2, method = "spearman", exact = FALSE)
+
+cor.test(ola2$p4, ola2$p2_1, method = "spearman", exact = FALSE)
+cor.test(ola2$p4, ola2$p2_2, method = "spearman", exact = FALSE) 
+chisq.test(ola2$p4, ola2$p2_2, correct = FALSE)
+
+##3 imputacion de la nota merecida.
+
+ola2 <- ola2 %>%
+  mutate(
+    p6 = case_when(
+      p5 == 2 ~ p4,   # Si en p5 respondió 2, asigna el valor de p4
+      TRUE ~ p6       # Para cualquier otro caso, mantiene el valor original de p6
+    )
+  )
+
+
+ola2 <- ola2 %>% 
+  mutate(fn_jasso = log(p4 / p6))
+
+
+summary(ola2$p4)
+summary(ola2$p5)
+summary(ola2$p6)
+summary(ola2$fn_jasso)
+
+cor.test(ola2$fn_jasso, ola2$p1_1, method = "spearman", exact = FALSE)
+cor.test(ola2$fn_jasso, ola2$p1_2, method = "spearman", exact = FALSE)
+
+cor.test(ola2$p2_3, ola2$p1_1, method = "spearman", exact = FALSE)
+cor.test(ola2$p2_3, ola2$p1_2, method = "spearman", exact = FALSE)
+
+
+library(stringr)
+
+ola2 <- data_long %>%
+  # 1. Limpieza de 88/99 a NA
+  mutate(across(everything(), ~ ifelse(. %in% c(88, 99), NA, .))) %>%
+  
+  # 2. Imputar d3_def desde la Ola 1 por estudiante
+  group_by(id_estudiante) %>%
+  fill(d3_def, .direction = "downup") %>% 
+  ungroup() %>%
+  
+  # 3. Filtrar solo la Ola 2
+  filter(ola == 2) %>%
+  
+  # 4. Crear los identificadores de colegio + curso
+  mutate(
+    colegio_curso = paste(d2, d3_def, sep = "_"),
+    class_id = cur_group_id(), .by = c(d2, d3_def)
+  )
+
+
+ola2 <- ola2 %>%
+  mutate(
+    ed_parent = case_when(
+      !is.na(p26) & !is.na(p27) ~ (p26 + p27) / 2,
+      !is.na(p26)                 ~ as.numeric(p26),
+      !is.na(p27)                 ~ as.numeric(p27),
+      TRUE                        ~ NA_real_
+    )
+  )
+
+ola2 <- ola2 %>% 
+  group_by(class_id) %>% 
+  mutate(
+    ses_cm   = mean(ed_parent, na.rm = TRUE),
+    ses_de   = sd(ed_parent, na.rm = TRUE),
+    notas_cm = mean(p4, na.rm = TRUE),
+    bsm      = mean(p2_3, na.rm = TRUE),
+    p1_1_cm  = mean(p1_1, na.rm = TRUE),
+    p1_2_cm  = mean(p1_2, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+curso2 <- ola2 %>%
+  group_by(class_id) %>%
+  summarise(
+    n_est    = n(),                                   # estudiantes del curso
+    ses_cm   = mean(ed_parent, na.rm = TRUE),
+    ses_de   = sd(ed_parent,   na.rm = TRUE),
+    notas_cm = mean(p4,   na.rm = TRUE),
+    bsm      = mean(p2_3, na.rm = TRUE),
+    p1_1_cm  = mean(p1_1, na.rm = TRUE),
+    p1_2_cm  = mean(p1_2, na.rm = TRUE),
+    # versión ordinal de las VD: % de acuerdo (3-4)
+    p1_1_ac  = mean(p1_1 >= 3, na.rm = TRUE),
+    p1_2_ac  = mean(p1_2 >= 3, na.rm = TRUE),
+    .groups  = "drop"
+  )
+
+
+
+library(ggplot2)
+cor.test(curso2$ses_cm, curso2$p1_1_cm, method = "spearman", exact = FALSE)
+
+cor.test(curso2$ses_cm, curso2$p1_2_cm, method = "spearman", exact = FALSE)
+
+cor.test(curso2$ses_de, curso2$p1_1_cm, method = "spearman", exact = FALSE)
+cor.test(curso2$ses_de, curso2$p1_2_cm, method = "spearman", exact = FALSE)
+  
+```

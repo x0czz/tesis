@@ -1,0 +1,66 @@
+digraph hipotesis {
+  rankdir=LR; newrank=true; compound=true; splines=spline; nodesep=0.32; ranksep=2.3;
+  bgcolor="white"; pad=0.3; fontname="Helvetica";
+  labelloc=b; labeljust=l; fontsize=13;
+  label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1" CELLPADDING="2">
+    <TR><TD ALIGN="LEFT"><B>Cómo leer el esquema.</B> Flecha continua: efecto principal; <B>+</B> a mayor valor, mayor percepción; <B>−</B> menor percepción. a = esfuerzo, b = talento.</TD></TR>
+    <TR><TD ALIGN="LEFT">Flecha punteada azul: interacción (H2, H9). Modera la fuerza de la transferencia H1; el signo indica cómo cambia al aumentar el moderador. Ambas son exploratorias.</TD></TR>
+    <TR><TD ALIGN="LEFT">H3: expectativas rivales (+ legitimación del privilegio, − efecto iluminador). H10: más homogeneidad (+) equivale a menos heterogeneidad (−).</TD></TR>
+  </TABLE>>;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=14, margin="0.18,0.10", penwidth=1.2, color="#5f6368"];
+  edge [fontname="Helvetica", fontsize=13, color="#333333", fontcolor="#111111", arrowsize=0.85, penwidth=1.5, labelfloat=false];
+
+  subgraph cluster_ind { label="Nivel individual (efectos principales)"; labelloc=t; labeljust=l; style="rounded"; color="#9db7e8"; fontsize=15; fontname="Helvetica-Bold";
+    A1 [label="Recompensa en las notas\n(esfuerzo / talento)", fillcolor="#e8f0fe"];
+    A2 [label="Educación de los padres\n(estatus)", fillcolor="#e8f0fe"];
+    A3 [label="Libros en el hogar\n(capital cultural)", fillcolor="#e8f0fe"];
+    A4 [label="Rendimiento (promedio de notas)\ny justicia percibida", fillcolor="#e8f0fe"];
+    A5 [label="Creencia en la meritocracia\nescolar (BSM)", fillcolor="#e8f0fe"];
+  }
+  subgraph cluster_ctx { label="Contexto: curso (efectos principales)"; labelloc=t; labeljust=l; style="rounded"; color="#8fd0a0"; fontsize=15; fontname="Helvetica-Bold";
+    C1 [label="Estatus promedio del curso", fillcolor="#e6f4ea"];
+    C2 [label="Clima meritocrático del curso\n(adhesión promedio a la BSM)", fillcolor="#e6f4ea"];
+    C3 [label="Homogeneidad socioeconómica\ndel curso", fillcolor="#e6f4ea"];
+  }
+  subgraph cluster_t { label="Cambio en el tiempo (intraindividual)"; labelloc=t; labeljust=l; style="rounded"; color="#f0c070"; fontsize=15; fontname="Helvetica-Bold";
+    T1 [label="Paso del tiempo\n(entre olas)", fillcolor="#fff4e5"];
+    T2 [label="Mejora del rendimiento o de la\njusticia percibida (vs. propio promedio)", fillcolor="#fff4e5"];
+  }
+  subgraph cluster_mod { label="Moderadores (interacciones)"; labelloc=t; labeljust=l; style="rounded,dashed"; color="#9575cd"; fontsize=15; fontname="Helvetica-Bold";
+    M1 [label="Nivel socioeconómico\ndel estudiante", fillcolor="#f3e8fd"];
+    M2 [label="Rendimiento promedio\ndel curso", fillcolor="#f3e8fd"];
+  }
+
+  subgraph cluster_dv { label="Percepciones de recompensa en la sociedad (Chile)"; labelloc=t; labeljust=c; style="rounded,filled"; fillcolor="#fff5f5"; color="#b3261e"; penwidth=2; fontsize=15; fontname="Helvetica-Bold";
+    DE [label="ESFUERZO\nes recompensado\n(p1_1)", fillcolor="#fde8e8", color="#b3261e", penwidth=2, fontsize=16];
+    DT [label="TALENTO\nes recompensado\n(p1_2)", fillcolor="#fde8e8", color="#b3261e", penwidth=2, fontsize=16];
+  }
+
+  { rank=same; A1; A2; A3; A4; A5; C1; C2; C3; T1; T2; M1; M2; }
+
+  me [shape=point, width=0.12, label="", fillcolor="#333333", color="#333333"];
+  mt [shape=point, width=0.12, label="", fillcolor="#333333", color="#333333"];
+
+  // H1 transferencia: esfuerzo->esfuerzo, talento->talento
+  A1 -> me [label="H1a  +", arrowhead=none];  me -> DE;
+  A1 -> mt [label="H1b  +", arrowhead=none];  mt -> DT;
+
+  // efectos principales sobre ambas percepciones (una flecha al recuadro)
+  A2 -> DE [lhead=cluster_dv, label="H3a-b  + / −", color="#6a1b9a", fontcolor="#6a1b9a"];
+  A4 -> DE [lhead=cluster_dv, label="H5a-b  +"];
+  A5 -> DE [lhead=cluster_dv, label="H6a-b  +"];
+  C1 -> DE [lhead=cluster_dv, label="H7a-b  +"];
+  C2 -> DE [lhead=cluster_dv, label="H8a-b  +"];
+  C3 -> DE [lhead=cluster_dv, label="H10a-b  +"];
+  T2 -> DE [lhead=cluster_dv, label="H12a-b  +"];
+
+  // efectos específicos
+  A3 -> DT [label="H4  +  (solo talento)"];
+  T1 -> DE [label="H11  −  (solo esfuerzo)", color="#b3261e", fontcolor="#b3261e"];
+
+  // interacciones sobre la transferencia H1
+  M1 -> me [label="H2a  −", style=dashed, color="#1565c0", fontcolor="#1565c0", arrowhead=vee];
+  M1 -> mt [label="H2b  −", style=dashed, color="#1565c0", fontcolor="#1565c0", arrowhead=vee];
+  M2 -> me [label="H9a  −", style=dashed, color="#1565c0", fontcolor="#1565c0", arrowhead=vee];
+  M2 -> mt [label="H9b  −", style=dashed, color="#1565c0", fontcolor="#1565c0", arrowhead=vee];
+}
