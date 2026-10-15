@@ -40,6 +40,7 @@ jobs:
         run: |
           quarto render presentacion_tesis.qmd
           cp presentacion_tesis.html docs/presentacion_tesis.html
+          cp presentacion_tesis.html docs/index.html
       - name: Check gh-pages branch
         id: ghpages
         run: |
