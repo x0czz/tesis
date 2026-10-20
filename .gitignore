@@ -11,14 +11,14 @@ docs/assets/*
 !docs/assets/styles.css
 !docs/site_libs/
 !docs/site_libs/**
-!docs/*_files/
-!docs/*_files/**
 _freeze/
 *.Rmd
 *.utf8.md
 *.knit.md
 *_cache/
 *_files/
+!docs/*_files/
+!docs/*_files/**
 *.log
 *.aux
 *.toc
