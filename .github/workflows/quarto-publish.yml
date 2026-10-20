@@ -4,6 +4,7 @@ name: Quarto Publish
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,12 +14,21 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - name: Use locally rendered presentation
-        run: cp presentacion_tesis.html docs/index.html
-      - name: Publish pre-rendered docs
+        with:
+          fetch-depth: 0
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: latest
+
+      - name: Render Quarto project
+        run: quarto render
+
+      - name: Publish generated docs to gh-pages
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin gh-pages
+          git fetch origin gh-pages || true
           git subtree split --prefix docs -b gh-pages-build
           git push --force origin gh-pages-build:gh-pages
