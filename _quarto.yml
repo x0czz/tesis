@@ -8,14 +8,13 @@ project:
     - assets/favicon-2025-20251031.svg  # Asegura que el favicon versionado llegue a docs/
 
 book:
-  title: Reportes FACSO - Plantilla Quarto
-  subtitle: Tesis, informes e investigaciones
+  title: "¿Las mismas oportunidades para todos?"
+  subtitle: "Creencias meritocráticas, experiencia escolar y percepción de igualdad de oportunidades en estudiantes chilenos"
   output-file: reportes-facso-plantilla
-  repo-url: https://github.com/KAravena/reportesfacsobook_template  #URL del repositorio del libro (cambia segun tu repo)
+  repo-url: https://github.com/x0czz/tesis  #URL del repositorio del libro (cambia segun tu repo)
   author:
-    - name: Nombre Apellido
-      affiliation: Departamento de Sociologia, Universidad de Chile
-      orcid: 0000-0000-0000-0000
+    - name: Nicolás Outerbridge
+      affiliation: Departamento de Sociología, Universidad de Chile
   date: today              # Usa fecha fija (YYYY-MM-DD) si necesitas control editorial
   date-format: D [de] MMMM [de] YYYY
   doi: ""
@@ -49,7 +48,10 @@ book:
     # Guarda anexos extensos en apendices/ y listalos aqui.
 
 csl: refs/apa.csl                # Estilo de citas (cambia a otro .csl si lo prefieres)
-bibliography: refs/Mi biblioteca.bib
+bibliography:
+  - refs/Mi biblioteca.bib
+  - refs/refs_nuevas_igualdad_oportunidades.bib
+  - refs/meritocracia_escolar_castillo.bib
 link-citations: true             # Enlaces desde el texto hacia la bibliografia
 reference-location: section      # Citas agrupadas al final de cada seccion
 

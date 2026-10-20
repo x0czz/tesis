@@ -1,0 +1,156 @@
+---
+title: "De la escuela a la sociedad: meritocracia escolar y percepción de meritocracia social en estudiantes chilenos"
+author: "[Nombre del autor/a]"
+lang: es
+abstract: |
+  La escuela no solo transmite conocimientos, sino también la creencia de que el éxito depende del esfuerzo y el talento individual. Investigaciones recientes sugieren que esta creencia en la meritocracia escolar se extiende más allá de la escuela, legitimando las desigualdades sociales. Sin embargo, la evidencia proviene principalmente de población adulta y de diseños transversales. Este estudio examina si la percepción de que en la escuela se obtienen las notas merecidas se asocia con la percepción de que la sociedad recompensa el mérito, cómo varía esta relación según la posición social de los estudiantes y cómo cambia la percepción de meritocracia social a lo largo de la trayectoria escolar. Para ello, se utilizan datos de las dos olas del panel Educación y Meritocracia (EDUMER), aplicado a estudiantes de básica y media en Chile entre 2023 y 2024.
+keywords: [meritocracia, socialización escolar, justificación del sistema, desigualdad, Chile]
+bibliography: meritocracia_escolar_castillo.bib
+number-sections: true
+---
+
+# Introducción
+
+Las instituciones educativas tienen como función explícita entregar conocimientos formales y habilidades que preparen a los estudiantes para sus futuras posiciones en la sociedad. Junto con ello, transmiten normas, valores y creencias que sostienen el logro educativo [@mijs2016]. Una de las más centrales es la creencia en la meritocracia escolar: la idea de que las recompensas en la escuela dependen de las habilidades y el esfuerzo de cada estudiante, y no de su pertenencia a un grupo social [@batruch_belief_2023]. Esta creencia se institucionaliza en las notas, la selección y los rankings, que presentan el desempeño académico como el reflejo de méritos individuales [@bourdieu_reproduction_1990].
+
+La creencia en la meritocracia escolar persiste pese a que la escuela no cumple su promesa. Las oportunidades de demostrar mérito dependen del origen social [@mijs2016], y las propias prácticas de aula convierten ventajas de clase en diferencias de desempeño [@goudeau_hidden_2017]. Más aún, la creencia contribuye a mantener esa desigualdad: promover el discurso meritocrático en el aula amplía la brecha de rendimiento entre estudiantes de distinto origen social [@darnon_belief_2018], y entre los estudiantes de bajo estatus esta creencia opera como un recurso para justificar el orden existente [@wiederkehr2015].
+
+Las consecuencias de esta creencia no se limitan a la escuela. Creer que la escuela es meritocrática se asocia con percibir como menos injusta la desigualdad social y con un menor apoyo a políticas redistributivas [@batruch_belief_2023]. En Chile, los estudiantes que perciben que la sociedad recompensa el mérito justifican en mayor medida que el acceso a salud, pensiones y educación dependa de la capacidad de pago [@castillo_socialization_2024]. La escuela aparecería así como un espacio donde se forman tempranamente las creencias que legitiman la desigualdad.
+
+Sin embargo, la evidencia sobre esta transferencia presenta tres vacíos. Primero, proviene mayoritariamente de población adulta o universitaria, por lo que se sabe poco sobre cómo opera durante la etapa escolar, cuando estas creencias se en teoria aun se están formando. Segundo, se ha centrado en la legitimación de la desigualdad y en las preferencias redistributivas, y no en la percepción de que la sociedad efectivamente recompensa el mérito. Tercero, descansa en diseños transversales que no permiten observar cómo cambian estas percepciones a medida que los estudiantes avanzan en su trayectoria escolar [@batruch_belief_2023].
+
+Este estudio pretende abordar estos vacíos a partir de la siguiente pregunta: ¿en qué medida la percepción de meritocracia en la escuela se asocia con la percepción de que el mérito es recompensado en la sociedad, y cómo varía esta percepción según la posición de los estudiantes y su avance en la trayectoria escolar? Para responderla se utilizan datos del panel Educación y Meritocracia (EDUMER), que encuestó en dos ocasiones a estudiantes de básica y media de escuelas chilenas. El caso chileno resulta especialmente relevante por la alta estratificación de su sistema escolar y por el lugar central que ocupa la noción de mérito en el discurso educativo [@castillo_socialization_2024].
+
+# Antecedentes conceptuales y empíricos
+
+## La escuela como espacio de socialización meritocrática
+
+El concepto de meritocracia refiere a una forma de organización social en la que las recompensas se distribuyen según el mérito, entendido como la combinación de esfuerzo y talento [@young1958]. Aunque surge como una alternativa a los privilegios heredados, en sociedades desiguales el mérito como principio distributivo tiende a legitimar posiciones obtenidas por otras vías, como el origen familiar o los contactos [@khan_saying_2013; @mijs2016].
+
+La escuela ocupa un lugar central en este proceso. Además de su tarea explícita de entregar conocimientos y habilidades que preparen para las futuras posiciones sociales (Arrow, 1973), es la institución que de manera más explícita promete que el esfuerzo y el talento serán recompensados, y lo hace a través de mecanismos cotidianos como las notas, los premios y la selección. Su estructura, su discurso y sus prácticas de selección contribuyen a institucionalizar una autoconcepción en la que el talento y el esfuerzo aparecen como los principales factores del éxito académico (Beauvois, 2003; Deutsch, 1979; Spruyt, 2015), y a transformar las diferencias de origen en diferencias de desempeño que aparecen como individuales [@bourdieu_reproduction_1990].
+
+<!-- Citas en autor-año tomadas de Batruch et al. (2023); pendientes de incorporar al .bib -->
+Lo que la escuela difunde se ha denominado "norma de internalidad": la tendencia a explicar el éxito y el fracaso por factores internos, como el talento y el esfuerzo (Beauvois & Dubois, 1988). Numerosos estudios de campo y experimentales muestran que el profesorado valora este tipo de explicaciones y las premia con mejores notas y juicios escolares, y que los estudiantes recurren más a ellas cuando buscan agradar a sus docentes (Dompnier et al., 2006; Pansu et al., 2008). Es decir, los estudiantes saben que la creencia meritocrática es deseable y recompensada en el sistema educativo. Además, una cultura escolar que enfatiza el mérito lleva a incorporar el logro académico como parte de la autoimagen (Trautwein et al., 2006).
+
+La creencia en la meritocracia escolar está profundamente arraigada en las instituciones educativas (Brown & Tannock, 2009), pese a la evidencia de que la desigualdad educativa persiste. La brecha de rendimiento por nivel socioeconómico aumentó en la mayoría de los países durante los últimos 50 años (Chmielewski, 2019), y en los países de la OCDE la probabilidad de acceder a la educación superior se duplica si al menos uno de los padres terminó la educación secundaria, y es 4,5 veces mayor si los padres tienen estudios superiores (OECD, 2014). Tampoco existe igualdad de oportunidades entre estudiantes con capacidades similares: ante un mismo rendimiento, los docentes tienen menores expectativas sobre los estudiantes de nivel socioeconómico bajo y les asignan peores notas y peores recomendaciones de trayectoria (Autin et al., 2019; Barg, 2013; Batruch et al., 2019; Geven et al., 2021; Timmermans et al., 2018). Así, la escuela no cumple del todo su promesa meritocrática e incluso puede contribuir a reproducir la desigualdad (van de Werfhorst & Mijs, 2010). La propia creencia contribuye a mantener esta situación: quienes adhieren a ella, sean estudiantes o apoderados, se muestran menos dispuestos a apoyar prácticas igualadoras en la escuela (Darnon, Smeding & Redersdorff, 2018).
+
+Las investigaciones experimentales muestran que este discurso tiene efectos concretos: en un estudio con estudiantes franceses de quinto básico, inducir la creencia de que en la escuela solo importa el mérito amplió la brecha de rendimiento entre estudiantes de distinto origen social [@darnon_belief_2018].
+
+La forma en que la escuela organiza a los estudiantes también moldea cómo estos explican su desempeño. Con datos de PISA 2012 para 128.110 estudiantes de 24 países, Mijs [-@mijs_stratified_2016] muestra que los estudiantes en sistemas que los separan según su rendimiento tienden a atribuir su fracaso a sí mismos, mientras que los que estudian en grupos heterogéneos lo atribuyen más a sus profesores o a la mala suerte. A su vez, la experiencia de justicia en las notas no es homogénea: en Israel, cerca de la mitad de los estudiantes de secundaria se considera perjudicada en sus calificaciones, y este sentido de injusticia es mayor entre los de menor nivel socioeconómico, aunque está mucho menos estratificado que el propio rendimiento académico [@resh2010].
+
+## Percepción y preferencia por la meritocracia
+
+La investigación sobre creencias meritocráticas distingue dos dimensiones subjetivas [@castillo_meritocracia_2019; @duru-bellat_whos_2012]. La *preferencia* por la meritocracia es una dimensión normativa: refiere al grado en que se considera que el esfuerzo y el talento *deberían* ser la base de la distribución de recompensas. La *percepción* de la meritocracia es una dimensión descriptiva: refiere a la evaluación de si la sociedad *efectivamente* recompensa el mérito.
+
+Esta distinción tiene respaldo empírico. Con datos de una encuesta a 1.245 adultos chilenos, Castillo et al. [-@castillo_meritocracia_2019] muestran mediante análisis factorial confirmatorio que ambas dimensiones constituyen constructos diferentes, con una correlación baja y no significativa. Con datos del ISSP, Duru-Bellat y Tenret [-@duru-bellat_whos_2012] tampoco encuentran correlación entre la meritocracia deseada y la percibida, ni a nivel individual ni entre países: en sociedades como Bulgaria se valora fuertemente la meritocracia basada en la educación, pero menos del 10% de la población percibe que el esfuerzo y la habilidad sean recompensados.
+
+Las dos dimensiones también difieren en su variabilidad. La preferencia por la meritocracia es más consensual, con promedios más altos y menor varianza, y en general no se ve afectada por las variables de estatus. Además, resulta resiliente a las carencias percibidas en su funcionamiento: puede mantenerse aunque se perciba que la meritocracia no opera [@castillo_meritocracia_2019]. En población escolar chilena, el patrón es aún más marcado: el 87% de los estudiantes apoya que el esfuerzo debería ser recompensado, mientras que el 67% percibe que lo es, proporción que desciende a 62% un año después [@laffert_changes].
+
+Este estudio se centra en la percepción de meritocracia. Es la dimensión que varía entre estudiantes y la que se vincula teóricamente con los mecanismos de transferencia y justificación del sistema que se discuten a continuación.
+
+## Meritocracia escolar y meritocracia social
+
+La creencia en la meritocracia escolar comparte rasgos con otras creencias que justifican el sistema, como la meritocracia general, la ética protestante del trabajo o la creencia en un mundo justo. Todas tienden a presentar el orden existente de forma positiva, y esa tendencia puede extenderse a la legitimación de las desigualdades entre grupos (Jost & Hunyady, 2005). Activar la idea de meritocracia aumenta las evaluaciones negativas y los estereotipos hacia los grupos de bajo estatus, y perjudica las decisiones que los involucran (Madeira et al., 2019). Además, favorece que la situación de los grupos desaventajados se explique por factores internos (Kuppens et al., 2018; McCoy & Major, 2007; Rüsch et al., 2010). En los grupos de bajo estatus, estas creencias ofrecen cierto alivio psicológico individual, pero frenan la disposición a defender colectivamente los derechos del grupo (Foster et al., 2006; McCoy et al., 2013; Osborne et al., 2019).
+
+Sin embargo, la meritocracia escolar y la meritocracia general no son equivalentes. La meritocracia general es una creencia difusa sobre la sociedad, mientras que la escolar se refiere a una institución concreta con objetivos explícitos. Además, la meritocracia escolar es una condición necesaria, pero no suficiente, de la meritocracia social: un país puede tener escuelas meritocráticas sin que su sociedad lo sea [@batruch_belief_2023]. Es el caso de Maldivas, Lesoto, Filipinas, Sudáfrica y Uzbekistán, que se encuentran entre los diez países con mayor movilidad educativa pese a sus altos niveles de corrupción (Global Database on Intergenerational Mobility, 2018; Corruption Perceptions Index, 2021).
+
+Batruch et al. [-@batruch_belief_2023] ofrecen la evidencia más sistemática sobre la transferencia entre ambas. En cuatro estudios, que combinan una encuesta a estudiantes universitarios australianos, un experimento y datos de 41 países del ISSP y 29 del ESS, muestran que creer en la meritocracia escolar se asocia con percibir como menos injusta la desigualdad de clase y de ingresos, y con un menor apoyo a la acción afirmativa y a la redistribución. El experimento indica que esta relación es causal, y los efectos se mantienen al controlar por la creencia en la meritocracia general. Los autores interpretan que creer que la escuela es justa implica creer que también lo son las diferencias de resultados que produce la jerarquía educativa.
+
+Esta evidencia, no obstante, se refiere a la legitimación de la desigualdad y no a la percepción de meritocracia social, y proviene de adultos. En población escolar, Wiederkehr et al. [-@wiederkehr2015] encuentran en estudiantes franceses de secundaria que la creencia en la meritocracia escolar se asocia con creer que la sociedad es meritocrática y justa, pero solo entre los de menor nivel socioeconómico. Los estudios sobre adolescentes muestran, además, que estas creencias se forman temprano: ya entre los 10 y 16 años, los jóvenes explican las diferencias de ingreso por la importancia del trabajo, el esfuerzo y la educación, y ven la desigualdad como el resultado de diferencias individuales [@dickinson_adolescent_1990].
+
+En Chile, Castillo et al. [-@castillo_socialization_2024] analizan a 5.047 estudiantes de octavo básico de 231 escuelas y encuentran que una proporción importante justifica que quienes tienen más ingresos accedan a mejor salud, pensiones y educación, en mayor medida que la población adulta. Quienes perciben que en la sociedad se recompensa el esfuerzo, el talento y el merecimiento muestran mayores preferencias por esta justicia de mercado.
+
+## Posición social y meritocracia percibida
+
+La literatura ofrece dos expectativas contrapuestas sobre cómo la posición social se relaciona con la percepción de meritocracia. Desde una perspectiva de interés propio, quienes ocupan posiciones ventajosas tenderían a explicar la desigualdad por características individuales, porque esa explicación legitima su lugar. En el ISSP, los hombres y las personas mayores perciben más meritocracia [@duru-bellat_whos_2012], y entre adolescentes escoceses, los de clase media muestran mayor apoyo al sistema de desigualdad que los de clase trabajadora [@dickinson_adolescent_1990]. Baer y Lambert [-@baer_education_1982] formulan una versión de este argumento referida a la educación: quienes son recompensados en proporción a sus logros tienden a aceptar la ideología dominante.
+
+Desde la teoría de la justificación del sistema, en cambio, los grupos de bajo estatus también pueden legitimar el orden que los desfavorece, porque hacerlo reduce la disonancia y preserva la sensación de control sobre su futuro [@jost_attitudinal_2000]. Para los estudiantes de menor nivel socioeconómico, la escuela es la principal vía de movilidad, lo que los haría más dependientes de creer que el esfuerzo es recompensado. En línea con esto, Wiederkehr et al. [-@wiederkehr2015] encuentran que el vínculo entre meritocracia escolar y social existe solo entre estudiantes de bajo estatus, y que, ante información amenazante sobre la selección universitaria, estos estudiantes refuerzan su creencia en la meritocracia escolar. En Chile, la asociación entre la percepción de meritocracia social y la justicia de mercado es más débil entre estudiantes cuyos padres tienen educación universitaria y en escuelas de mayor nivel socioeconómico [@castillo_socialization_2024].
+
+Esta adhesión tiene costos. Con datos longitudinales alemanes, García-Sierra [-@garcia-sierra_dark_2023] muestra que los adolescentes de origen desaventajado con fuertes creencias meritocráticas tienen luego más probabilidades de una inserción laboral precaria, efecto que no se observa entre los de origen aventajado.
+
+## Trayectoria escolar: socialización e ilustración
+
+Una pregunta distinta es cómo cambia la percepción de meritocracia a medida que los estudiantes avanzan en la escuela. Baer y Lambert [-@baer_education_1982] contrastan dos expectativas sobre el efecto de la educación en las creencias sobre la desigualdad. La hipótesis de *socialización* plantea que la educación transmite la ideología dominante en proporción al tiempo que se pasa en ella. La hipótesis de *ilustración* plantea, en cambio, que la educación fomenta una mirada crítica sobre la desigualdad. En su versión perceptiva, la educación puede llevar a interiorizar que los diplomas son recompensados o, por el contrario, aumentar la conciencia de la desigualdad [@duru-bellat_whos_2012].
+
+La evidencia es ambigua. Baer y Lambert [-@baer_education_1982] encuentran apoyo para la socialización en adultos canadienses. En la comparación internacional, el nivel educativo se asocia positivamente con la percepción de meritocracia en algunos países, negativamente en siete y sin efecto en quince [@duru-bellat_whos_2012]. Entre escolares chilenos, Laffert et al. [-@laffert_changes] encuentran que los estudiantes de media usan la escala de percepción de manera distinta a los de básica al evaluar si el esfuerzo es recompensado, lo que interpretan como un marco más crítico entre los mayores.
+
+# Hipótesis
+
+A partir de los antecedentes se plantean cuatro hipótesis, resumidas en la @tbl-hipotesis.
+
+  **Transferencia.** Si la escuela es la primera institución formal en donde los estudiantes experimentan una distribución sistemática de recompensas que se presenta como basada en el mérito, la evaluación de que esa distribución es justa debería extenderse a la sociedad en su conjunto [@batruch_belief_2023; @mijs_stratified_2016].
+
+  > **H1:** A mayor percepción de meritocracia en la escuela, mayor percepción de que el mérito es recompensado en la sociedad.
+
+  **Interés propio.** Quienes ocupan posiciones ventajosas o son reconocidos por el sistema escolar tendrían razones para percibir que el mérito es recompensado [@baer_education_1982; @dickinson_adolescent_1990; @duru-bellat_whos_2012].
+
+  > **H2a:** Los estudiantes de mayor nivel socioeconómico, con mejor rendimiento académico y los hombres perciben más meritocracia en la sociedad.
+
+  **Justificación del sistema.** Los estudiantes de menor nivel socioeconómico dependen más de la escuela como vía de promoción, por lo que su percepción de la sociedad dependería en mayor medida de su experiencia escolar [@jost_attitudinal_2000; @wiederkehr2015; @castillo_socialization_2024].
+
+  > **H2b:** La relación entre la percepción de meritocracia escolar y la percepción de meritocracia social es más fuerte entre los estudiantes de menor nivel socioeconómico.
+
+  H2a y H2b no son excluyentes. La primera se refiere al *nivel* de meritocracia percibida según la posición social; la segunda, a la *fuerza de la transferencia* entre la escuela y la sociedad. Es posible que los estudiantes de mayor nivel socioeconómico perciban en promedio más meritocracia, pero que entre los de menor nivel esa percepción dependa más de su experiencia escolar.
+
+  **Socialización e ilustración.** La evidencia no permite anticipar si la escolarización refuerza o cuestiona la percepción de meritocracia [@baer_education_1982; @duru-bellat_whos_2012; @laffert_changes], por lo que se plantea una hipótesis bilateral.
+
+  > **H3:** La percepción de meritocracia social cambia con el avance en la trayectoria escolar. Si predomina la socialización, aumenta; si predomina la ilustración, disminuye.
+
+  Para distinguir entre ambas explicaciones, se examinará complementariamente la percepción de privilegio. La ilustración implica que, junto con la disminución de la meritocracia percibida, aumenta la percepción de que el éxito depende de tener padres ricos o buenos contactos.
+
+| Hipótesis | Mecanismo | Predictor | Efecto esperado |
+|---|---|---|---|
+| H1 | Transferencia | Meritocracia escolar | Positivo |
+| H2a | Interés propio | Nivel socioeconómico, rendimiento, sexo (hombre) | Positivo |
+| H2b | Justificación del sistema | Meritocracia escolar × nivel socioeconómico | Negativo |
+| H3 | Socialización / ilustración | Ola | Positivo (socialización) / negativo (ilustración) |
+
+: Resumen de hipótesis {#tbl-hipotesis}
+
+# Datos
+
+Se utilizan datos de la Encuesta Panel Educación y Meritocracia (EDUMER), desarrollada en el marco del proyecto FONDECYT N.º 1210847 [@edumer_manual]. Su objetivo es examinar las creencias, actitudes y comportamientos de estudiantes en edad escolar respecto de la meritocracia, la desigualdad y la ciudadanía [@laffert_changes]. El protocolo del estudio fue aprobado por un comité de ética en mayo de 2021, y en ambas olas se registró la autorización de participación de cada estudiante [@edumer_manual].
+
+La encuesta es un panel de dos olas. La población objetivo son estudiantes de escuelas municipales y particulares subvencionadas de las regiones Metropolitana y de Valparaíso. Se encuestó a dos cohortes: estudiantes de 6.º básico y 1.º medio en la primera ola, que fueron seguidos en 7.º básico y 2.º medio en la segunda. Participaron nueve escuelas [@laffert_changes]. La muestra no es probabilística ni representativa por zona geográfica o dependencia administrativa [@edumer_manual].
+
+El cuestionario fue autoadministrado en línea (CAWI) y respondido por los estudiantes en las salas de computación de sus escuelas, con una duración aproximada de 20 minutos. El levantamiento estuvo a cargo de la empresa Datavoz. La primera ola se aplicó entre octubre de 2023 y mayo de 2024, y la segunda entre agosto y noviembre de 2024 [@edumer_manual].
+
+La primera ola incluye 902 estudiantes y la segunda 674. De ellos, 639 participan en ambas olas, 263 solo en la primera y 35 solo en la segunda, lo que implica una atrición de 29,2% [@edumer_manual]. Según Laffert et al. [-@laffert_changes], las principales causas de la atrición fueron los traslados de escuela y la inasistencia, y no se observan diferencias sistemáticas entre quienes permanecen y quienes abandonan el panel en las variables de meritocracia de la primera ola. La primera ola también encuestó a apoderados y docentes, que no se incluyen en este estudio.
+
+Las bases de datos depuradas están disponibles en el repositorio Zenodo [@edumer_datos] en formatos R, Stata y SPSS. Este estudio utiliza la base de panel en formato largo, que contiene 1.576 observaciones correspondientes a ambas olas. La muestra analítica final se definirá tras excluir los casos con información faltante en las variables principales.
+
+# Operacionalización
+
+La @tbl-variables resume la operacionalización. Salvo indicación contraria, los ítems actitudinales se responden en una escala de cuatro puntos, desde "muy en desacuerdo" hasta "muy de acuerdo", sin punto medio. Las respuestas "no sabe" y "prefiero no responder" se tratan como datos perdidos [@edumer_manual].
+
+**Variable dependiente.** La percepción de meritocracia social se mide con dos ítems: "En Chile, las personas son recompensadas por sus esfuerzos" y "En Chile, las personas son recompensadas por su inteligencia y habilidad". Ambos forman parte de una escala validada en población escolar, que distingue la percepción de la preferencia por la meritocracia y presenta invarianza longitudinal estricta entre las dos olas, lo que permite comparar sus medias en el tiempo [@laffert_changes].
+
+**Variable independiente principal.** La percepción de meritocracia escolar se mide con el ítem "En esta escuela, los/as estudiantes obtienen las notas que merecen". El ítem refiere al merecimiento de las notas, es decir, a si la escuela distribuye sus recompensas de forma justa.
+
+**Posición social.** El nivel socioeconómico se mide con el nivel educativo de los padres y el número de libros en el hogar, dos indicadores habituales del capital económico y cultural familiar en estudios con población escolar [@castillo_socialization_2024]. El rendimiento académico se mide con el promedio de notas del año anterior, en la escala chilena de 1,0 a 7,0. El sexo se mide con la identificación de género declarada.
+
+**Trayectoria escolar.** Se mide con la ola (primera o segunda) y la cohorte (básica o media).
+
+**Variables complementarias y de control.** La percepción de privilegio, utilizada para distinguir entre socialización e ilustración, se mide con los ítems "En Chile, a quienes tienen padres ricos les va mucho mejor en la vida" y "En Chile, quienes tienen buenos contactos les va mejor en la vida". La preferencia meritocrática se incluye como control, con los ítems "Quienes más se esfuerzan deberían obtener mayores recompensas que quienes se esfuerzan menos" y "Quienes poseen más talento deberían obtener mayores recompensas que quienes poseen menos talento".
+
+| Concepto | Indicador | Escala | Rol |
+|---|---|---|---|
+| Meritocracia social percibida | `p1_1` esfuerzo; `p1_2` inteligencia y habilidad | 1–4 | Dependiente (latente) |
+| Meritocracia escolar percibida | `p2_3` notas merecidas | 1–4 | Independiente (H1, H2b) |
+| Nivel socioeconómico | Educación de los padres; libros en el hogar | Categórica | Independiente (H2a, H2b) |
+| Rendimiento académico | `p4` promedio de notas del año anterior | 1,0–7,0 | Independiente (H2a) |
+| Sexo | Género declarado | Categórica | Independiente (H2a) |
+| Trayectoria escolar | Ola; cohorte | Dicotómicas | Independiente (H3) |
+| Privilegio percibido | `p1_3` padres ricos; `p1_4` contactos | 1–4 | Complementaria (H3) |
+| Preferencia meritocrática | `p1_5` esfuerzo; `p1_6` talento | 1–4 | Control |
+
+: Operacionalización de variables {#tbl-variables}
+
+**Estrategia de análisis.** Se estimará un modelo de ecuaciones estructurales en el que la percepción de meritocracia social se especifica como una variable latente medida por sus dos indicadores y explicada por los predictores. Dado que cada estudiante es observado en dos ocasiones, los errores estándar se corregirán por agrupamiento a nivel de estudiante. Cada hipótesis se contrasta con un coeficiente específico (@tbl-hipotesis): el efecto de la meritocracia escolar (H1), los efectos del nivel socioeconómico, el rendimiento y el sexo (H2a), la interacción entre la meritocracia escolar y el nivel socioeconómico, estimada con variables centradas en su media (H2b), y el efecto de la ola (H3). Como análisis de robustez, el modelo se estimará por separado para cada ola tratando los ítems como ordinales.
+
+El diseño presenta limitaciones que deben considerarse al interpretar los resultados. El panel cuenta con solo dos olas, lo que limita las posibilidades de establecer la dirección temporal de las relaciones entre variables. Como la primera ola se extendió por dos años escolares, el tiempo entre olas varía entre estudiantes. El número de escuelas no permite estimar efectos del contexto escolar, y la escala de percepción no es invariante entre cohortes, por lo que las comparaciones entre básica y media deben interpretarse con cautela [@laffert_changes]. Finalmente, la meritocracia escolar se mide con un solo ítem, lo que impide corregir el error de medición.
+
+# Referencias {.unnumbered}
+
+::: {#refs}
+:::

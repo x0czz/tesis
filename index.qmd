@@ -1,4 +1,4 @@
-﻿---
+---
 title: ""
 number-sections: false
 numbered: false
@@ -11,7 +11,7 @@ format:
 ---
 
 ::: {.content-visible when-format="pdf"}
-\small\textbf{Palabras clave:} Sociologia, educacion, Chile
+\small\textbf{Palabras clave:} igualdad de oportunidades, meritocracia, privilegio, socialización escolar, educación superior, Chile
 \normalsize
 :::
 
@@ -20,10 +20,9 @@ format:
 nav#TOC { display: none !important; }
 div[data-when-format="pdf"] { display: none !important; }
 </style>
-<span class="keywords-line"><strong>Palabras clave:</strong> sociología, educación, Chile</span>
+<span class="keywords-line"><strong>Palabras clave:</strong> igualdad de oportunidades, meritocracia, privilegio, socialización escolar, educación superior, Chile</span>
 :::
 
-# Abstract {.unnumbered}
+# Resumen {.unnumbered}
 
-Resumen en español (200-300). Expón propósito, método, resultados clave y conclusiones.
-Puede incluir citas como @xie2017bookdown y se actualizarán automáticamente.
+La escuela promete que todos los estudiantes pueden llegar tan lejos como su esfuerzo y su talento les permitan. Esa promesa descansa en un supuesto anterior al mérito: que todos parten con las mismas oportunidades. En Chile, sin embargo, el acceso a la educación superior está fuertemente estratificado según el tipo de colegio de origen, y las universidades más selectivas reclutan mayoritariamente a egresados de colegios particulares pagados. Este estudio examina cómo perciben la igualdad de oportunidades los estudiantes de básica y media, y qué factores se asocian con esa percepción. Se analizan cuatro fuentes de variación: las creencias meritocráticas de los estudiantes, distinguiendo percepciones y preferencias sobre el mérito y el privilegio; la experiencia de justicia en la propia escuela; la posición en la jerarquía escolar y el horizonte educativo; y la exposición a información sobre la desigualdad en el acceso a la universidad, mediante un experimento de encuesta. Para ello se utilizan datos del panel Educación y Meritocracia (EDUMER), aplicado a estudiantes de básica y media de nueve escuelas chilenas entre 2023 y 2024, cuya primera ola incluye un experimento con asignación aleatoria de información.

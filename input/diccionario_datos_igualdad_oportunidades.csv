@@ -1,0 +1,247 @@
+"variable","etiqueta","tipo","n_validos_ola1","n_validos_ola2"
+"id_estudiante","Identificador del estudiante","numeric",902,674
+"ola","Ola (1 = 2023-2024, 2 = 2024)","integer",902,674
+"ola2","Segunda ola (1 = s,"integer",902,674
+"escuela","Establecimiento (homologado entre olas)","factor",902,674
+"id_escuela","Identificador del establecimiento (1-9, homologado entre olas)","integer",902,674
+"id_curso","Identificador del curso en ola 1 (1-33); se repite en ola 2. NA si solo participa en ola 2","integer",902,639
+"curso","Curso en ola 1 (E<escuela>-<nivel y letra>); se repite en ola 2","factor",902,639
+"id_estrato","Estrato del experimento: escuela x cohorte en ola 1 (1-18)","integer",902,639
+"estrato","Estrato del experimento: escuela x cohorte en ola 1","factor",902,639
+"cohorte_media","Cohorte de ense,"integer",902,674
+"nivel_estudiante","Nivel del estudiante al momento de la encuesta","factor",902,674
+"p1_9","En Chile, todas las personas tienen las mismas oportunidades para salir adelante (1-4)","numeric",898,674
+"p1_9_ord","Igualdad de oportunidades percibida (ordinal)","ordered",898,674
+"p1_9_fac","En Chile, todas las personas tienen las mismas oportunidades para salir adelante (1-4) - factor","factor",898,674
+"p1_9_acuerdo","Igualdad de oportunidades: de acuerdo o muy de acuerdo (1)","integer",898,674
+"p1_10","En Chile, todas las personas obtienen lo que merecen (1-4)","numeric",898,672
+"p1_10_ord","En Chile, todas las personas obtienen lo que merecen (1-4) - ordinal","ordered",898,672
+"p1_10_fac","En Chile, todas las personas obtienen lo que merecen (1-4) - factor","factor",898,672
+"p1_10_acuerdo","En Chile, todas las personas obtienen lo que merecen (1-4) - de acuerdo (1)","integer",898,672
+"p2_1","En esta escuela, quienes se esfuerzan obtienen buenas notas (1-4)","numeric",897,673
+"p2_1_ord","En esta escuela, quienes se esfuerzan obtienen buenas notas (1-4) - ordinal","ordered",897,673
+"p2_1_fac","En esta escuela, quienes se esfuerzan obtienen buenas notas (1-4) - factor","factor",897,673
+"p2_1_acuerdo","En esta escuela, quienes se esfuerzan obtienen buenas notas (1-4) - de acuerdo (1)","integer",897,673
+"p2_2","En esta escuela, quienes son inteligentes obtienen buenas notas (1-4)","numeric",898,674
+"p2_2_ord","En esta escuela, quienes son inteligentes obtienen buenas notas (1-4) - ordinal","ordered",898,674
+"p2_2_fac","En esta escuela, quienes son inteligentes obtienen buenas notas (1-4) - factor","factor",898,674
+"p2_2_acuerdo","En esta escuela, quienes son inteligentes obtienen buenas notas (1-4) - de acuerdo (1)","integer",898,674
+"p2_3","En esta escuela, los/as estudiantes obtienen las notas que merecen (1-4)","numeric",895,672
+"p2_3_ord","En esta escuela, los/as estudiantes obtienen las notas que merecen (1-4) - ordinal","ordered",895,672
+"p2_3_fac","En esta escuela, los/as estudiantes obtienen las notas que merecen (1-4) - factor","factor",895,672
+"p2_3_acuerdo","En esta escuela, los/as estudiantes obtienen las notas que merecen (1-4) - de acuerdo (1)","integer",895,672
+"educ_madre","Educaci,"numeric",682,481
+"educ_madre_ord","Educaci,"ordered",682,481
+"educ_madre_fac","Educaci,"factor",682,481
+"madre_univ","Madre con estudios universitarios o posgrado (1)","integer",682,481
+"educ_padre","Educaci,"numeric",614,423
+"educ_padre_ord","Educaci,"ordered",614,423
+"educ_padre_fac","Educaci,"factor",614,423
+"padre_univ","Padre con estudios universitarios o posgrado (1)","integer",614,423
+"libros","Libros en el hogar (1 = 0-10 ... 6 = m,"numeric",898,673
+"libros_ord","Libros en el hogar - ordinal","ordered",898,673
+"libros_fac","Libros en el hogar - factor","factor",898,673
+"libros_25","M,"integer",898,673
+"notas","Promedio de notas del a,"numeric",902,674
+"aspiracion","Nivel educacional que espera completar","factor",894,671
+"aspiracion_ord","Nivel educacional que espera completar - ordinal","ordered",894,671
+"univ","Espera completar una carrera universitaria (1)","integer",894,671
+"trat","Asignaci,"integer",902,0
+"trat_ctrl","Asignaci,"integer",902,674
+"comprende","Responde correctamente la pregunta de verificaci,"integer",902,0
+"p1_1","En Chile, las personas son recompensadas por sus esfuerzos (1-4)","numeric",901,674
+"p1_1_ord","En Chile, las personas son recompensadas por sus esfuerzos (1-4) - ordinal","ordered",901,674
+"p1_1_fac","En Chile, las personas son recompensadas por sus esfuerzos (1-4) - factor","factor",901,674
+"p1_1_acuerdo","En Chile, las personas son recompensadas por sus esfuerzos (1-4) - de acuerdo (1)","integer",901,674
+"p1_2","En Chile, las personas son recompensadas por su inteligencia y habilidad (1-4)","numeric",894,672
+"p1_2_ord","En Chile, las personas son recompensadas por su inteligencia y habilidad (1-4) - ordinal","ordered",894,672
+"p1_2_fac","En Chile, las personas son recompensadas por su inteligencia y habilidad (1-4) - factor","factor",894,672
+"p1_2_acuerdo","En Chile, las personas son recompensadas por su inteligencia y habilidad (1-4) - de acuerdo (1)","integer",894,672
+"p1_3","En Chile, a quienes tienen padres ricos les va mucho mejor en la vida (1-4)","numeric",890,669
+"p1_3_ord","En Chile, a quienes tienen padres ricos les va mucho mejor en la vida (1-4) - ordinal","ordered",890,669
+"p1_3_fac","En Chile, a quienes tienen padres ricos les va mucho mejor en la vida (1-4) - factor","factor",890,669
+"p1_3_acuerdo","En Chile, a quienes tienen padres ricos les va mucho mejor en la vida (1-4) - de acuerdo (1)","integer",890,669
+"p1_4","En Chile, quienes tienen buenos contactos les va mejor en la vida (1-4)","numeric",889,672
+"p1_4_ord","En Chile, quienes tienen buenos contactos les va mejor en la vida (1-4) - ordinal","ordered",889,672
+"p1_4_fac","En Chile, quienes tienen buenos contactos les va mejor en la vida (1-4) - factor","factor",889,672
+"p1_4_acuerdo","En Chile, quienes tienen buenos contactos les va mejor en la vida (1-4) - de acuerdo (1)","integer",889,672
+"p1_5","Quienes m,"numeric",894,672
+"p1_5_ord","Quienes m,"ordered",894,672
+"p1_5_fac","Quienes m,"factor",894,672
+"p1_5_acuerdo","Quienes m,"integer",894,672
+"p1_6","Quienes poseen m,"numeric",889,671
+"p1_6_ord","Quienes poseen m,"ordered",889,671
+"p1_6_fac","Quienes poseen m,"factor",889,671
+"p1_6_acuerdo","Quienes poseen m,"integer",889,671
+"p1_7","Est,"numeric",894,671
+"p1_7_ord","Est,"ordered",894,671
+"p1_7_fac","Est,"factor",894,671
+"p1_7_acuerdo","Est,"integer",894,671
+"p1_8","Est,"numeric",895,671
+"p1_8_ord","Est,"ordered",895,671
+"p1_8_fac","Est,"factor",895,671
+"p1_8_acuerdo","Est,"integer",895,671
+"genero","G,"factor",902,674
+"genero2","G,"factor",902,674
+"mujer_otro","Mujer u otro g,"integer",902,674
+"extranjero","Naci,"integer",902,639
+"merit_esc","Meritocracia escolar percibida: promedio p2_1-p2_3","numeric",889,672
+"merit_esc_ord","Meritocracia escolar percibida: promedio redondeado a la categor,"ordered",889,672
+"merit_esc_fac","Meritocracia escolar percibida: promedio redondeado a la categor,"factor",889,672
+"merit_esc_acuerdo","Meritocracia escolar percibida: promedio p2_1-p2_3 - de acuerdo en promedio (> 2,5) (1)","integer",889,672
+"merit_soc","Meritocracia social percibida: promedio p1_1-p1_2","numeric",894,672
+"merit_soc_acuerdo","Meritocracia social percibida: promedio p1_1-p1_2 - de acuerdo en promedio (> 2,5) (1)","integer",894,672
+"privilegio","Privilegio percibido: promedio p1_3-p1_4","numeric",878,667
+"privilegio_acuerdo","Privilegio percibido: promedio p1_3-p1_4 - de acuerdo en promedio (> 2,5) (1)","integer",878,667
+"pref_merit","Preferencia meritocr,"numeric",881,670
+"pref_merit_acuerdo","Preferencia meritocr,"integer",881,670
+"pref_nomerit","Preferencia no meritocr,"numeric",888,669
+"pref_nomerit_acuerdo","Preferencia no meritocr,"integer",888,669
+"educ_padres_max","Educaci,"numeric",730,508
+"educ_padres_max_ord","Educaci,"ordered",730,508
+"educ_padres_max_fac","Educaci,"factor",730,508
+"padres_univ","Al menos un padre con estudios universitarios o posgrado (1)","integer",730,508
+"merit_esc_gmc","Meritocracia escolar percibida: promedio p2_1-p2_3 - centrada en la media general (GMC)","numeric",889,672
+"merit_esc_m_est","Meritocracia escolar percibida: promedio p2_1-p2_3 - media por estudiante","numeric",895,673
+"merit_esc_cwc_est","Meritocracia escolar percibida: promedio p2_1-p2_3 - centrada en la media del estudiante (CWC)","numeric",889,672
+"merit_esc_m_est_gmc","Meritocracia escolar percibida: promedio p2_1-p2_3 - media por estudiante centrada en la media general","numeric",895,673
+"merit_esc_m_cur","Meritocracia escolar percibida: promedio p2_1-p2_3 - media por curso","numeric",902,639
+"merit_esc_cwc_cur","Meritocracia escolar percibida: promedio p2_1-p2_3 - centrada en la media del curso (CWC)","numeric",889,637
+"merit_esc_m_cur_gmc","Meritocracia escolar percibida: promedio p2_1-p2_3 - media por curso centrada en la media general","numeric",902,639
+"merit_esc_m_est_cwc_cur","Meritocracia escolar percibida: promedio p2_1-p2_3 - media del estudiante centrada en la media del curso","numeric",895,638
+"p2_1_gmc","En esta escuela, quienes se esfuerzan obtienen buenas notas - centrada en la media general (GMC)","numeric",897,673
+"p2_1_m_est","En esta escuela, quienes se esfuerzan obtienen buenas notas - media por estudiante","numeric",900,673
+"p2_1_cwc_est","En esta escuela, quienes se esfuerzan obtienen buenas notas - centrada en la media del estudiante (CWC)","numeric",897,673
+"p2_1_m_est_gmc","En esta escuela, quienes se esfuerzan obtienen buenas notas - media por estudiante centrada en la media general","numeric",900,673
+"p2_1_m_cur","En esta escuela, quienes se esfuerzan obtienen buenas notas - media por curso","numeric",902,639
+"p2_1_cwc_cur","En esta escuela, quienes se esfuerzan obtienen buenas notas - centrada en la media del curso (CWC)","numeric",897,638
+"p2_1_m_cur_gmc","En esta escuela, quienes se esfuerzan obtienen buenas notas - media por curso centrada en la media general","numeric",902,639
+"p2_1_m_est_cwc_cur","En esta escuela, quienes se esfuerzan obtienen buenas notas - media del estudiante centrada en la media del curso","numeric",900,638
+"p2_2_gmc","En esta escuela, quienes son inteligentes obtienen buenas notas - centrada en la media general (GMC)","numeric",898,674
+"p2_2_m_est","En esta escuela, quienes son inteligentes obtienen buenas notas - media por estudiante","numeric",900,674
+"p2_2_cwc_est","En esta escuela, quienes son inteligentes obtienen buenas notas - centrada en la media del estudiante (CWC)","numeric",898,674
+"p2_2_m_est_gmc","En esta escuela, quienes son inteligentes obtienen buenas notas - media por estudiante centrada en la media general","numeric",900,674
+"p2_2_m_cur","En esta escuela, quienes son inteligentes obtienen buenas notas - media por curso","numeric",902,639
+"p2_2_cwc_cur","En esta escuela, quienes son inteligentes obtienen buenas notas - centrada en la media del curso (CWC)","numeric",898,639
+"p2_2_m_cur_gmc","En esta escuela, quienes son inteligentes obtienen buenas notas - media por curso centrada en la media general","numeric",902,639
+"p2_2_m_est_cwc_cur","En esta escuela, quienes son inteligentes obtienen buenas notas - media del estudiante centrada en la media del curso","numeric",900,639
+"p2_3_gmc","En esta escuela, los/as estudiantes obtienen las notas que merecen - centrada en la media general (GMC)","numeric",895,672
+"p2_3_m_est","En esta escuela, los/as estudiantes obtienen las notas que merecen - media por estudiante","numeric",898,673
+"p2_3_cwc_est","En esta escuela, los/as estudiantes obtienen las notas que merecen - centrada en la media del estudiante (CWC)","numeric",895,672
+"p2_3_m_est_gmc","En esta escuela, los/as estudiantes obtienen las notas que merecen - media por estudiante centrada en la media general","numeric",898,673
+"p2_3_m_cur","En esta escuela, los/as estudiantes obtienen las notas que merecen - media por curso","numeric",902,639
+"p2_3_cwc_cur","En esta escuela, los/as estudiantes obtienen las notas que merecen - centrada en la media del curso (CWC)","numeric",895,637
+"p2_3_m_cur_gmc","En esta escuela, los/as estudiantes obtienen las notas que merecen - media por curso centrada en la media general","numeric",902,639
+"p2_3_m_est_cwc_cur","En esta escuela, los/as estudiantes obtienen las notas que merecen - media del estudiante centrada en la media del curso","numeric",898,638
+"notas_gmc","Promedio de notas del a,"numeric",902,674
+"notas_m_est","Promedio de notas del a,"numeric",902,674
+"notas_cwc_est","Promedio de notas del a,"numeric",902,674
+"notas_m_est_gmc","Promedio de notas del a,"numeric",902,674
+"notas_m_cur","Promedio de notas del a,"numeric",902,639
+"notas_cwc_cur","Promedio de notas del a,"numeric",902,639
+"notas_m_cur_gmc","Promedio de notas del a,"numeric",902,639
+"notas_m_est_cwc_cur","Promedio de notas del a,"numeric",902,639
+"univ_gmc","Espera completar una carrera universitaria - centrada en la media general (GMC)","numeric",894,671
+"univ_m_est","Espera completar una carrera universitaria - media por estudiante","numeric",898,672
+"univ_cwc_est","Espera completar una carrera universitaria - centrada en la media del estudiante (CWC)","numeric",894,671
+"univ_m_est_gmc","Espera completar una carrera universitaria - media por estudiante centrada en la media general","numeric",898,672
+"univ_m_cur","Espera completar una carrera universitaria - media por curso","numeric",902,639
+"univ_cwc_cur","Espera completar una carrera universitaria - centrada en la media del curso (CWC)","numeric",894,637
+"univ_m_cur_gmc","Espera completar una carrera universitaria - media por curso centrada en la media general","numeric",902,639
+"univ_m_est_cwc_cur","Espera completar una carrera universitaria - media del estudiante centrada en la media del curso","numeric",898,638
+"educ_madre_gmc","Educaci,"numeric",682,481
+"educ_madre_m_est","Educaci,"numeric",754,570
+"educ_madre_cwc_est","Educaci,"numeric",682,481
+"educ_madre_m_est_gmc","Educaci,"numeric",754,570
+"educ_madre_m_cur","Educaci,"numeric",902,639
+"educ_madre_cwc_cur","Educaci,"numeric",682,454
+"educ_madre_m_cur_gmc","Educaci,"numeric",902,639
+"educ_madre_m_est_cwc_cur","Educaci,"numeric",754,543
+"madre_univ_gmc","Madre con estudios universitarios o posgrado - centrada en la media general (GMC)","numeric",682,481
+"madre_univ_m_est","Madre con estudios universitarios o posgrado - media por estudiante","numeric",754,570
+"madre_univ_cwc_est","Madre con estudios universitarios o posgrado - centrada en la media del estudiante (CWC)","numeric",682,481
+"madre_univ_m_est_gmc","Madre con estudios universitarios o posgrado - media por estudiante centrada en la media general","numeric",754,570
+"madre_univ_m_cur","Madre con estudios universitarios o posgrado - media por curso","numeric",902,639
+"madre_univ_cwc_cur","Madre con estudios universitarios o posgrado - centrada en la media del curso (CWC)","numeric",682,454
+"madre_univ_m_cur_gmc","Madre con estudios universitarios o posgrado - media por curso centrada en la media general","numeric",902,639
+"madre_univ_m_est_cwc_cur","Madre con estudios universitarios o posgrado - media del estudiante centrada en la media del curso","numeric",754,543
+"educ_padres_max_gmc","Educaci,"numeric",730,508
+"educ_padres_max_m_est","Educaci,"numeric",788,593
+"educ_padres_max_cwc_est","Educaci,"numeric",730,508
+"educ_padres_max_m_est_gmc","Educaci,"numeric",788,593
+"educ_padres_max_m_cur","Educaci,"numeric",902,639
+"educ_padres_max_cwc_cur","Educaci,"numeric",730,478
+"educ_padres_max_m_cur_gmc","Educaci,"numeric",902,639
+"educ_padres_max_m_est_cwc_cur","Educaci,"numeric",788,563
+"padres_univ_gmc","Al menos un padre con estudios universitarios o posgrado - centrada en la media general (GMC)","numeric",730,508
+"padres_univ_m_est","Al menos un padre con estudios universitarios o posgrado - media por estudiante","numeric",788,593
+"padres_univ_cwc_est","Al menos un padre con estudios universitarios o posgrado - centrada en la media del estudiante (CWC)","numeric",730,508
+"padres_univ_m_est_gmc","Al menos un padre con estudios universitarios o posgrado - media por estudiante centrada en la media general","numeric",788,593
+"padres_univ_m_cur","Al menos un padre con estudios universitarios o posgrado - media por curso","numeric",902,639
+"padres_univ_cwc_cur","Al menos un padre con estudios universitarios o posgrado - centrada en la media del curso (CWC)","numeric",730,478
+"padres_univ_m_cur_gmc","Al menos un padre con estudios universitarios o posgrado - media por curso centrada en la media general","numeric",902,639
+"padres_univ_m_est_cwc_cur","Al menos un padre con estudios universitarios o posgrado - media del estudiante centrada en la media del curso","numeric",788,563
+"libros_gmc","Libros en el hogar - centrada en la media general (GMC)","numeric",898,673
+"libros_m_est","Libros en el hogar - media por estudiante","numeric",901,673
+"libros_cwc_est","Libros en el hogar - centrada en la media del estudiante (CWC)","numeric",898,673
+"libros_m_est_gmc","Libros en el hogar - media por estudiante centrada en la media general","numeric",901,673
+"libros_m_cur","Libros en el hogar - media por curso","numeric",902,639
+"libros_cwc_cur","Libros en el hogar - centrada en la media del curso (CWC)","numeric",898,638
+"libros_m_cur_gmc","Libros en el hogar - media por curso centrada en la media general","numeric",902,639
+"libros_m_est_cwc_cur","Libros en el hogar - media del estudiante centrada en la media del curso","numeric",901,638
+"pref_merit_gmc","Preferencia meritocr,"numeric",881,670
+"pref_merit_m_est","Preferencia meritocr,"numeric",895,673
+"pref_merit_cwc_est","Preferencia meritocr,"numeric",881,670
+"pref_merit_m_est_gmc","Preferencia meritocr,"numeric",895,673
+"pref_merit_m_cur","Preferencia meritocr,"numeric",902,639
+"pref_merit_cwc_cur","Preferencia meritocr,"numeric",881,635
+"pref_merit_m_cur_gmc","Preferencia meritocr,"numeric",902,639
+"pref_merit_m_est_cwc_cur","Preferencia meritocr,"numeric",895,638
+"pref_nomerit_gmc","Preferencia no meritocr,"numeric",888,669
+"pref_nomerit_m_est","Preferencia no meritocr,"numeric",897,673
+"pref_nomerit_cwc_est","Preferencia no meritocr,"numeric",888,669
+"pref_nomerit_m_est_gmc","Preferencia no meritocr,"numeric",897,673
+"pref_nomerit_m_cur","Preferencia no meritocr,"numeric",902,639
+"pref_nomerit_cwc_cur","Preferencia no meritocr,"numeric",888,634
+"pref_nomerit_m_cur_gmc","Preferencia no meritocr,"numeric",902,639
+"pref_nomerit_m_est_cwc_cur","Preferencia no meritocr,"numeric",897,638
+"merit_soc_gmc","Meritocracia social percibida: promedio p1_1-p1_2 - centrada en la media general (GMC)","numeric",894,672
+"merit_soc_m_est","Meritocracia social percibida: promedio p1_1-p1_2 - media por estudiante","numeric",901,673
+"merit_soc_cwc_est","Meritocracia social percibida: promedio p1_1-p1_2 - centrada en la media del estudiante (CWC)","numeric",894,672
+"merit_soc_m_est_gmc","Meritocracia social percibida: promedio p1_1-p1_2 - media por estudiante centrada en la media general","numeric",901,673
+"merit_soc_m_cur","Meritocracia social percibida: promedio p1_1-p1_2 - media por curso","numeric",902,639
+"merit_soc_cwc_cur","Meritocracia social percibida: promedio p1_1-p1_2 - centrada en la media del curso (CWC)","numeric",894,638
+"merit_soc_m_cur_gmc","Meritocracia social percibida: promedio p1_1-p1_2 - media por curso centrada en la media general","numeric",902,639
+"merit_soc_m_est_cwc_cur","Meritocracia social percibida: promedio p1_1-p1_2 - media del estudiante centrada en la media del curso","numeric",901,639
+"privilegio_gmc","Privilegio percibido: promedio p1_3-p1_4 - centrada en la media general (GMC)","numeric",878,667
+"privilegio_m_est","Privilegio percibido: promedio p1_3-p1_4 - media por estudiante","numeric",895,671
+"privilegio_cwc_est","Privilegio percibido: promedio p1_3-p1_4 - centrada en la media del estudiante (CWC)","numeric",878,667
+"privilegio_m_est_gmc","Privilegio percibido: promedio p1_3-p1_4 - media por estudiante centrada en la media general","numeric",895,671
+"privilegio_m_cur","Privilegio percibido: promedio p1_3-p1_4 - media por curso","numeric",902,639
+"privilegio_cwc_cur","Privilegio percibido: promedio p1_3-p1_4 - centrada en la media del curso (CWC)","numeric",878,634
+"privilegio_m_cur_gmc","Privilegio percibido: promedio p1_3-p1_4 - media por curso centrada en la media general","numeric",902,639
+"privilegio_m_est_cwc_cur","Privilegio percibido: promedio p1_3-p1_4 - media del estudiante centrada en la media del curso","numeric",895,638
+"mujer_otro_gmc","Mujer u otro g,"numeric",902,674
+"mujer_otro_m_est","Mujer u otro g,"numeric",902,674
+"mujer_otro_cwc_est","Mujer u otro g,"numeric",902,674
+"mujer_otro_m_est_gmc","Mujer u otro g,"numeric",902,674
+"mujer_otro_m_cur","Mujer u otro g,"numeric",902,639
+"mujer_otro_cwc_cur","Mujer u otro g,"numeric",902,639
+"mujer_otro_m_cur_gmc","Mujer u otro g,"numeric",902,639
+"mujer_otro_m_est_cwc_cur","Mujer u otro g,"numeric",902,639
+"extranjero_gmc","Naci,"numeric",902,639
+"extranjero_m_est","Naci,"numeric",902,639
+"extranjero_cwc_est","Naci,"numeric",902,639
+"extranjero_m_est_gmc","Naci,"numeric",902,639
+"extranjero_m_cur","Naci,"numeric",902,639
+"extranjero_cwc_cur","Naci,"numeric",902,639
+"extranjero_m_cur_gmc","Naci,"numeric",902,639
+"extranjero_m_est_cwc_cur","Naci,"numeric",902,639
+"trat_ctrl_gmc","Asignaci,"numeric",902,674
+"trat_ctrl_m_est","Asignaci,"numeric",902,674
+"trat_ctrl_cwc_est","Asignaci,"numeric",902,674
+"trat_ctrl_m_est_gmc","Asignaci,"numeric",902,674
+"trat_ctrl_m_cur","Asignaci,"numeric",902,639
+"trat_ctrl_cwc_cur","Asignaci,"numeric",902,639
+"trat_ctrl_m_cur_gmc","Asignaci,"numeric",902,639
+"trat_ctrl_m_est_cwc_cur","Asignaci,"numeric",902,639

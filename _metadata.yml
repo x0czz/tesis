@@ -1,9 +1,11 @@
 crossref:
-  eq-prefix: Ecuacion
+  eq-prefix: Ecuación
   fig-prefix: Figura
-  fig-title: Lista de figuras
+  fig-title: Figura
+  lof-title: Lista de figuras
   tbl-prefix: Tabla
-  tbl-title: Lista de tablas
+  tbl-title: Tabla
+  lot-title: Lista de tablas
 df-print: default
 lang: es
 link-citations: true
