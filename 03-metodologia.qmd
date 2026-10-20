@@ -24,8 +24,6 @@ A continuación, cada grupo respondió una pregunta de verificación: "¿De qué
 
 ## Operacionalización
 
-Salvo indicación contraria, los ítems actitudinales se responden en una escala de cuatro puntos, desde "muy en desacuerdo" hasta "muy de acuerdo", sin punto medio. Las respuestas "no sabe" (88) y "no responde" (99) se tratan como datos perdidos [@edumer_manual].
-
 ### Variables
 
 La variable dependiente es la percepción de igualdad de oportunidades, medida con el ítem "En Chile, todas las personas tienen las mismas oportunidades para salir adelante" (`p1_9`), tomado de los cuestionarios de la Agencia de Calidad de la Educación. Dado que se trata de un ítem de cuatro categorías ordenadas, se analiza como variable ordinal; como robustez, se trata también como escala numérica de 1 a 4 y como variable dicotómica que distingue a quienes están de acuerdo o muy de acuerdo de quienes están en desacuerdo o muy en desacuerdo. El ítem contiguo del cuestionario, "En Chile, todas las personas obtienen lo que merecen" (`p1_10`), no se combina con la variable dependiente, porque se refiere a la regla que vincula el mérito con la recompensa y ha sido utilizado como indicador de percepción de meritocracia [@castillo_meritocracia_2019].

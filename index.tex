@@ -1,0 +1,1715 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  spanish,
+  a4paper,
+  oneside]{scrbook}
+\usepackage{xcolor}
+\usepackage[top=25mm,bottom=25mm,left=30mm,right=20mm]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+\ifLuaTeX
+\usepackage[bidi=basic,shorthands=off]{babel}
+\else
+\usepackage[bidi=default,shorthands=off]{babel}
+\fi
+\ifLuaTeX
+  \usepackage{selnolig} % disable illegal ligatures
+\fi
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\AtBeginDocument{\hypersetup{linkcolor=black}}
+% ---------- Paquetes tipograficos y microajustes ----------
+\usepackage{microtype}        % mejor interletrado y justificado
+\usepackage{csquotes}         % comillas tipograficas
+\usepackage{iftex}
+\ifPDFTeX\else
+  % Seleccion de fuentes solo cuando XeTeX/LuaTeX esta disponible.
+  \IfFontExistsTF{TeX Gyre Termes}{
+    \setmainfont{TeX Gyre Termes}
+  }{
+    \IfFontExistsTF{Latin Modern Roman}{\setmainfont{Latin Modern Roman}}{}
+  }
+  \IfFontExistsTF{TeX Gyre Heros}{
+    \setsansfont{TeX Gyre Heros}
+  }{
+    \IfFontExistsTF{Latin Modern Sans}{\setsansfont{Latin Modern Sans}}{}
+  }
+  \IfFontExistsTF{TeX Gyre Cursor}{
+    \setmonofont{TeX Gyre Cursor}
+  }{
+    \IfFontExistsTF{Latin Modern Mono}{\setmonofont{Latin Modern Mono}}{}
+  }
+\fi
+\usepackage{enumitem}         % listas compactas
+\setlist{itemsep=.2em, topsep=.2em}
+
+% ---------- KOMA-Script: estilo de titulos y espaciado ----------
+\KOMAoptions{
+  headings=big,
+  parskip=half,
+  fontsize=12pt,
+  appendixprefix=true
+}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.6em}
+\usepackage{indentfirst}
+\usepackage{setspace}         % Control del interlineado del documento
+\setstretch{1.5}
+
+% ---------- Encabezados y pies (scrlayer-scrpage) ----------
+\usepackage[automark,headsepline]{scrlayer-scrpage}
+\clearpairofpagestyles
+\automark[chapter]{chapter}
+\ihead{\pagemark}
+\ohead{\itshape\headmark}
+\setheadsepline{0.4pt}
+\renewcommand*{\chaptermarkformat}{}
+\renewcommand*{\chapterpagestyle}{scrheadings}
+\pagestyle{scrheadings}
+\makeatletter
+\let\ps@plain\ps@scrheadings
+\makeatother
+\cfoot{}
+
+% ---------- Hipervinculos mas sobrios ----------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=[rgb]{0.05,0.2,0.5},
+  urlcolor=[rgb]{0.05,0.2,0.5},
+  pdfauthor={\@author},
+  pdftitle={\@title}
+}
+
+% ---------- Leyendas de figuras/tablas ----------
+\usepackage[labelfont=bf,textfont=it]{caption}
+\captionsetup{
+  skip=8pt
+}
+
+% ---------- Tabla de contenidos ----------
+\KOMAoptions{toc=graduated}
+\RedeclareSectionCommand[tocnumwidth=3em]{chapter}
+\RedeclareSectionCommand[tocindent=3.25em,tocnumwidth=2.8em]{section}
+\RedeclareSectionCommand[tocindent=6.5em,tocnumwidth=2.5em]{subsection}
+\makeatletter
+\newcommand*{\tocdotfill}{\leavevmode\leaders\hbox to .6em{\hss.\hss}\hfill}
+\makeatother
+\RedeclareSectionCommand[toclinefill=\tocdotfill]{chapter}
+\RedeclareSectionCommand[toclinefill=\tocdotfill]{section}
+\RedeclareSectionCommand[toclinefill=\tocdotfill]{subsection}
+\renewcommand*{\contentsname}{Tabla de contenido}
+\setkomafont{chapterentry}{\normalfont}
+\setkomafont{chapterentrypagenumber}{\normalfont}
+
+% ---------- Viudas/Huerfanas y cortes de pagina ----------
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+
+% ---------- Entorno abstract para scrbook ----------
+\providecommand{\abstractname}{Resumen}
+\makeatletter
+\@ifundefined{abstract}{
+  \newenvironment{abstract}{
+    \cleardoublepage
+    \thispagestyle{plain}
+    \null\vfill
+    \begin{center}
+      {\bfseries\Large \abstractname\par}
+    \end{center}\vspace{1em}
+    \begingroup
+  }{
+    \par\endgroup
+    \vfill\null
+    \cleardoublepage
+  }
+}{}
+\makeatother
+
+% ---------- Soporte de subtitulo desde YAML ----------
+\makeatletter
+\providecommand{\subtitle}[1]{\gdef\@subtitle{#1}}
+\providecommand{\@subtitle}{}
+\makeatother
+
+\makeatletter
+\newcommand{\facso@iflist}[4]{%
+  \begingroup
+    \def\addvspace##1{}%
+    \def\numberline##1{##1}%
+    \def\facso@target{#2}%
+    \newcount\facso@entrycount
+    \facso@entrycount=0\relax
+    \long\def\contentsline##1##2##3{%
+      \def\facso@this{##1}%
+      \ifx\facso@this\facso@target
+        \advance\facso@entrycount\@ne
+      \fi
+    }%
+    \InputIfFileExists{\jobname.#1}{}{}%
+  \endgroup
+  \ifnum\facso@entrycount>0\relax
+    #3%
+  \else
+    #4%
+  \fi}
+\renewcommand{\listoffigures}{%
+  \facso@iflist{lof}{figure}{%
+    \cleardoublepage
+    \phantomsection
+    \addchap*{Listado de Figuras}%
+    \thispagestyle{scrheadings}%
+    \markboth{Listado de Figuras}{Listado de Figuras}%
+    \addcontentsline{toc}{chapter}{Listado de Figuras}%
+    \@starttoc{lof}%
+    \cleardoublepage
+    \automark[chapter]{chapter}%
+  }{}}
+\renewcommand{\listoftables}{%
+  \facso@iflist{lot}{table}{%
+    \cleardoublepage
+    \phantomsection
+    \addchap*{Listado de Tablas}%
+    \thispagestyle{scrheadings}%
+    \markboth{Listado de Tablas}{Listado de Tablas}%
+    \addcontentsline{toc}{chapter}{Listado de Tablas}%
+    \@starttoc{lot}%
+    \cleardoublepage
+    \automark[chapter]{chapter}%
+  }{}}
+\makeatother
+
+% --- Desactivar portada y abstract automaticos de Pandoc (PDF) ---
+\AtBeginDocument{\let\maketitle\relax}
+\renewenvironment{abstract}{}{}
+\providecommand{\appendixname}{}
+\providecommand{\appendixtocname}{}
+\providecommand{\appendixpagename}{}
+\renewcommand*{\appendixname}{Anexo}
+\renewcommand*{\appendixtocname}{Anexos}
+\renewcommand*{\appendixpagename}{Anexos}
+\makeatletter
+\@ifpackageloaded{bookmark}{}{\usepackage{bookmark}}
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Tabla de contenidos}
+\else
+  \newcommand\contentsname{Tabla de contenidos}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{Lista de figuras}
+\else
+  \newcommand\listfigurename{Lista de figuras}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{Lista de tablas}
+\else
+  \newcommand\listtablename{Lista de tablas}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figura}
+\else
+  \newcommand\figurename{Figura}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Tabla}
+\else
+  \newcommand\tablename{Tabla}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listado}
+\newcommand*\listoflistings{\listof{codelisting}{Listado de Listados}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={¿Las mismas oportunidades para todos?},
+  pdfauthor={Nicolás Outerbridge},
+  pdflang={es},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{¿Las mismas oportunidades para todos?}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Creencias meritocráticas, experiencia escolar y percepción de
+igualdad de oportunidades en estudiantes chilenos}
+\author{Nicolás Outerbridge}
+\date{20 de octubre de 2026}
+\begin{document}
+\frontmatter
+\maketitle
+
+% --- title-pdf.tex personalizado para portada formal ---
+\makeatletter
+\providecommand{\subtitle}[1]{\gdef\@subtitle{#1}}
+\providecommand{\@subtitle}{}
+\providecommand{\frontmattercontext}{}
+\providecommand{\advisorname}{}
+\providecommand{\advisorlabel}{Profesor guia:}
+\providecommand{\frontmatterlocation}{}
+\InputIfFileExists{includes/cover-config.tex}{}{}
+
+\newcommand{\PrintTitle}{%
+  {\sffamily\bfseries\fontsize{24pt}{28pt}\selectfont \@title\par}%
+}
+\newcommand{\PrintSubtitle}{%
+  \begingroup
+  \edef\temp{\detokenize{\@subtitle}}%
+  \ifx\temp\empty\relax
+    % sin subtitulo
+  \else
+    {\sffamily\bfseries\large \@subtitle\par}%
+  \fi
+  \endgroup
+}
+\newcommand{\PrintAuthor}{%
+  {\Large\bfseries \@author\par}%
+}
+\newcommand{\PrintDate}{%
+  {\small \@date\par}%
+}
+\makeatother
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+\vspace*{10mm}
+
+% Logo o imagen institucional
+\includegraphics[width=0.35\textwidth]{assets/cover.png}\par
+\vspace{12mm}
+
+% Titulo y subtitulo
+\PrintTitle
+\vspace{6mm}
+\PrintSubtitle
+
+\vspace{22mm}
+\begingroup
+\edef\temp{\detokenize{\frontmattercontext}}%
+\ifx\temp\empty\relax
+  % sin contexto adicional
+\else
+  {\normalsize \frontmattercontext\par}
+\fi
+\endgroup
+
+\vspace{18mm}
+\PrintAuthor
+
+\vspace{16mm}
+\begingroup
+\edef\temp{\detokenize{\advisorname}}%
+\ifx\temp\empty\relax
+  % sin tutor
+\else
+  \rule{0.45\textwidth}{0.4pt}\par
+  {\small \advisorlabel\ \advisorname\par}
+\fi
+\endgroup
+
+\vfill
+\begingroup
+\edef\temp{\detokenize{\frontmatterlocation}}%
+\ifx\temp\empty\relax
+  % sin ubicacion
+\else
+  {\small \frontmatterlocation\par}
+\fi
+\endgroup
+\PrintDate
+
+\end{center}
+\end{titlepage}
+
+% Preliminares (numeros romanos) y estilo simple
+\frontmatter
+\pagestyle{scrheadings}
+
+\setcounter{tocdepth}{2} % (o 1/3 segun prefieras)
+\tableofcontents
+\listoffigures
+\listoftables
+
+
+\mainmatter
+\bookmarksetup{startatroot}
+
+\chapter*{Resumen}\label{resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+\markboth{Resumen}{Resumen}
+
+\small\textbf{Palabras clave:} igualdad de oportunidades, meritocracia,
+privilegio, socialización escolar, educación superior, Chile \normalsize
+
+La escuela promete que todos los estudiantes pueden llegar tan lejos
+como su esfuerzo y su talento les permitan. Esa promesa descansa en un
+supuesto anterior al mérito: que todos parten con las mismas
+oportunidades. En Chile, sin embargo, el acceso a la educación superior
+está fuertemente estratificado según el tipo de colegio de origen, y las
+universidades más selectivas reclutan mayoritariamente a egresados de
+colegios particulares pagados. Este estudio examina cómo perciben la
+igualdad de oportunidades los estudiantes de básica y media, y qué
+factores se asocian con esa percepción. Se analizan cuatro fuentes de
+variación: las creencias meritocráticas de los estudiantes,
+distinguiendo percepciones y preferencias sobre el mérito y el
+privilegio; la experiencia de justicia en la propia escuela; la posición
+en la jerarquía escolar y el horizonte educativo; y la exposición a
+información sobre la desigualdad en el acceso a la universidad, mediante
+un experimento de encuesta. Para ello se utilizan datos del panel
+Educación y Meritocracia (EDUMER), aplicado a estudiantes de básica y
+media de nueve escuelas chilenas entre 2023 y 2024, cuya primera ola
+incluye un experimento con asignación aleatoria de información.
+
+\bookmarksetup{startatroot}
+
+\chapter*{Prefacio}\label{prefacio}
+\addcontentsline{toc}{chapter}{Prefacio}
+
+\markboth{Prefacio}{Prefacio}
+
+\mainmatter
+
+\bookmarksetup{startatroot}
+
+\chapter{Introducción}\label{introducciuxf3n}
+
+Las instituciones educativas tienen la función explícita de transmitir
+conocimientos y habilidades que preparan a los estudiantes para sus
+futuras posiciones en la sociedad. Asimismo, transmiten normas, valores
+y creencias que respaldan el logro educativo
+(\citeproc{ref-mijs2016}{Mijs, 2016b}). Entre los principios centrales
+destaca la promesa de que la escuela ofrece a todos la misma oportunidad
+de demostrar su valía, y que las diferencias en los resultados reflejan
+diferencias de esfuerzo y talento, no de origen
+(\citeproc{ref-batruch_belief_2023}{Batruch et~al., 2023};
+\citeproc{ref-bourdieu_reproduction_1990}{Bourdieu \& Passeron, 1990}).
+
+Esta promesa comprende dos elementos diferentes. El primero es la
+\emph{meritocracia}, definida como la regla que distribuye recompensas
+según esfuerzo y talento (\citeproc{ref-young1958}{Young, 1958}). El
+segundo, que podría suponer un supuesto anterior, corresponde a la
+\emph{igualdad de oportunidades}, entendida como la condición en la que
+todos compiten desde puntos de partida comparables, de modo que el
+resultado dependa de acciones individuales y no del origen social. Solo
+en un contexto de igualdad de oportunidades la meritocracia puede
+generar movilidad social
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019}). Una
+sociedad puede recompensar el esfuerzo y, simultáneamente, distribuir
+desigualmente las oportunidades para alcanzarlo. Según Mijs
+(\citeproc{ref-mijs2016}{2016b}), las oportunidades para demostrar
+mérito dependen de factores externos a la meritocracia, lo que implica
+que esta no solo es una promesa incumplida, sino también incumplible.
+
+El caso chileno ilustra esta tensión. El sistema escolar se caracteriza
+por una alta estratificación y la noción de mérito ocupa un lugar
+central en el discurso educativo
+(\citeproc{ref-castillo_socialization_2024}{Castillo, Salgado, et~al.,
+2024}). De manera paralela, la educación superior experimentó una rápida
+masificación bajo un sistema jerarquizado, en el que pocas instituciones
+forman a las élites y otras absorben a la mayoría
+(\citeproc{ref-brunner_lucha_2012}{Brunner, 2012};
+\citeproc{ref-brunner_dinamicas_2016}{Brunner \& Ganga, 2016}). Las
+universidades más selectivas reclutan principalmente a egresados de
+colegios particulares pagados, que representan una fracción menor de la
+matrícula escolar total (\citeproc{ref-brunner_lucha_2012}{Brunner,
+2012}; \citeproc{ref-munoz_taxonomia_2013}{Muñoz \& Blanco, 2013}). Para
+los estudiantes de educación básica o media, la cuestión de si todos
+tienen las mismas oportunidades no es abstracta, sino que se concreta en
+el horizonte de acceso a distintas instituciones al finalizar la
+escuela.
+
+La investigación sobre creencias distributivas en la población escolar
+se ha enfocado principalmente en la meritocracia, es decir, en si los
+estudiantes creen que el esfuerzo es recompensado y si consideran que
+debería serlo (\citeproc{ref-castillo_socialization_2024}{Castillo,
+Salgado, et~al., 2024}; \citeproc{ref-laffert_changes}{Laffert et~al.,
+s.f.}). Esta línea de investigación ha mostrado que las creencias
+meritocráticas son multidimensionales: los estudiantes distinguen entre
+lo que perciben y lo que prefieren, y entre los principios del mérito y
+del privilegio, de modo que pueden adherir al mérito como ideal y, al
+mismo tiempo, reconocer el peso de la riqueza familiar y los contactos
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). La percepción de
+igualdad de oportunidades, en cambio, ha recibido menor atención y, con
+frecuencia, se ha tratado como equivalente a la creencia meritocrática
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). Además, la
+evidencia sobre cómo los estudiantes perciben la desigualdad en el
+acceso a la educación superior proviene mayoritariamente de quienes ya
+han ingresado a ella, especialmente estudiantes de universidades de
+élite (\citeproc{ref-allouch_ethique_2016}{Allouch et~al., 2016};
+\citeproc{ref-binder_symbolically_2019}{Binder \& Abel, 2019};
+\citeproc{ref-villalobos_percepciones_2022}{Villalobos et~al., 2022}).
+Existe escaso conocimiento sobre la formación de esta percepción en
+etapas previas, cuando los estudiantes aún se encuentran en la escuela y
+su trayectoria futura permanece abierta.
+
+El presente estudio aborda esta brecha mediante la siguiente pregunta:
+¿cómo perciben la igualdad de oportunidades los estudiantes escolares
+chilenos y en qué medida dicha percepción se asocia con sus creencias
+sobre el mérito y el privilegio, su experiencia de justicia en la
+escuela, su posición en la jerarquía escolar y su horizonte educativo?
+Asimismo, se examina si proporcionar información sobre la desigualdad en
+el acceso a la universidad modifica su percepción sobre la igualdad de
+oportunidades. Para responder a estas cuestiones, se utilizan datos del
+panel Educación y Meritocracia (EDUMER), cuya primera ola incluye un
+experimento en el que la mitad de los estudiantes recibió información
+sobre diferencias de acceso a la universidad según el tipo de colegio.
+
+\bookmarksetup{startatroot}
+
+\chapter{Antecedentes conceptuales y
+empíricos}\label{antecedentes-conceptuales-y-empuxedricos}
+
+\section{Igualdad de oportunidades y
+meritocracia}\label{igualdad-de-oportunidades-y-meritocracia}
+
+La investigación sobre creencias meritocráticas ha distinguido, en
+primer lugar, entre una dimensión normativa, la \emph{preferencia} por
+que el esfuerzo y el talento sean la base de la distribución de
+recompensas, y una dimensión descriptiva, la \emph{percepción} de que la
+sociedad efectivamente los recompensa
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019};
+\citeproc{ref-duru-bellat_whos_2012}{Duru-Bellat \& Tenret, 2012}). La
+percepción se refiere a lo que es observado (``lo que es'') y la
+preferencia a lo que las personas quisieran que ocurriera (``lo que
+debería ser'') (\citeproc{ref-castillo_meritocracia_2019}{Castillo
+et~al., 2019}). Ambas dimensiones constituyen constructos diferentes: en
+población adulta chilena, su correlación es baja y no significativa, y
+la preferencia es más alta, más consensual y resistente, de modo que
+puede mantenerse aunque se perciba que la meritocracia no opera
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019}).
+
+Castillo et al. (\citeproc{ref-castillo_multidimensional_2023}{2023})
+agregan una segunda distinción, entre los elementos meritocráticos
+(esfuerzo y talento) y los elementos basados en el privilegio (riqueza
+familiar y contactos), que se tratan como componentes distintos y no
+como polos opuestos de un mismo continuo
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). De la
+combinación de ambas distinciones resultan cuatro dimensiones: la
+\emph{percepción de meritocracia} (si el esfuerzo y la habilidad son
+recompensados), la \emph{percepción de privilegio} (si el éxito se
+vincula a los contactos y la riqueza familiar), la \emph{preferencia
+meritocrática} (si quienes se esfuerzan más o tienen más talento
+deberían obtener mayores recompensas) y la \emph{aceptación del
+privilegio} (si es aceptable que quienes tienen mejores contactos o
+padres ricos obtengan mayor éxito)
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). Esta estructura
+de cuatro factores se ha validado en población escolar chilena con los
+mismos datos que utiliza este estudio, y los resultados muestran que la
+adhesión al mérito coexiste con el reconocimiento del privilegio, en
+lugar de desplazarlo (\citeproc{ref-laffert_changes}{Laffert et~al.,
+s.f.}).
+
+Los niveles de cada dimensión ilustran esta coexistencia. En la primera
+ola del panel EDUMER, la mayoría de los estudiantes percibe que en Chile
+les va mejor a quienes tienen buenos contactos (77\%) o padres ricos
+(71\%), y en menor medida que se recompensa el talento (74\%) o el
+esfuerzo (67\%). Al mismo tiempo, el 87\% considera que el esfuerzo
+debería ser la base de las recompensas, mientras que la aceptación de
+que a quienes tienen padres ricos les vaya mejor se divide casi por
+mitades y la de los buenos contactos es mayoritaria (61\%)
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). Las cuatro
+dimensiones se relacionan entre sí de manera diferenciada: la percepción
+de meritocracia y la de privilegio se correlacionan negativamente,
+mientras que la percepción de privilegio se asocia positivamente con la
+preferencia meritocrática, lo que se ha interpretado como una respuesta
+normativo-reactiva ante la injusticia percibida
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}).
+
+La percepción de igualdad de oportunidades es también una creencia
+descriptiva, pero se refiere a otro momento del proceso distributivo.
+Mientras la percepción de meritocracia evalúa la regla que conecta el
+desempeño con la recompensa, la percepción de igualdad de oportunidades
+evalúa las condiciones de partida: si el origen familiar, el colegio o
+los recursos del hogar determinan quién puede competir y con qué
+ventajas (\citeproc{ref-mijs2016}{Mijs, 2016b}). Por ello, ambas
+creencias pueden disociarse. Un estudiante puede creer que en Chile el
+esfuerzo es recompensado y, al mismo tiempo, reconocer que no todos
+parten desde el mismo lugar.
+
+Parte de la literatura ha operacionalizado la creencia meritocrática
+mediante el apoyo genérico a la igualdad de oportunidades
+(\citeproc{ref-batruch_belief_2023}{Batruch et~al., 2023};
+\citeproc{ref-darnon_where_2018}{Darnon et~al., 2018}), lo que dificulta
+distinguir ambas creencias (\citeproc{ref-laffert_changes}{Laffert
+et~al., s.f.}). Incluso las mediciones de la preferencia meritocrática
+han incorporado la igualdad de oportunidades como condición, por
+ejemplo, al preguntar si está bien que algunas personas tengan más
+dinero ``pero sólo si hay igualdad de oportunidades''
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019}).
+Separar ambas creencias tiene consecuencias sustantivas. En la
+investigación sobre percepciones de desigualdad, distintos indicadores
+perceptuales se asocian débilmente y capturan aspectos diferentes del
+fenómeno, con determinantes distintos
+(\citeproc{ref-castillo_percepcion_2012}{Castillo et~al., 2012}). Este
+estudio se centra en la percepción de igualdad de oportunidades y trata
+las cuatro dimensiones de la creencia meritocrática como creencias
+relacionadas pero distintas, que pueden contribuir a explicarla.
+
+\section{Creencias meritocráticas y percepción de igualdad de
+oportunidades}\label{creencias-meritocruxe1ticas-y-percepciuxf3n-de-igualdad-de-oportunidades}
+
+Las cuatro dimensiones permiten derivar expectativas distintas sobre la
+percepción de igualdad de oportunidades. La meritocracia opera a la vez
+como un juicio cognitivo sobre cómo funciona la desigualdad y como un
+lente moral para evaluar si los resultados desiguales son merecidos
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). Por ello, sus
+dimensiones no tienen por qué relacionarse en la misma dirección con la
+evaluación de las oportunidades.
+
+La percepción de meritocracia cumpliría una función de legitimación.
+Quienes perciben que la meritocracia funciona adecuadamente perciben
+menos desigualdad económica, lo que Castillo et al.
+(\citeproc{ref-castillo_meritocracia_2019}{2019}) interpretan como una
+legitimación de las diferencias de ingreso, que se deberían a razones
+más bien individuales que sistémicas. Una percepción alta de
+meritocracia es más compatible con la afirmación del orden existente,
+mientras que una percepción baja puede reflejar insatisfacción y una
+demanda de mayor justicia (\citeproc{ref-laffert_changes}{Laffert
+et~al., s.f.}). Si las recompensas se perciben como resultado del
+esfuerzo y el talento, es esperable que también se perciba que las
+condiciones para competir están abiertas a todos.
+
+La percepción de privilegio apunta en la dirección contraria. Percibir
+que a quienes tienen padres ricos o buenos contactos les va mejor
+equivale a reconocer que el origen familiar y las redes condicionan los
+resultados, es decir, que las oportunidades para demostrar mérito
+dependen de factores externos a él (\citeproc{ref-mijs2016}{Mijs,
+2016b}). La percepción de privilegio debería, por tanto, asociarse con
+una menor percepción de igualdad de oportunidades.
+
+La preferencia meritocrática no implica una evaluación positiva de la
+realidad. En población adulta, una mayor preferencia por la meritocracia
+se asocia con una mayor percepción de desigualdad, lo que sugiere que la
+adhesión normativa al mérito establece un estándar más exigente frente a
+la realidad y una demanda por reducir las diferencias que se basan en
+criterios distintos al mérito
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019}). En
+población escolar, la preferencia meritocrática se asocia con una mayor
+percepción de privilegio (\citeproc{ref-laffert_changes}{Laffert et~al.,
+s.f.}). Quienes prefieren con más fuerza que el esfuerzo y el talento
+determinen las recompensas tenderían, así, a evaluar más críticamente si
+todos parten desde el mismo lugar.
+
+La aceptación del privilegio es la dimensión menos estudiada. Su
+relación con la percepción de privilegio es positiva, lo que indica que
+reconocer mecanismos no meritocráticos se vincula con aceptar en mayor
+medida su legitimidad (\citeproc{ref-laffert_changes}{Laffert et~al.,
+s.f.}). La preferencia por la meritocracia ha sido descrita como un mito
+legitimador, que provee justificaciones morales y racionales para la
+desigualdad social (\citeproc{ref-castillo_meritocracia_2019}{Castillo
+et~al., 2019}). Si se extiende este argumento a la aceptación del
+privilegio, quienes consideran legítimo que el origen familiar y los
+contactos favorezcan a algunos tendrían menos razones para interpretar
+esas ventajas como una desigualdad de oportunidades. Al mismo tiempo,
+como esta aceptación puede operar como un juicio normativo separado de
+la evaluación del mérito (\citeproc{ref-laffert_changes}{Laffert et~al.,
+s.f.}), esta expectativa tiene un carácter más exploratorio.
+
+\section{La escuela como espacio de socialización de las
+oportunidades}\label{la-escuela-como-espacio-de-socializaciuxf3n-de-las-oportunidades}
+
+La escuela es la institución que de manera más explícita promete
+igualdad de condiciones: todos reciben el mismo currículo, son evaluados
+con las mismas pruebas y compiten por las mismas notas. Su estructura,
+su discurso y sus prácticas de evaluación contribuyen a presentar el
+éxito académico como resultado del talento y el esfuerzo individual, y a
+transformar diferencias de origen en diferencias de desempeño que
+aparecen como individuales
+(\citeproc{ref-bourdieu_reproduction_1990}{Bourdieu \& Passeron, 1990};
+\citeproc{ref-goudeau_hidden_2017}{Goudeau \& Croizet, 2017}).
+
+Esta promesa no se cumple. Las oportunidades para demostrar mérito
+dependen del origen social (\citeproc{ref-mijs2016}{Mijs, 2016b}), y las
+prácticas de aula convierten ventajas de clase en diferencias de
+rendimiento (\citeproc{ref-goudeau_hidden_2017}{Goudeau \& Croizet,
+2017}). La experiencia de justicia escolar tampoco es homogénea: en
+Israel, cerca de la mitad de los estudiantes de secundaria se considera
+perjudicada en sus calificaciones (\citeproc{ref-resh2010}{Resh \&
+Sabbagh, 2010}). La forma en que la escuela organiza a los estudiantes
+también moldea sus explicaciones: en sistemas que separan a los
+estudiantes según rendimiento, estos tienden a atribuir su fracaso a sí
+mismos (\citeproc{ref-mijs_stratified_2016}{Mijs, 2016a}).
+
+Lo que ocurre en la escuela parece extenderse a la evaluación de la
+sociedad. Creer que la escuela es meritocrática se asocia con percibir
+como menos injusta la desigualdad social y con un menor apoyo a la
+redistribución, y esta relación se mantiene al controlar por la creencia
+en la meritocracia general (\citeproc{ref-batruch_belief_2023}{Batruch
+et~al., 2023}). Batruch et al.~interpretan que creer que la escuela es
+justa implica creer que también lo son las diferencias que produce la
+jerarquía educativa. Si la escuela es la primera institución en que los
+estudiantes experimentan una distribución sistemática de recompensas, la
+evaluación de que esa distribución es justa podría extenderse a la
+percepción de que la sociedad ofrece a todos las mismas oportunidades.
+
+\section{La educación superior como horizonte de
+movilidad}\label{la-educaciuxf3n-superior-como-horizonte-de-movilidad}
+
+Para los estudiantes escolares, la desigualdad de oportunidades se
+materializa sobre todo en el acceso a la educación superior. Chile es un
+caso paradigmático de masificación terciaria en América Latina
+(\citeproc{ref-brunner_dinamicas_2016}{Brunner \& Ganga, 2016}): la
+cobertura de pregrado pasó de cerca de 8\% en 1980 a 53\% en 2015, en un
+crecimiento absorbido principalmente por instituciones privadas y con
+escasa regulación estatal
+(\citeproc{ref-villalobos_percepciones_2022}{Villalobos et~al., 2022}).
+La masificación, sin embargo, no eliminó la estratificación del acceso.
+Según la encuesta CASEN 2009, la tasa de participación en educación
+terciaria variaba entre 22,7\% en el quintil de menores ingresos y
+67,8\% en el de mayores ingresos
+(\citeproc{ref-brunner_lucha_2012}{Brunner, 2012}).
+
+Más importante aún, el sistema se organizó como una pirámide jerárquica
+de selectividad y reputación. Brunner
+(\citeproc{ref-brunner_lucha_2012}{2012}) describe el ingreso a las
+universidades chilenas como un proceso de doble selección, académica y
+socioeconómica, donde las instituciones más prestigiosas eligen a los
+estudiantes con mejores puntajes y las demás se ordenan en cascada hasta
+la base, donde no existe selectividad. En la cima, la composición
+escolar del alumnado revela el origen familiar: dos tercios de quienes
+ingresaban a la Pontificia Universidad Católica provenían de colegios
+particulares pagados, que reunían apenas el 6,9\% de la matrícula
+nacional de enseñanza media, mientras solo un 13\% provenía de liceos
+municipales. Brunner resume esta dinámica señalando que las
+universidades donde se forman las élites reproducen ``bajo un velo
+meritocrático el privilegio de los herederos'', al tiempo que ofrecen un
+canal de ascenso a quienes superan las barreras selectivas.
+
+La taxonomía de Muñoz y Blanco
+(\citeproc{ref-munoz_taxonomia_2013}{2013}), construida mediante
+análisis factorial sobre variables de operación de las universidades,
+confirma que el origen escolar del alumnado es uno de los ejes que
+ordenan el sistema. De los cinco tipos que identifican, dos se definen
+precisamente por la composición escolar de su matrícula: las
+universidades \emph{elitistas}, con alta selectividad y una proporción
+de egresados de colegios particulares pagados que supera el 70\% en las
+``altamente elitistas'' (Universidad de los Andes, Adolfo Ibáñez y del
+Desarrollo), y las universidades \emph{no elitistas}, con selectividad
+menor al 2\% y alumnado proveniente principalmente de establecimientos
+municipales. Entre ambos extremos se ubican las universidades de
+investigación, las de acreditación y las masivas, estas últimas con más
+de la mitad de su matrícula proveniente de colegios particulares
+subvencionados.
+
+En consecuencia, la pregunta por la igualdad de oportunidades adquiere
+en Chile un contenido institucional preciso: el tipo de colegio anticipa
+el tipo de institución a la que se puede aspirar. La experiencia
+internacional muestra que esta jerarquía no desaparece con la expansión
+del acceso. En el Reino Unido, la masificación aumentó la competencia
+entre instituciones y postulantes, y los estudiantes de clase
+trabajadora siguen concentrándose en instituciones de menor prestigio,
+cuyos títulos tienen menor valor en el mercado laboral
+(\citeproc{ref-bathmaker_degree_2016}{Bathmaker et~al., 2016}). La
+desigualdad se prolonga después de la universidad: las firmas
+profesionales de élite privilegian a candidatos con formas estrechas de
+capital cultural, aun cuando declaran reclutar al ``mejor talento''
+(\citeproc{ref-ashley_understanding_2017}{Ashley \& Empson, 2017}).
+
+\section{Posición en la jerarquía escolar y horizonte
+educativo}\label{posiciuxf3n-en-la-jerarquuxeda-escolar-y-horizonte-educativo}
+
+La evidencia disponible sobre cómo los estudiantes perciben la
+desigualdad en el acceso a la educación superior proviene de quienes ya
+están dentro. En Chile, Villalobos et al.
+(\citeproc{ref-villalobos_percepciones_2022}{2022}) encuestaron a 1.773
+estudiantes de ocho carreras de universidades de élite. El principal eje
+de diferenciación de sus percepciones no fue el nivel socioeconómico,
+sino el tipo de universidad: los estudiantes de universidades
+tradicionales eran más escépticos de la meritocracia y de las
+explicaciones individualistas de la desigualdad que sus pares de
+universidades privadas elitistas. Los autores observan además
+percepciones ``ortogonales'': los estudiantes explican la desigualdad
+general por factores estructurales, pero atribuyen su propio ingreso a
+sus cualidades personales.
+
+Estudios en otros países apuntan en la misma dirección. Los estudiantes
+de Sciences Po y Oxford reconocen que viven en un mundo desigual y que
+sus trayectorias están condicionadas por esa desigualdad, pero al mismo
+tiempo creen firmemente que merecen el lugar que ocupan, y recurren a la
+idea de responsabilidad para justificar su privilegio
+(\citeproc{ref-allouch_ethique_2016}{Allouch et~al., 2016}). Los
+estudiantes de Harvard y Stanford, por su parte, construyen fronteras
+simbólicas entre universidades de élite que justifican su propia
+posición (\citeproc{ref-binder_symbolically_2019}{Binder \& Abel,
+2019}). Quienes acceden a las posiciones aventajadas tienden, así, a
+interpretar su trayectoria como merecida.
+
+En la escuela, la posición de cada estudiante se expresa ante todo en
+sus calificaciones, que operan como marcadores institucionales de valor
+y hacen visible el mérito de manera inmediata
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). Al presentar los
+resultados como ganados, los ideales meritocráticos alientan a los
+``ganadores'' a ver su posición como merecida
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). Desde una
+perspectiva de \emph{interés propio}, quienes ocupan posiciones
+ventajosas o son reconocidos por el sistema escolar tendrían razones
+para percibir que las oportunidades están abiertas a todos, porque esa
+percepción legitima su lugar (\citeproc{ref-baer_education_1982}{Baer \&
+Lambert, 1982}; \citeproc{ref-dickinson_adolescent_1990}{Dickinson,
+1990}; \citeproc{ref-duru-bellat_whos_2012}{Duru-Bellat \& Tenret,
+2012}). Del mismo modo, quienes se proyectan en la universidad ocupan
+una posición anticipada de ganadores del sistema.
+
+\section{Trayectoria escolar: socialización e
+ilustración}\label{trayectoria-escolar-socializaciuxf3n-e-ilustraciuxf3n}
+
+Una pregunta distinta es cómo cambia la percepción de igualdad de
+oportunidades a medida que los estudiantes avanzan en la escuela y se
+acercan a la transición a la educación superior. La hipótesis de
+\emph{socialización} plantea que la educación transmite la ideología
+dominante según el tiempo que se pasa en ella; la de \emph{ilustración},
+que fomenta una mirada crítica sobre la desigualdad
+(\citeproc{ref-baer_education_1982}{Baer \& Lambert, 1982}). Los
+estudios sobre socialización universitaria muestran que los contextos
+educativos pueden moldear actitudes sociopolíticas de forma duradera
+(\citeproc{ref-alwin_political_1991}{Alwin et~al., 1991}), y que la
+exposición a la institución modifica las percepciones: entre estudiantes
+de élite chilenos, quienes llevan más tiempo en su carrera atribuyen
+menos su ingreso a sus atributos personales
+(\citeproc{ref-villalobos_percepciones_2022}{Villalobos et~al., 2022}).
+
+En la etapa escolar, la evidencia es escasa y ambigua. Entre escolares
+chilenos, los estudiantes de media usan la escala de percepción de
+meritocracia de manera distinta a los de básica al evaluar si el
+esfuerzo es recompensado, lo que se interpreta como un marco más crítico
+entre los mayores (\citeproc{ref-laffert_changes}{Laffert et~al.,
+s.f.}). Es plausible que, a medida que la selección universitaria se
+vuelve más próxima y visible, los estudiantes perciban con mayor
+claridad que no todos parten desde el mismo lugar.
+
+\section{Hipótesis}\label{hipuxf3tesis}
+
+A partir de los antecedentes se plantean seis hipótesis, resumidas en la
+Tabla~\ref{tbl-hipotesis}.
+
+\textbf{Transferencia.} Si la escuela es la primera institución en que
+los estudiantes experimentan una distribución de recompensas que se
+presenta como igualitaria y basada en el mérito, la evaluación de que
+esa distribución es justa debería extenderse a la percepción de que la
+sociedad ofrece las mismas oportunidades a todos
+(\citeproc{ref-batruch_belief_2023}{Batruch et~al., 2023};
+\citeproc{ref-mijs_stratified_2016}{Mijs, 2016a}).
+
+\begin{quote}
+\textbf{H1:} A mayor percepción de meritocracia en la escuela, mayor
+percepción de igualdad de oportunidades en la sociedad.
+\end{quote}
+
+\textbf{Posición en la jerarquía escolar.} Quienes son reconocidos por
+el sistema escolar tendrían razones para percibir que las oportunidades
+están abiertas a todos, porque esa percepción legitima su lugar
+(\citeproc{ref-baer_education_1982}{Baer \& Lambert, 1982};
+\citeproc{ref-duru-bellat_whos_2012}{Duru-Bellat \& Tenret, 2012};
+\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}).
+
+\begin{quote}
+\textbf{H2:} Los estudiantes con mejor rendimiento académico perciben
+más igualdad de oportunidades.
+\end{quote}
+
+\textbf{Horizonte educativo.} Quienes se proyectan en la educación
+superior, y en particular en la universidad, ocupan una posición
+anticipada de ``ganadores'' del sistema. Como los estudiantes que ya
+accedieron a instituciones selectivas, tenderían a interpretar su
+trayectoria esperada como resultado de su esfuerzo y a percibir que las
+oportunidades están abiertas
+(\citeproc{ref-allouch_ethique_2016}{Allouch et~al., 2016};
+\citeproc{ref-villalobos_percepciones_2022}{Villalobos et~al., 2022}).
+
+\begin{quote}
+\textbf{H3:} Los estudiantes que esperan completar una carrera
+universitaria perciben más igualdad de oportunidades que quienes esperan
+completar solo la educación media o una carrera técnica.
+\end{quote}
+
+\textbf{Información sobre el acceso a la universidad.} Si la percepción
+de igualdad de oportunidades descansa en parte en el desconocimiento de
+la estratificación del acceso a la educación superior, hacer visible esa
+estratificación debería reducirla
+(\citeproc{ref-brunner_lucha_2012}{Brunner, 2012};
+\citeproc{ref-munoz_taxonomia_2013}{Muñoz \& Blanco, 2013}). Mientras H1
+supone que la percepción se forma a partir de la experiencia en la
+escuela, el experimento permite evaluar si la información sobre la
+desigualdad del acceso basta para modificarla. La evidencia previa con
+este experimento muestra efectos pequeños sobre la percepción de
+meritocracia y dificultades para comprender la información
+(\citeproc{ref-castillo_experimento_2024}{Castillo, Carrasco, et~al.,
+2024}).
+
+\begin{quote}
+\textbf{H4:} Los estudiantes expuestos a información sobre las
+diferencias de acceso a la universidad según tipo de colegio
+(tratamiento) perciben menos igualdad de oportunidades que el grupo
+control.
+\end{quote}
+
+\textbf{Socialización e ilustración.} La evidencia no permite anticipar
+si el avance en la escolaridad refuerza o cuestiona la percepción de
+igualdad de oportunidades (\citeproc{ref-baer_education_1982}{Baer \&
+Lambert, 1982}; \citeproc{ref-duru-bellat_whos_2012}{Duru-Bellat \&
+Tenret, 2012}; \citeproc{ref-laffert_changes}{Laffert et~al., s.f.}),
+por lo que se plantea una hipótesis bilateral.
+
+\begin{quote}
+\textbf{H5:} La percepción de igualdad de oportunidades cambia con el
+avance en la trayectoria escolar. Si predomina la socialización,
+aumenta; si predomina la ilustración, disminuye.
+\end{quote}
+
+Para distinguir entre ambas explicaciones se examinará
+complementariamente el cambio en la percepción de privilegio. La
+ilustración implica que, junto con la menor percepción de igualdad de
+oportunidades, aumenta la percepción de que el éxito depende de tener
+padres ricos o buenos contactos.
+
+\textbf{Creencias meritocráticas.} Se espera que las cuatro dimensiones
+de la creencia meritocrática se relacionen de manera diferenciada con la
+percepción de igualdad de oportunidades: la percepción de meritocracia
+legitimaría las diferencias existentes, la percepción de privilegio
+reconoce el peso del origen, la preferencia meritocrática establecería
+un estándar más exigente frente a la realidad y la aceptación del
+privilegio legitimaría las ventajas de origen
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019};
+\citeproc{ref-laffert_changes}{Laffert et~al., s.f.};
+\citeproc{ref-mijs2016}{Mijs, 2016b}). H6d tiene un carácter
+exploratorio.
+
+\begin{quote}
+\textbf{H6a:} A mayor percepción de meritocracia, mayor percepción de
+igualdad de oportunidades.
+\end{quote}
+
+\begin{quote}
+\textbf{H6b:} A mayor percepción de privilegio, menor percepción de
+igualdad de oportunidades.
+\end{quote}
+
+\begin{quote}
+\textbf{H6c:} A mayor preferencia meritocrática, menor percepción de
+igualdad de oportunidades.
+\end{quote}
+
+\begin{quote}
+\textbf{H6d:} A mayor aceptación del privilegio, mayor percepción de
+igualdad de oportunidades.
+\end{quote}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\caption{Resumen de hipótesis}\label{tbl-hipotesis}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Hipótesis
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mecanismo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Predictor
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Efecto esperado
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Hipótesis
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mecanismo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Predictor
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Efecto esperado
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+H1 & Transferencia & Meritocracia escolar percibida & Positivo \\
+H2 & Interés propio & Rendimiento académico & Positivo \\
+H3 & Horizonte educativo & Expectativa de completar la universidad &
+Positivo \\
+H4 & Información sobre el acceso & Asignación al tratamiento &
+Negativo \\
+H5 & Socialización / ilustración & Ola (panel) & Positivo
+(socialización) / negativo (ilustración) \\
+H6a & Legitimación & Percepción de meritocracia & Positivo \\
+H6b & Reconocimiento del origen & Percepción de privilegio & Negativo \\
+H6c & Estándar normativo & Preferencia meritocrática & Negativo \\
+H6d & Legitimación del privilegio & Aceptación del privilegio &
+Positivo \\
+\end{longtable}
+
+\bookmarksetup{startatroot}
+
+\chapter{Metodología}\label{metodologuxeda}
+
+\section{Datos}\label{datos}
+
+Se utilizan datos de la Encuesta de Percepciones de Meritocracia y
+Formación Ciudadana, levantada en el marco del panel Educación y
+Meritocracia (EDUMER), proyecto FONDECYT N.º 1210847
+(\citeproc{ref-edumer_manual}{Proyecto Educación y Meritocracia, s.f.}).
+Su objetivo es examinar las creencias, actitudes y comportamientos de
+estudiantes en edad escolar respecto de la meritocracia, la desigualdad
+y la ciudadanía (\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}).
+El protocolo del estudio fue aprobado por un comité de ética, y se
+registró la autorización de un adulto para la participación de cada
+estudiante (\citeproc{ref-edumer_manual}{Proyecto Educación y
+Meritocracia, s.f.}).
+
+La encuesta es un panel de dos olas. La población objetivo son
+estudiantes de escuelas municipales y particulares subvencionadas de las
+regiones Metropolitana y de Valparaíso. Se encuestó a dos cohortes:
+estudiantes de 6.º básico y 1.º medio en la primera ola, que fueron
+seguidos en 7.º básico y 2.º medio en la segunda. Participaron nueve
+escuelas (\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). La
+muestra no es probabilística ni representativa por zona geográfica o
+dependencia administrativa (\citeproc{ref-edumer_manual}{Proyecto
+Educación y Meritocracia, s.f.}).
+
+El cuestionario fue autoadministrado en línea (CAWI) y respondido por
+los estudiantes en las salas de computación de sus escuelas, con una
+duración aproximada de 20 minutos. La primera ola se aplicó entre
+octubre de 2023 y mayo de 2024, y la segunda entre agosto y noviembre de
+2024 (\citeproc{ref-edumer_manual}{Proyecto Educación y Meritocracia,
+s.f.}). La primera ola incluye 902 estudiantes y la segunda 674. De
+ellos, 639 participan en ambas olas, 263 solo en la primera y 35 solo en
+la segunda, lo que implica una atrición de 29,2\%
+(\citeproc{ref-edumer_manual}{Proyecto Educación y Meritocracia, s.f.}).
+
+El análisis experimental (H4) utiliza los 902 estudiantes de la primera
+ola, que es la única en que se aplicó el experimento. Las demás
+hipótesis se contrastan con las observaciones de ambas olas, que suman
+1.576 observaciones de 937 estudiantes.
+
+La primera ola también encuestó a 180 apoderados y 26 docentes, cuyos
+cuestionarios contienen el mismo ítem de igualdad de oportunidades
+(\citeproc{ref-edumer_manual}{Proyecto Educación y Meritocracia, s.f.}).
+Estas bases no forman parte del análisis principal, pero permiten un
+análisis descriptivo complementario de la percepción de oportunidades en
+la comunidad escolar.
+
+\textbf{Experimento de encuesta.} El módulo experimental abre el
+cuestionario de la primera ola, antes de todos los demás módulos. Los
+estudiantes fueron asignados aleatoriamente, en proporción de 50\%
+dentro de cada curso, a un grupo tratamiento (n = 444) o a un grupo
+control (n = 458) (\texttt{asignacion})
+(\citeproc{ref-edumer_manual}{Proyecto Educación y Meritocracia, s.f.}).
+El grupo tratamiento leyó un texto titulado ``Tipos de colegio y acceso
+a la universidad'', acompañado de una figura
+(\citeproc{ref-castillo_experimento_2024}{Castillo, Carrasco, et~al.,
+2024}):
+
+\begin{quote}
+Para entrar a la universidad se necesita tener buenas notas en el
+colegio y también un buen puntaje en una prueba de selección de lenguaje
+y matemáticas. En Chile existen colegios de distinto tipo: municipales,
+subvencionados y privados. En los colegios municipales no se debe pagar
+por estudiar, mientras que en los colegios privados las familias tienen
+que pagar. Existen grandes diferencias en los puntajes de la prueba de
+acceso a la universidad entre colegios municipales (no pagados) y
+privados (pagados): 2 de cada 10 estudiantes de colegios municipales
+logran entrar a la universidad, mientras en el caso de los colegios
+privados son 8 de cada 10.
+\end{quote}
+
+El grupo control leyó un texto con la misma estructura, titulado ``Tipos
+de colegio y acceso a deportes'', que presentaba la misma razón numérica
+referida a la práctica deportiva: 2 de cada 10 estudiantes de colegios
+municipales practican deportes, frente a 8 de cada 10 en colegios
+privados (\citeproc{ref-castillo_experimento_2024}{Castillo, Carrasco,
+et~al., 2024}). El diseño mantiene constantes el contraste entre tipos
+de colegio y la magnitud de la diferencia, y varía solo el ámbito al que
+se refiere: el acceso a la universidad o el deporte. Lo que se manipula,
+por tanto, no es la información sobre la existencia de tipos de colegio
+desiguales, sino que esa desigualdad se traduzca en oportunidades
+educativas.
+
+A continuación, cada grupo respondió una pregunta de verificación: ``¿De
+qué tipo de colegio entran más estudiantes a la universidad?''
+(\texttt{tratamiento}) o ``¿En qué tipo de colegio se practican más
+deportes?'' (\texttt{control}). Al cierre del cuestionario se informó a
+los estudiantes que las diferencias presentadas en el módulo
+experimental habían sido exageradas
+(\citeproc{ref-edumer_manual}{Proyecto Educación y Meritocracia, s.f.}).
+
+\section{Operacionalización}\label{operacionalizaciuxf3n}
+
+\subsection{Variables}\label{variables}
+
+La variable dependiente es la percepción de igualdad de oportunidades,
+medida con el ítem ``En Chile, todas las personas tienen las mismas
+oportunidades para salir adelante'' (\texttt{p1\_9}), tomado de los
+cuestionarios de la Agencia de Calidad de la Educación. Dado que se
+trata de un ítem de cuatro categorías ordenadas, se analiza como
+variable ordinal; como robustez, se trata también como escala numérica
+de 1 a 4 y como variable dicotómica que distingue a quienes están de
+acuerdo o muy de acuerdo de quienes están en desacuerdo o muy en
+desacuerdo. El ítem contiguo del cuestionario, ``En Chile, todas las
+personas obtienen lo que merecen'' (\texttt{p1\_10}), no se combina con
+la variable dependiente, porque se refiere a la regla que vincula el
+mérito con la recompensa y ha sido utilizado como indicador de
+percepción de meritocracia
+(\citeproc{ref-castillo_meritocracia_2019}{Castillo et~al., 2019}).
+
+La percepción de meritocracia escolar (H1) se mide con tres ítems: ``En
+esta escuela, quienes se esfuerzan obtienen buenas notas''
+(\texttt{p2\_1}), ``En esta escuela, quienes son inteligentes obtienen
+buenas notas'' (\texttt{p2\_2}) y ``En esta escuela, los/as estudiantes
+obtienen las notas que merecen'' (\texttt{p2\_3}). Con ellos se
+construye un índice que promedia las respuestas, de modo que valores más
+altos indican una mayor percepción de que la escuela recompensa el
+mérito. El rendimiento académico (H2) corresponde al promedio de notas
+del año anterior (\texttt{p4}), en la escala chilena de 1,0 a 7,0. El
+horizonte educativo (H3) se mide con la pregunta ``¿Cuál de los
+siguientes niveles educacionales crees que vas a completar?''
+(\texttt{p25}), dicotomizada entre quienes esperan completar una carrera
+universitaria y quienes esperan completar la educación media o una
+carrera en un instituto profesional o centro de formación técnica. La
+información sobre el acceso a la universidad (H4) es la asignación
+aleatoria al grupo tratamiento o control del experimento de la primera
+ola (\texttt{asignacion}); la comprensión de la información se registra
+con las preguntas de verificación (\texttt{tratamiento} y
+\texttt{control}), considerando correcta la respuesta ``colegio
+privado'' en ambos grupos. La trayectoria escolar (H5) se mide con la
+ola de la encuesta, que distingue la primera de la segunda medición de
+cada estudiante.
+
+Las creencias meritocráticas (H6) se miden con la escala de percepciones
+y preferencias sobre la meritocracia de Castillo et al.
+(\citeproc{ref-castillo_multidimensional_2023}{2023}), que mide cada
+dimensión con dos ítems (\citeproc{ref-laffert_changes}{Laffert et~al.,
+s.f.}). La percepción de meritocracia (H6a) se mide con ``En Chile, las
+personas son recompensadas por sus esfuerzos'' (\texttt{p1\_1}) y ``En
+Chile, las personas son recompensadas por su inteligencia y habilidad''
+(\texttt{p1\_2}); la percepción de privilegio (H6b), con ``En Chile, a
+quienes tienen padres ricos les va mucho mejor en la vida''
+(\texttt{p1\_3}) y ``En Chile, quienes tienen buenos contactos les va
+mejor en la vida'' (\texttt{p1\_4}); la preferencia meritocrática (H6c),
+con ``Quienes más se esfuerzan deberían obtener mayores recompensas que
+quienes se esfuerzan menos'' (\texttt{p1\_5}) y ``Quienes poseen más
+talento deberían obtener mayores recompensas que quienes poseen menos
+talento'' (\texttt{p1\_6}); y la aceptación del privilegio (H6d), con
+``Está bien que quienes tienen padres ricos les vaya bien en la vida''
+(\texttt{p1\_7}) y ``Está bien que quienes tienen buenos contactos les
+vaya bien en la vida'' (\texttt{p1\_8}). Cada dimensión se construye
+como el promedio de sus dos ítems. La estructura de cuatro factores de
+esta escala se ha validado en estos mismos datos y es invariante entre
+olas dentro de los estudiantes, lo que permite interpretar su cambio en
+el tiempo como sustantivo, aunque no entre cohortes, sobre todo en el
+ítem de percepción del esfuerzo (\citeproc{ref-laffert_changes}{Laffert
+et~al., s.f.}).
+
+\subsection{Controles}\label{controles}
+
+Los modelos incluyen un conjunto de variables de control orientadas a
+aislar la relación entre los predictores y la percepción de igualdad de
+oportunidades de diferencias en la composición de la muestra. El género
+(\texttt{p20}) se incluye porque la percepción de meritocracia varía
+según género en la población adulta
+(\citeproc{ref-duru-bellat_whos_2012}{Duru-Bellat \& Tenret, 2012});
+dado el reducido número de estudiantes que se identifica con otro
+género, se distingue a los hombres de las mujeres y quienes se
+identifican con otro género. El país de nacimiento del estudiante
+(\texttt{p22\_1}), que distingue a quienes nacieron en Chile de quienes
+nacieron en el extranjero, controla por una dimensión de desventaja
+relevante en las escuelas estudiadas, en las que cerca de uno de cada
+diez estudiantes nació fuera del país; como solo se preguntó en la
+primera ola, se asigna a ambas observaciones de cada estudiante. La
+cohorte (básica o media) controla por diferencias de edad y de nivel
+escolar que podrían confundirse con el cambio entre olas, y por la falta
+de invarianza de la escala de meritocracia entre cohortes
+(\citeproc{ref-laffert_changes}{Laffert et~al., s.f.}). Finalmente, como
+el experimento abre el cuestionario de la primera ola, todas las
+respuestas de esa ola son posteriores a la asignación; por ello, los
+modelos observacionales controlan por la asignación al tratamiento, que
+toma el valor cero en la segunda ola.
+
+El estudio no incluye una medida del nivel socioeconómico. El
+cuestionario de estudiantes indaga la educación de la madre y del padre,
+pero cerca de un cuarto de las observaciones no reporta la de la madre,
+y la información de los apoderados solo puede vincularse a una fracción
+minoritaria de los estudiantes. Se optó por no utilizar indicadores con
+esa cobertura en lugar de introducir una medición poco confiable.
+
+\subsection{Modelos (notaciones genneradas cn IA; pediennte de
+confirmacion)}\label{modelos-notaciones-genneradas-cn-ia-pediennte-de-confirmacion}
+
+Las hipótesis se contrastan con dos modelos de regresión logística
+ordinal. El primero aprovecha el experimento de la primera ola para
+estimar el efecto causal de la información sobre el acceso a la
+universidad (H4). Para cada estudiante \(i\) y cada categoría \(k\) de
+la variable dependiente:
+
+\begin{equation}\protect\phantomsection\label{eq-modelo1}{
+\text{logit}\,P(Y_i \le k) = \tau_k - \left(\beta_1 T_i + \gamma_{e[i]}\right)
+}\end{equation}
+
+donde \(Y_i\) es la percepción de igualdad de oportunidades, \(\tau_k\)
+son los umbrales entre categorías, \(T_i\) es la asignación al
+tratamiento y \(\gamma_{e[i]}\) son efectos fijos de escuela y cohorte,
+los estratos en que se realizó la asignación. Como la asignación es
+aleatoria, \(\beta_1\) estima el efecto de intención de tratar de la
+información (H4: \(\beta_1 < 0\)), que se reporta también como efecto
+marginal promedio sobre la probabilidad de estar de acuerdo con el ítem.
+
+El segundo modelo utiliza las observaciones de ambas olas para
+contrastar H1, H2, H3, H5 y H6. Como cada estudiante es observado hasta
+dos veces, se estima un modelo multinivel de dos niveles, en que las
+observaciones de cada ola (nivel 1) están anidadas en estudiantes (nivel
+2), con un intercepto aleatorio por estudiante. Para el estudiante \(i\)
+en la ola \(t\):
+
+\begin{equation}\protect\phantomsection\label{eq-modelo2}{
+\begin{aligned}
+\text{logit}\,P(Y_{it} \le k) = \tau_k - \big(&\beta_1 \text{MeritEsc}_{it} + \beta_2 \text{Notas}_{it} + \beta_3 \text{Univ}_{it} + \beta_4 \text{Ola}_t \\
+&+ \beta_5 \text{PercMerit}_{it} + \beta_6 \text{PercPriv}_{it} + \beta_7 \text{PrefMerit}_{it} + \beta_8 \text{AcepPriv}_{it} \\
+&+ \boldsymbol{\delta}'\mathbf{X}_{it} + u_i\big)
+\end{aligned}
+}\end{equation}
+
+donde \(\text{MeritEsc}_{it}\) es la percepción de meritocracia escolar,
+\(\text{Notas}_{it}\) el promedio de notas, \(\text{Univ}_{it}\) la
+expectativa de completar la universidad, \(\text{Ola}_t\) un indicador
+de la segunda ola, \(\text{PercMerit}_{it}\), \(\text{PercPriv}_{it}\),
+\(\text{PrefMerit}_{it}\) y \(\text{AcepPriv}_{it}\) las cuatro
+dimensiones de la creencia meritocrática, \(\mathbf{X}_{it}\) el vector
+de controles (género, país de nacimiento, cohorte y asignación al
+tratamiento) y \(u_i \sim N(0, \sigma_u^2)\) el intercepto aleatorio del
+estudiante, que recoge las diferencias estables entre estudiantes. Las
+variables continuas se centran en su media general. Cada hipótesis
+corresponde a un coeficiente: \(\beta_1 > 0\) (H1), \(\beta_2 > 0\)
+(H2), \(\beta_3 > 0\) (H3), \(\beta_4 \neq 0\) (H5), cuyo signo permite
+distinguir entre socialización (\(\beta_4 > 0\)) e ilustración
+(\(\beta_4 < 0\)), \(\beta_5 > 0\) (H6a), \(\beta_6 < 0\) (H6b),
+\(\beta_7 < 0\) (H6c) y \(\beta_8 > 0\) (H6d).
+
+\section{Estrategia de análisis}\label{estrategia-de-anuxe1lisis}
+
+El análisis se organiza en tres etapas.
+
+\textbf{Descripción.} Se describirá la distribución de la percepción de
+igualdad de oportunidades en cada ola y cohorte, y su correlación con la
+percepción de meritocracia escolar y con las cuatro dimensiones de la
+creencia meritocrática. Este paso permite evaluar empíricamente si los
+estudiantes distinguen la igualdad de oportunidades de la meritocracia,
+como sostiene el marco conceptual. De manera complementaria, se
+comparará la distribución del ítem entre estudiantes, docentes y
+apoderados de los mismos establecimientos.
+
+\textbf{Análisis experimental (H4).} Se verificará el balance entre
+ambos grupos en características que no pueden ser afectadas por la
+información recibida, como género, cohorte, establecimiento y país de
+nacimiento. El efecto de la información se estimará con el primer modelo
+(Ecuación~\ref{eq-modelo1}), primero sin covariables y luego ajustando
+por covariables. De manera exploratoria, se examinará si el efecto varía
+según la cohorte y según la comprensión de la información.
+
+\textbf{Modelo panel (H1, H2, H3, H5 y H6).} Las hipótesis
+observacionales se contrastarán con el segundo modelo
+(Ecuación~\ref{eq-modelo2}). Se reportarán los coeficientes como razones
+de odds y la proporción de varianza explicada por los efectos fijos y
+por el intercepto del estudiante (R² marginal y condicional). Para
+distinguir la variación dentro de cada estudiante de las diferencias
+estables entre estudiantes, los predictores que cambian entre olas se
+descompondrán en su desviación respecto de la media del estudiante y en
+dicha media. El componente dentro del estudiante indica si los cambios
+de un mismo estudiante entre olas se asocian con cambios en su
+percepción de igualdad de oportunidades, y no está afectado por
+características estables no observadas.
+
+\textbf{Robustez.} Se probarán modelos lineales sobre la escala de 1 a 4
+y modelos logísticos sobre la versión dicotómica de la variable
+dependiente; tambien se estimaran con difrerentes especificaciones de
+los controles y covariables.
+
+\bookmarksetup{startatroot}
+
+\chapter{Resultados}\label{resultados}
+
+\section{Análisis descriptivo}\label{anuxe1lisis-descriptivo}
+
+\subsection{Percepción de igualdad de
+oportunidades}\label{percepciuxf3n-de-igualdad-de-oportunidades}
+
+Como la variable dependiente es un ítem ordinal de cuatro categorías, se
+describe mediante su distribución completa y no mediante un promedio. La
+Tabla~\ref{tbl-p19-ola} presenta la distribución por ola y la
+Figura~\ref{fig-p19-distribucion} la desagrega por cohorte.
+
+En la primera ola, el 39,3\% de los estudiantes está de acuerdo o muy de
+acuerdo con que en Chile todas las personas tienen las mismas
+oportunidades para salir adelante, mientras que el 60,7\% está en
+desacuerdo o muy en desacuerdo. La categoría más frecuente es ``en
+desacuerdo'' (36,2\%), que corresponde también a la mediana. La
+percepción de igualdad de oportunidades es, por tanto, minoritaria entre
+los estudiantes, aunque no marginal: cerca de cuatro de cada diez la
+sostienen.
+
+{
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.7714}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1143}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1143}}@{}}
+
+\caption{\label{tbl-p19-ola}Percepción de igualdad de oportunidades
+según ola. Frecuencias y porcentajes.}
+
+\tabularnewline
+
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+En Chile, todas las personas tienen las mismas oportunidades para salir
+adelante
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Ola 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Ola 2
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Muy en desacuerdo & 220 (24,5\%) & 197 (29,2\%) \\
+En desacuerdo & 325 (36,2\%) & 228 (33,8\%) \\
+De acuerdo & 160 (17,8\%) & 141 (20,9\%) \\
+Muy de acuerdo & 193 (21,5\%) & 108 (16,0\%) \\
+Total & 898 & 674 \\
+
+\end{longtable}
+
+}
+
+Las diferencias entre cohortes son marcadas. En la primera ola, el
+52,9\% de los estudiantes de básica está de acuerdo o muy de acuerdo,
+frente al 25,8\% de los de media. En básica, la categoría más frecuente
+es ``muy de acuerdo'' (34,4\%), mientras que en media solo el 8,7\%
+elige esa opción y el 74,2\% se ubica en el desacuerdo. La brecha se
+mantiene en la segunda ola (48,3\% y 26,2\% de acuerdo,
+respectivamente). Este patrón es consistente con el marco más crítico
+que se ha observado entre los estudiantes de media al evaluar si el
+esfuerzo es recompensado (\citeproc{ref-laffert_changes}{Laffert et~al.,
+s.f.}), aunque la comparación entre cohortes debe interpretarse con
+cautela, porque contrasta a grupos distintos de estudiantes y no el
+cambio de los mismos estudiantes a lo largo del tiempo.
+
+\begin{figure}
+
+\caption{\label{fig-p19-distribucion}Percepción de igualdad de
+oportunidades según ola y cohorte. Porcentajes; a la izquierda,
+desacuerdo; a la derecha, acuerdo.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-p19-distribucion-1.pdf}}
+
+}
+
+\end{figure}%
+
+Entre olas, la percepción de igualdad de oportunidades tiende a
+disminuir. El porcentaje de acuerdo pasa de 39,3\% a 36,9\%, y la
+proporción que está muy en desacuerdo aumenta de 24,5\% a 29,2\%. Como
+la composición de ambas olas difiere por la atrición, el cambio se
+evalúa con los 635 estudiantes que responden en las dos mediciones
+(Figura~\ref{fig-p19-transiciones}). De ellos, el 44,9\% mantiene la
+misma respuesta, el 33,1\% se desplaza hacia el desacuerdo y el 22,0\%
+hacia el acuerdo. La percepción es además relativamente inestable a
+nivel individual: el 29,3\% de los estudiantes cambia de lado entre el
+acuerdo y el desacuerdo de una ola a otra. Este descenso es consistente
+con la hipótesis de ilustración (H5), que se evalúa formalmente en los
+modelos multivariados.
+
+\begin{figure}
+
+\caption{\label{fig-p19-transiciones}Transiciones en la percepción de
+igualdad de oportunidades entre la ola 1 y la ola 2. Estudiantes que
+responden ambas olas; porcentajes sobre el total de esos estudiantes.
+Los flujos tienen el color de la respuesta en la ola 1.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-p19-transiciones-1.pdf}}
+
+}
+
+\end{figure}%
+
+\bookmarksetup{startatroot}
+
+\chapter{Discusión}\label{discusiuxf3n}
+
+Pendiente.
+
+\section{Limitaciones}\label{limitaciones}
+
+Por lo pronto no hay forma consistente de operacionalizar el NSE, poca
+varianza en educación de los padres, discordancia entre los niveles
+educativos reportados por los estudiantes y los apoderados, cantidad de
+libros como proxy de capital cultural tampoco en este caso reporta
+efectos significativos en ninguna de sus especificaciones, ni en versión
+ordinal, ni en más de veinticinco versus el resto, los factores de
+meritocracia estarían entrando como índices ponderados; se están sumando
+los errores, habría que considerar algún tipo de análisis de robustez,
+me da la impresión de que la inclusión del experimento está interesante
+más no del todo justificada, de cualquier forma sirve para controlar al
+menos en la ola uno si la info que se entrega a los estudiantes tiene
+algún efecto sobre el resto de respuestas de la encuesta; ``¿Conocer
+cifras de desigualdad en el acceso a la universidad afecta la percepcion
+de igualdad de oportunidades?'' se me ocurre que tal vez podría
+imputarse el control a la ola dos, si los estudiantes en algún momento
+se les entregó la información sobre desigualdad, podría ser que para el
+cuestionario dos se hayan acordado y también tenga efecto sobre sus
+respuestas.
+
+\bookmarksetup{startatroot}
+
+\chapter{Conclusiones}\label{conclusiones}
+
+Síntesis y proyecciones futuras.
+
+\bookmarksetup{startatroot}
+
+\chapter{Referencias}\label{referencias}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-allouch_ethique_2016}
+Allouch, A., Brown, P., Power, S., \& Tholen, G. (2016). L'éthique des
+élites scolaires. Du mérite à la responsabilité chez les étudiants de
+Sciences Po Paris et de l'Université d'Oxford. \emph{L'Année
+sociologique}, \emph{66}(1), 193-224.
+\url{https://doi.org/10.3917/anso.161.0193}
+
+\bibitem[\citeproctext]{ref-alwin_political_1991}
+Alwin, D. F., Cohen, R. L., \& Newcomb, T. M. (1991). \emph{Political
+Attitudes over the Life Span: The Bennington Women after Fifty Years}.
+University of Wisconsin Press.
+
+\bibitem[\citeproctext]{ref-ashley_understanding_2017}
+Ashley, L., \& Empson, L. (2017). Understanding social exclusion in
+elite professional service firms: field level dynamics and the
+{«professional project»}. \emph{Work, Employment and Society},
+\emph{31}(2), 211-229. \url{https://doi.org/10.1177/0950017015621480}
+
+\bibitem[\citeproctext]{ref-baer_education_1982}
+Baer, D. E., \& Lambert, R. D. (1982). Education and Support for
+Dominant Ideology. \emph{Canadian Review of Sociology / Revue canadienne
+de sociologie}, \emph{19}(2), 173-195.
+\url{https://doi.org/10.1111/j.1755-618X.1982.tb00859.x}
+
+\bibitem[\citeproctext]{ref-bathmaker_degree_2016}
+Bathmaker, A.-M., Ingram, N., Abrahams, J., Hoare, A., Waller, R., \&
+Bradley, H. (2016). \emph{Higher Education, Social Class and Social
+Mobility: The Degree Generation}. Palgrave Macmillan.
+
+\bibitem[\citeproctext]{ref-batruch_belief_2023}
+Batruch, A., Jetten, J., Van De Werfhorst, H., Darnon, C., \& Butera, F.
+(2023). Belief in {School Meritocracy} and the {Legitimization} of
+{Social} and {Income Inequality}. \emph{Social Psychological and
+Personality Science}, \emph{14}(5), 621-635.
+\url{https://doi.org/10.1177/19485506221111017}
+
+\bibitem[\citeproctext]{ref-binder_symbolically_2019}
+Binder, A. J., \& Abel, A. R. (2019). Symbolically Maintained
+Inequality: How Harvard and Stanford Students Construct Boundaries among
+Elite Universities. \emph{Sociology of Education}, \emph{92}(1), 41-58.
+\url{https://doi.org/10.1177/0038040718821073}
+
+\bibitem[\citeproctext]{ref-bourdieu_reproduction_1990}
+Bourdieu, P., \& Passeron, J.-C. (1990). \emph{Reproduction in
+Education, Society and Culture} (2.ª ed.). Sage.
+
+\bibitem[\citeproctext]{ref-brunner_lucha_2012}
+Brunner, J. J. (2012). La lucha por la educación de las elites: campo y
+canales formativos. \emph{Revista UDP}, \emph{9}, 119-143.
+
+\bibitem[\citeproctext]{ref-brunner_dinamicas_2016}
+Brunner, J. J., \& Ganga, F. A. (2016). Dinámicas de transformación en
+la educación superior latinoamericana: desafíos para la gobernanza.
+\emph{Opción}, \emph{32}(80), 12-35.
+
+\bibitem[\citeproctext]{ref-castillo_experimento_2024}
+Castillo, J. C., Carrasco, K., Nuñez, M. F., \& Laffert, A. (2024).
+\emph{Meritocracia en la etapa escolar: un experimento de encuesta}.
+Presentación en el Congreso Chileno de Sociología, Santiago, 2-4 de
+mayo. \url{https://github.com/educacion-meritocracia/experimento}
+
+\bibitem[\citeproctext]{ref-castillo_multidimensional_2023}
+Castillo, J. C., Iturra, J., Maldonado, L., Atria, J., \& Meneses, F.
+(2023). A {Multidimensional Approach} for {Measuring Meritocratic
+Beliefs}: {Advantages}, {Limitations} and {Alternatives} to the {ISSP
+Social Inequality Survey}. \emph{International Journal of Sociology},
+\emph{53}(6), 448-472.
+\url{https://doi.org/10.1080/00207659.2023.2274712}
+
+\bibitem[\citeproctext]{ref-castillo_percepcion_2012}
+Castillo, J. C., Miranda, D., \& Carrasco, D. (2012). Percepción de
+desigualdad económica en Chile: medición, diferencias y determinantes.
+\emph{Psykhe}, \emph{21}(1), 99-114.
+
+\bibitem[\citeproctext]{ref-castillo_socialization_2024}
+Castillo, J. C., Salgado, M., Carrasco, K., \& Laffert, A. (2024). The
+{Socialization} of {Meritocracy} and {Market Justice Preferences} at
+{School}. \emph{Societies}, \emph{14}(11), 214.
+\url{https://doi.org/10.3390/soc14110214}
+
+\bibitem[\citeproctext]{ref-castillo_meritocracia_2019}
+Castillo, J. C., Torres, A., Atria, J., \& Maldonado, L. (2019).
+Meritocracia y Desigualdad Económica: {Percepciones}, Preferencias e
+Implicancias. \emph{Revista Internacional de Sociología}, \emph{77}(1),
+e117. \url{https://doi.org/10.3989/ris.2019.77.1.17.114}
+
+\bibitem[\citeproctext]{ref-darnon_where_2018}
+Darnon, C., Wiederkehr, V., Dompnier, B., \& Martinot, D. (2018).
+{«{Where} There Is a Will, There Is a Way»}: {Belief} in School
+Meritocracy and the Social-class Achievement Gap. \emph{British Journal
+of Social Psychology}, \emph{57}(1), 250-262.
+\url{https://doi.org/10.1111/bjso.12214}
+
+\bibitem[\citeproctext]{ref-dickinson_adolescent_1990}
+Dickinson, J. (1990). Adolescent Representations of Socio-economic
+Status. \emph{British Journal of Developmental Psychology}, \emph{8}(4),
+351-371. \url{https://doi.org/10.1111/j.2044-835X.1990.tb00850.x}
+
+\bibitem[\citeproctext]{ref-duru-bellat_whos_2012}
+Duru-Bellat, M., \& Tenret, E. (2012). Who's for Meritocracy?
+{Individual} and Contextual Variations in the Faith. \emph{Comparative
+Education Review}, \emph{56}(2), 223-247.
+\url{https://doi.org/10.1086/661290}
+
+\bibitem[\citeproctext]{ref-goudeau_hidden_2017}
+Goudeau, S., \& Croizet, J.-C. (2017). Hidden Advantages and
+Disadvantages of Social Class: {How} Classroom Settings Reproduce Social
+Inequality by Staging Unfair Comparison. \emph{Psychological Science},
+\emph{28}(2), 162-170. \url{https://doi.org/10.1177/0956797616676600}
+
+\bibitem[\citeproctext]{ref-laffert_changes}
+Laffert, A., Castillo, J. C., Canales, R., Urzúa, T., \& Carrasco, K.
+(s.f.). \emph{Changes in meritocratic beliefs among school-age students
+over time and across cohorts}.
+
+\bibitem[\citeproctext]{ref-mijs_stratified_2016}
+Mijs, J. J. B. (2016a). Stratified Failure: {Educational} Stratification
+and Students' Attributions of Their Mathematics Performance in 24
+Countries. \emph{Sociology of Education}, \emph{89}(2), 137-153.
+\url{https://doi.org/10.1177/0038040716636434}
+
+\bibitem[\citeproctext]{ref-mijs2016}
+Mijs, J. J. B. (2016b). \emph{The Unfulfillable Promise of Meritocracy:
+Three Lessons and Their Implications for Justice in Education}.
+
+\bibitem[\citeproctext]{ref-munoz_taxonomia_2013}
+Muñoz, M., \& Blanco, C. (2013). Una taxonomía de las universidades
+chilenas. \emph{Calidad en la Educación}, \emph{38}.
+
+\bibitem[\citeproctext]{ref-edumer_manual}
+Proyecto Educación y Meritocracia. (s.f.). \emph{Encuesta Panel
+Educación y Meritocracia (EDUMER): manual metodológico}.
+\url{https://educacion-meritocracia.github.io/encuesta-edumer/}
+
+\bibitem[\citeproctext]{ref-resh2010}
+Resh, N., \& Sabbagh, C. (2010). Sense of Justice about Grades in
+School: Is It Stratified like Academic Achievement? \emph{Social
+Psychology of Education}.
+
+\bibitem[\citeproctext]{ref-villalobos_percepciones_2022}
+Villalobos, C., Kuzmanic, D., Valenzuela, J. P., \& Quaresma, M. L.
+(2022). Percepciones sociales de los estudiantes de educación superior
+de élite: un estudio del caso chileno. \emph{Psykhe}, \emph{31}(2),
+1-18. \url{https://doi.org/10.7764/psykhe.2020.22549}
+
+\bibitem[\citeproctext]{ref-young1958}
+Young, M. (1958). \emph{The Rise of the Meritocracy, 1870--2033}.
+Thames; Hudson.
+
+\end{CSLReferences}
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{part}{Apéndices}
+\appendix
+
+\chapter{Instrumentos de
+levantamiento}\label{instrumentos-de-levantamiento}
+
+Incluye cuestionarios, guias de entrevista, etc.
+
+\chapter{Tablas adicionales}\label{tablas-adicionales}
+
+Tablas extendidas, tests de robustez, etc.
+
+
+\backmatter
+
+% --- Cuerpo del libro (capítulos) en arábigos ---
+\mainmatter
+\pagestyle{scrheadings}
+
+% --- (Opcional) Estilo del índice general ---
+% \addtocontents{toc}{\protect\thispagestyle{plain}}
+
+
+\end{document}
