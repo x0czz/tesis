@@ -40,7 +40,7 @@ Los modelos incluyen un conjunto de variables de control orientadas a aislar la 
 
 El estudio no incluye una medida del nivel socioeconómico. El cuestionario de estudiantes indaga la educación de la madre y del padre, pero cerca de un cuarto de las observaciones no reporta la de la madre, y la información de los apoderados solo puede vincularse a una fracción minoritaria de los estudiantes. Se optó por no utilizar indicadores con esa cobertura en lugar de introducir una medición poco confiable.
 
-### Modelos
+### Modelos (notaciones genneradas cn IA; pediennte de confirmacion)
 
 Las hipótesis se contrastan con dos modelos de regresión logística ordinal. El primero aprovecha el experimento de la primera ola para estimar el efecto causal de la información sobre el acceso a la universidad (H4). Para cada estudiante $i$ y cada categoría $k$ de la variable dependiente:
 
