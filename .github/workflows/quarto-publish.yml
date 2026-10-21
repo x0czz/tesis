@@ -36,8 +36,12 @@ jobs:
             any::ggplot2
 
       # Solo HTML: el PDF necesita LaTeX/xelatex y es la causa típica de fallos en CI
+      # _freeze/ del repo está desactualizado: dice que los gráficos existen
+      # pero sus PNG no están guardados, así que se borra y R vuelve a ejecutar todo.
       - name: Render Quarto project (HTML)
-        run: quarto render --to html
+        run: |
+          rm -rf _freeze
+          quarto render --to html
 
       # Publica la carpeta docs/ RECIÉN RENDERIZADA (no la versión del commit)
       - name: Deploy to gh-pages
