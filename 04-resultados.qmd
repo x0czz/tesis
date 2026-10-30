@@ -186,3 +186,175 @@ ggplot() +
         panel.grid.minor = element_blank(),
         panel.grid.major.y = element_line(colour = "grey92"))
 ```
+
+### Relación con las creencias meritocráticas
+
+```{r}
+#| label: setup-correlaciones
+#| include: false
+items <- c(p1_9 = "Igualdad de oportunidades",
+           p1_1 = "Percepción mérito: esfuerzo",
+           p1_2 = "Percepción mérito: inteligencia",
+           p1_3 = "Percepción privilegio: padres ricos",
+           p1_4 = "Percepción privilegio: contactos",
+           p1_5 = "Preferencia mérito: esfuerzo",
+           p1_6 = "Preferencia mérito: talento",
+           p1_7 = "Aceptación privilegio: padres ricos",
+           p1_8 = "Aceptación privilegio: contactos")
+
+x_w1 <- datos_io |>
+  filter(ola == 1) |>
+  select(all_of(names(items))) |>
+  mutate(across(everything(), as.numeric))
+
+rho <- psych::polychoric(x_w1)$rho
+n_par <- crossprod(!is.na(as.matrix(x_w1)))
+r <- function(a, b) f1(rho[a, b], 2)
+```
+
+Para evaluar si los estudiantes distinguen la igualdad de oportunidades de las creencias meritocráticas, la @fig-correlaciones presenta las correlaciones policóricas, adecuadas para ítems ordinales, entre la variable dependiente y los ocho ítems de la escala de percepciones y preferencias sobre la meritocracia, en la primera ola (n entre `r min(n_par)` y `r max(n_par)` según el par de ítems).
+
+```{r}
+#| label: fig-correlaciones
+#| fig-cap: "Correlaciones policóricas entre la percepción de igualdad de oportunidades y los ítems de la escala de percepciones y preferencias sobre la meritocracia. Ola 1. Datos perdidos tratados por pares (pairwise)."
+#| echo: false
+#| fig-width: 7.5
+#| fig-height: 6
+lab <- unname(items)
+cor_df <- as.data.frame(as.table(rho)) |>
+  setNames(c("v1", "v2", "r")) |>
+  mutate(i = match(v1, names(items)), j = match(v2, names(items))) |>
+  filter(i > j) |>
+  mutate(f = factor(lab[i], rev(lab)), c = factor(lab[j], lab),
+         txt = ifelse(abs(r) >= 0.45, "white", "grey15"))
+
+ggplot(cor_df, aes(x = c, y = f, fill = r)) +
+  geom_tile(colour = "white", linewidth = 0.8) +
+  geom_text(aes(label = f1(r, 2), colour = txt), size = 3) +
+  scale_fill_gradient2(low = "#4A4A4A", mid = "white", high = "#99000D", midpoint = 0,
+                       limits = c(-1, 1), breaks = seq(-1, 1, 0.5),
+                       labels = function(x) f1(x, 1), name = "r") +
+  scale_colour_identity() +
+  scale_x_discrete(position = "bottom") +
+  labs(x = NULL, y = NULL) +
+  coord_fixed() +
+  theme_minimal(base_size = 10) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.grid = element_blank(),
+        legend.position = "right")
+```
+
+Las correlaciones de la igualdad de oportunidades con los demás ítems son, en general, bajas o moderadas, y ninguna se acerca a la unidad. Las más altas corresponden a la percepción de meritocracia: la igualdad de oportunidades se asocia positivamente con percibir que en Chile se recompensa el esfuerzo (r = `r r("p1_9", "p1_1")`) y la inteligencia (r = `r r("p1_9", "p1_2")`). Estas correlaciones son menores que la que existe entre esos dos ítems entre sí (r = `r r("p1_1", "p1_2")`), lo que indica que la percepción de igualdad de oportunidades no es una medida más de la percepción de meritocracia, sino una creencia relacionada pero distinta, como sostiene el marco conceptual.
+
+Las asociaciones con las dimensiones de privilegio siguen la dirección esperada en las hipótesis. La percepción de privilegio se relaciona negativamente con la igualdad de oportunidades (r = `r r("p1_9", "p1_3")` para los padres ricos y `r r("p1_9", "p1_4")` para los contactos), mientras que la aceptación del privilegio se relaciona positivamente (r = `r r("p1_9", "p1_7")` y `r r("p1_9", "p1_8")`). La preferencia meritocrática, en cambio, prácticamente no se asocia con la igualdad de oportunidades (r = `r r("p1_9", "p1_5")` y `r r("p1_9", "p1_6")`).
+
+La matriz reproduce, además, la estructura de la escala de meritocracia: los dos ítems de cada dimensión se correlacionan más entre sí (entre `r f1(min(rho["p1_5", "p1_6"], rho["p1_1", "p1_2"], rho["p1_3", "p1_4"], rho["p1_7", "p1_8"]), 2)` y `r f1(max(rho["p1_5", "p1_6"], rho["p1_1", "p1_2"], rho["p1_3", "p1_4"], rho["p1_7", "p1_8"]), 2)`) que con los de otras dimensiones, lo que es consistente con la estructura de cuatro factores validada en estos datos [@laffert_changes]. La percepción de meritocracia y la de privilegio se relacionan de forma débil y mayormente negativa, lo que muestra que los estudiantes no las tratan como polos opuestos de una misma creencia. Las correlaciones entre los ítems de cada dimensión son, además, similares a las que se desprenden del análisis factorial confirmatorio que Laffert et al. [-@laffert_changes] estimaron con estos mismos datos.
+
+## Efecto de la información sobre el acceso a la universidad
+
+```{r}
+#| label: setup-experimento
+#| include: false
+library(ordinal)
+
+exp1 <- datos_io |>
+  filter(ola == 1) |>
+  mutate(across(c(trat, comprende, mujer_otro, extranjero, cohorte_media, id_escuela, p1_9), as.numeric),
+         grupo = factor(trat, 0:1, c("Control", "Tratamiento")))
+n_grupo <- table(exp1$grupo)
+
+# Balance: porcentajes por grupo y prueba chi-cuadrado
+pchi <- function(v) chisq.test(table(exp1$trat, exp1[[v]]))$p.value
+bal <- exp1 |>
+  group_by(grupo) |>
+  summarise(mujer = 100 * mean(mujer_otro, na.rm = TRUE),
+            extranjero = 100 * mean(extranjero, na.rm = TRUE),
+            media = 100 * mean(cohorte_media, na.rm = TRUE))
+p_bal <- c(mujer = pchi("mujer_otro"), extranjero = pchi("extranjero"),
+           media = pchi("cohorte_media"), escuela = pchi("id_escuela"))
+
+# Comprensión de la información
+comp <- exp1 |> group_by(grupo) |> summarise(c = 100 * mean(comprende, na.rm = TRUE))
+cp <- function(g) comp$c[comp$grupo == g]
+
+# Regresión logística ordinal con efectos fijos de estrato (escuela x cohorte)
+d_exp <- exp1 |> filter(!is.na(p1_9_ord))
+m1 <- clm(p1_9_ord ~ trat + estrato, data = d_exp, link = "logit")
+b1 <- coef(summary(m1))["trat", ]
+or1 <- exp(b1[["Estimate"]])
+ci1 <- exp(confint.default(m1)["trat", ])
+p1 <- b1[["Pr(>|z|)"]]
+
+pval <- function(p) ifelse(p < 0.001, "< 0,001", paste("=", f1(p, 3)))
+acu_g <- function(t) 100 * mean(d_exp$p1_9[d_exp$trat == t] >= 3)
+```
+
+El experimento de la primera ola permite estimar el efecto causal de la información sobre el acceso a la universidad (H4). De los `r sum(n_grupo)` estudiantes de la primera ola, `r n_grupo[["Tratamiento"]]` fueron asignados al grupo tratamiento y `r n_grupo[["Control"]]` al grupo control.
+
+**Balance.** Para verificar que la asignación aleatoria produjo grupos comparables, la @tbl-balance compara ambos grupos en características que no pueden ser afectadas por la información recibida, mediante pruebas chi-cuadrado. Las diferencias son pequeñas y ninguna es estadísticamente significativa.
+
+```{r}
+#| label: tbl-balance
+#| tbl-cap: "Balance entre el grupo tratamiento y el grupo control. Porcentajes y valor p de la prueba chi-cuadrado. Ola 1."
+#| echo: false
+bc <- function(v, g) f1(bal[[v]][bal$grupo == g])
+tibble(
+  Característica = c("Mujer u otro género (%)", "Nacido/a fuera de Chile (%)", "Cohorte de media (%)", "Establecimiento"),
+  Control = c(bc("mujer", "Control"), bc("extranjero", "Control"), bc("media", "Control"), "—"),
+  Tratamiento = c(bc("mujer", "Tratamiento"), bc("extranjero", "Tratamiento"), bc("media", "Tratamiento"), "—"),
+  p = f1(c(p_bal[["mujer"]], p_bal[["extranjero"]], p_bal[["media"]], p_bal[["escuela"]]), 3)
+) |>
+  kable(align = c("l", "r", "r", "r"))
+```
+
+**Comprensión de la información.** La proporción de estudiantes que responde correctamente la pregunta de verificación es similar en ambos grupos: `r f1(cp("Tratamiento"))`% en el grupo tratamiento y `r f1(cp("Control"))`% en el grupo control.
+
+**Efecto de la información.** La @fig-experimento muestra la distribución de la percepción de igualdad de oportunidades en cada grupo. Las distribuciones son muy similares: el `r f1(acu_g(1))`% del grupo tratamiento está de acuerdo o muy de acuerdo con que todas las personas tienen las mismas oportunidades, frente al `r f1(acu_g(0))`% del grupo control.
+
+```{r}
+#| label: fig-experimento
+#| fig-cap: "Percepción de igualdad de oportunidades según grupo experimental. Porcentajes; a la izquierda, desacuerdo; a la derecha, acuerdo. Ola 1."
+#| echo: false
+#| fig-width: 8
+#| fig-height: 2.6
+ge <- d_exp |>
+  count(grupo, p1_9_ord) |>
+  group_by(grupo) |>
+  mutate(pct = 100 * n / sum(n)) |>
+  ungroup() |>
+  select(-n) |>
+  pivot_wider(names_from = p1_9_ord, values_from = pct, values_fill = 0) |>
+  mutate(yy = as.numeric(factor(grupo, c("Tratamiento", "Control"))))
+
+segs_e <- bind_rows(
+  ge |> transmute(yy, cat = "En desacuerdo",     xmin = -`En desacuerdo`, xmax = 0),
+  ge |> transmute(yy, cat = "Muy en desacuerdo", xmin = -`En desacuerdo` - `Muy en desacuerdo`, xmax = -`En desacuerdo`),
+  ge |> transmute(yy, cat = "De acuerdo",        xmin = 0, xmax = `De acuerdo`),
+  ge |> transmute(yy, cat = "Muy de acuerdo",    xmin = `De acuerdo`, xmax = `De acuerdo` + `Muy de acuerdo`)
+) |>
+  mutate(cat = factor(cat, cats), x = (xmin + xmax) / 2, w = xmax - xmin,
+         txt = ifelse(cat %in% c("Muy en desacuerdo", "Muy de acuerdo"), "white", "grey15"))
+tot_e <- ge |> transmute(yy, des = `Muy en desacuerdo` + `En desacuerdo`, acu = `De acuerdo` + `Muy de acuerdo`)
+
+ggplot(segs_e) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = yy - 0.32, ymax = yy + 0.32, fill = cat),
+            colour = "white", linewidth = 0.6) +
+  geom_text(data = filter(segs_e, w >= 5), aes(x = x, y = yy, label = paste0(f1(w, 0), "%"), colour = txt), size = 3) +
+  geom_text(data = tot_e, aes(x = -des - 2, y = yy, label = paste0(f1(des, 0), "%")),
+            hjust = 1, size = 3.2, fontface = "bold", colour = "grey30") +
+  geom_text(data = tot_e, aes(x = acu + 2, y = yy, label = paste0(f1(acu, 0), "%")),
+            hjust = 0, size = 3.2, fontface = "bold", colour = "#99000D") +
+  geom_vline(xintercept = 0, colour = "grey40", linewidth = 0.4) +
+  scale_fill_manual(values = pal_p19, breaks = cats, name = NULL) +
+  scale_colour_identity() +
+  scale_x_continuous(limits = c(-100, 100), breaks = seq(-100, 100, 25), labels = function(x) paste0(abs(x), "%")) +
+  scale_y_continuous(breaks = 1:2, labels = c("Tratamiento", "Control")) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top",
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_line(colour = "grey92"))
+```
+
+Para estimar el efecto se utiliza el primer modelo (@eq-modelo1), una regresión logística ordinal de la percepción de igualdad de oportunidades sobre la asignación al tratamiento, con efectos fijos de cada cohorte dentro de cada escuela, que es el nivel en que se realizó el sorteo. El efecto de la información no es estadísticamente significativo (razón de odds = `r f1(or1, 2)`; IC 95%: `r f1(ci1[1], 2)`–`r f1(ci1[2], 2)`; p `r pval(p1)`; n = `r nobs(m1)`). Por tanto, los resultados no apoyan H4: no se encuentra evidencia de que recibir información sobre las diferencias de acceso a la universidad modifique la percepción de igualdad de oportunidades.

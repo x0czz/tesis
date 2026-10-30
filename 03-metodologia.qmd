@@ -12,8 +12,6 @@ El cuestionario fue autoadministrado en línea (CAWI) y respondido por los estud
 
 El análisis experimental (H4) utiliza los 902 estudiantes de la primera ola, que es la única en que se aplicó el experimento. Las demás hipótesis se contrastan con las observaciones de ambas olas, que suman 1.576 observaciones de 937 estudiantes.
 
-La primera ola también encuestó a 180 apoderados y 26 docentes, cuyos cuestionarios contienen el mismo ítem de igualdad de oportunidades [@edumer_manual]. Estas bases no forman parte del análisis principal, pero permiten un análisis descriptivo complementario de la percepción de oportunidades en la comunidad escolar.
-
 **Experimento de encuesta.** El módulo experimental abre el cuestionario de la primera ola, antes de todos los demás módulos. Los estudiantes fueron asignados aleatoriamente, en proporción de 50% dentro de cada curso, a un grupo tratamiento (n = 444) o a un grupo control (n = 458) (`asignacion`) [@edumer_manual]. El grupo tratamiento leyó un texto titulado "Tipos de colegio y acceso a la universidad", acompañado de una figura [@castillo_experimento_2024]:
 
 > Para entrar a la universidad se necesita tener buenas notas en el colegio y también un buen puntaje en una prueba de selección de lenguaje y matemáticas. En Chile existen colegios de distinto tipo: municipales, subvencionados y privados. En los colegios municipales no se debe pagar por estudiar, mientras que en los colegios privados las familias tienen que pagar. Existen grandes diferencias en los puntajes de la prueba de acceso a la universidad entre colegios municipales (no pagados) y privados (pagados): 2 de cada 10 estudiantes de colegios municipales logran entrar a la universidad, mientras en el caso de los colegios privados son 8 de cada 10.
@@ -64,7 +62,7 @@ donde $\text{MeritEsc}_{it}$ es la percepción de meritocracia escolar, $\text{N
 
 El análisis se organiza en tres etapas.
 
-**Descripción.** Se describirá la distribución de la percepción de igualdad de oportunidades en cada ola y cohorte, y su correlación con la percepción de meritocracia escolar y con las cuatro dimensiones de la creencia meritocrática. Este paso permite evaluar empíricamente si los estudiantes distinguen la igualdad de oportunidades de la meritocracia, como sostiene el marco conceptual. De manera complementaria, se comparará la distribución del ítem entre estudiantes, docentes y apoderados de los mismos establecimientos.
+**Descripción.** Se describirá la distribución de la percepción de igualdad de oportunidades en cada ola y cohorte, y su correlación con la percepción de meritocracia escolar y con las cuatro dimensiones de la creencia meritocrática. Este paso permite evaluar empíricamente si los estudiantes distinguen la igualdad de oportunidades de la meritocracia, como sostiene el marco conceptual.
 
 **Análisis experimental (H4).** Se verificará el balance entre ambos grupos en características que no pueden ser afectadas por la información recibida, como género, cohorte, establecimiento y país de nacimiento. El efecto de la información se estimará con el primer modelo (@eq-modelo1), primero sin covariables y luego ajustando por covariables. De manera exploratoria, se examinará si el efecto varía según la cohorte y según la comprensión de la información.
 

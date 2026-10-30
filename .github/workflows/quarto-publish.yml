@@ -34,6 +34,9 @@ jobs:
             any::dplyr
             any::tidyr
             any::ggplot2
+            any::ggplot2
+            any::ordinal
+            any::psych
 
       # Solo HTML: el PDF necesita LaTeX/xelatex y es la causa típica de fallos en CI
       # _freeze/ del repo está desactualizado: dice que los gráficos existen
