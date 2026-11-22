@@ -16,15 +16,15 @@ Parte de la literatura ha operacionalizado la creencia meritocrática mediante e
 
 ## Creencias meritocráticas y percepción de igualdad de oportunidades
 
-Las cuatro dimensiones de la creencia meritocrática (percepción de meritocracia, percepción de privilegio, preferencia meritocrática y aceptación del privilegio) no tienen por qué relacionarse en la misma dirección con la percepción de igualdad de oportunidades. La meritocracia opera a la vez como un juicio cognitivo sobre cómo funciona la desigualdad y como un lente moral para evaluar si los resultados desiguales son merecidos [@laffert_changes], de modo que cada dimensión permite derivar una expectativa distinta.
+Las cuatro dimensiones de la creencia meritocrática (percepción de meritocracia, percepción de privilegio, preferencia meritocrática y aceptación del privilegio) no tienen por qué relacionarse en la misma dirección con la percepción de igualdad de oportunidades. La meritocracia opera a la vez como un juicio cognitivo sobre cómo funciona la desigualdad y como un lente moral para evaluar si los resultados desiguales son merecidos [@laffert_changes], de modo que cada dimensión puede relacionarse de forma distinta con la evaluación de las oportunidades.
 
 La percepción de meritocracia cumpliría una función de legitimación. Quienes perciben que la meritocracia funciona adecuadamente perciben menos desigualdad económica, lo que Castillo et al. [-@castillo_meritocracia_2019] interpretan como una legitimación de las diferencias de ingreso, que se deberían a razones más bien individuales que sistémicas. Una percepción alta de meritocracia es más compatible con la afirmación del orden existente, mientras que una percepción baja puede reflejar insatisfacción y una demanda de mayor justicia [@laffert_changes]. Si las recompensas se perciben como resultado del esfuerzo y el talento, es esperable que también se perciba que las condiciones para competir están abiertas a todos.
 
 La percepción de privilegio apunta en la dirección contraria. Percibir que a quienes tienen padres ricos o buenos contactos les va mejor equivale a reconocer que el origen familiar y las redes condicionan los resultados, es decir, que las oportunidades para demostrar mérito dependen de factores externos a él [@mijs2016]. La percepción de privilegio debería, por tanto, asociarse con una menor percepción de igualdad de oportunidades.
 
-La preferencia meritocrática no implica una evaluación positiva de la realidad. En población adulta, una mayor preferencia por la meritocracia se asocia con una mayor percepción de desigualdad, lo que sugiere que la adhesión normativa al mérito establece un estándar más exigente frente a la realidad y una demanda por reducir las diferencias que se basan en criterios distintos al mérito [@castillo_meritocracia_2019]. En población escolar, la preferencia meritocrática se asocia con una mayor percepción de privilegio [@laffert_changes]. Quienes prefieren con más fuerza que el esfuerzo y el talento determinen las recompensas tenderían, así, a evaluar más críticamente si todos parten desde el mismo lugar.
+La preferencia meritocrática no implica una evaluación positiva de la realidad. En población adulta, una mayor preferencia por la meritocracia se asocia con una mayor percepción de desigualdad, lo que sugiere que la adhesión normativa al mérito establece un estándar más exigente frente a la realidad y una demanda por reducir las diferencias que se basan en criterios distintos al mérito [@castillo_meritocracia_2019]. En población escolar, la preferencia meritocrática se asocia con una mayor percepción de privilegio [@laffert_changes]. Quienes prefieren con más fuerza que el esfuerzo y el talento determinen las recompensas podrían, así, evaluar más críticamente si todos parten desde el mismo lugar. Sin embargo, la preferencia por la meritocracia también ha sido descrita como un mito legitimador, que provee justificaciones morales y racionales para la desigualdad social [@castillo_meritocracia_2019], lo que apunta en la dirección contraria. Con estos antecedentes no es posible anticipar el sentido de su relación con la percepción de igualdad de oportunidades.
 
-La aceptación del privilegio es la dimensión menos estudiada. Su relación con la percepción de privilegio es positiva, lo que indica que reconocer mecanismos no meritocráticos se vincula con aceptar en mayor medida su legitimidad [@laffert_changes]. La preferencia por la meritocracia ha sido descrita como un mito legitimador, que provee justificaciones morales y racionales para la desigualdad social [@castillo_meritocracia_2019]. Si se extiende este argumento a la aceptación del privilegio, quienes consideran legítimo que el origen familiar y los contactos favorezcan a algunos tendrían menos razones para interpretar esas ventajas como una desigualdad de oportunidades. Al mismo tiempo, como esta aceptación puede operar como un juicio normativo separado de la evaluación del mérito [@laffert_changes], esta expectativa tiene un carácter más exploratorio.
+La aceptación del privilegio es la dimensión menos estudiada, y los antecedentes también admiten dos lecturas. Por una parte, quienes consideran legítimo que el origen familiar y los contactos favorezcan a algunos tendrían menos razones para interpretar esas ventajas como una desigualdad de oportunidades. Por otra, en población escolar la aceptación del privilegio se relaciona positivamente con la percepción de privilegio, lo que indica que reconocer mecanismos no meritocráticos se vincula con aceptar en mayor medida su legitimidad [@laffert_changes]; quienes aceptan el privilegio también reconocerían que no todos parten desde el mismo lugar. Como esta aceptación puede operar como un juicio normativo separado de la evaluación del mérito [@laffert_changes], su relación con la percepción de igualdad de oportunidades se examina de manera exploratoria.
 
 ## La escuela como espacio de socialización de las oportunidades
 
@@ -52,7 +52,7 @@ En la etapa escolar, la evidencia es escasa y ambigua. Entre escolares chilenos,
 
 ## Hipótesis
 
-A partir de los antecedentes se plantean cinco hipótesis, resumidas en la @tbl-hipotesis.
+A partir de los antecedentes se plantean cinco hipótesis, resumidas en la @tbl-hipotesis. Dos de ellas, referidas a las dimensiones normativas de la creencia meritocrática, tienen un carácter exploratorio y no anticipan una dirección.
 
   **Transferencia.** Si la escuela es la primera institución en que los estudiantes experimentan una distribución de recompensas que se presenta como igualitaria y basada en el mérito, la evaluación de que esa distribución es justa debería extenderse a la percepción de que la sociedad ofrece las mismas oportunidades a todos [@batruch_belief_2023; @mijs_stratified_2016].
 
@@ -72,15 +72,17 @@ A partir de los antecedentes se plantean cinco hipótesis, resumidas en la @tbl-
 
   Para distinguir entre ambas explicaciones se examinará complementariamente el cambio en la percepción de privilegio. La ilustración implica que, junto con la menor percepción de igualdad de oportunidades, aumenta la percepción de que el éxito depende de tener padres ricos o buenos contactos.
 
-  **Creencias meritocráticas.** Se espera que las cuatro dimensiones de la creencia meritocrática se relacionen de manera diferenciada con la percepción de igualdad de oportunidades: la percepción de meritocracia legitimaría las diferencias existentes, la percepción de privilegio reconoce el peso del origen, la preferencia meritocrática establecería un estándar más exigente frente a la realidad y la aceptación del privilegio legitimaría las ventajas de origen [@castillo_meritocracia_2019; @laffert_changes; @mijs2016]. H5d tiene un carácter exploratorio.
+  **Creencias meritocráticas.** Se espera que las dimensiones perceptivas de la creencia meritocrática se relacionen en direcciones opuestas con la percepción de igualdad de oportunidades: la percepción de meritocracia legitimaría las diferencias existentes y la percepción de privilegio reconoce el peso del origen [@castillo_meritocracia_2019; @laffert_changes; @mijs2016].
 
   > **H5a:** A mayor percepción de meritocracia, mayor percepción de igualdad de oportunidades.
 
   > **H5b:** A mayor percepción de privilegio, menor percepción de igualdad de oportunidades.
 
-  > **H5c:** A mayor preferencia meritocrática, menor percepción de igualdad de oportunidades.
+  **Dimensiones normativas (exploratorias).** Para la preferencia meritocrática y la aceptación del privilegio, los antecedentes apuntan en direcciones contrapuestas: pueden operar como un estándar crítico frente a la realidad o como justificaciones de la desigualdad [@castillo_meritocracia_2019; @laffert_changes]. Por ello se examina su relación con la percepción de igualdad de oportunidades sin anticipar su sentido.
 
-  > **H5d:** A mayor aceptación del privilegio, mayor percepción de igualdad de oportunidades.
+  > **H5c (exploratoria):** La preferencia meritocrática se asocia con la percepción de igualdad de oportunidades.
+
+  > **H5d (exploratoria):** La aceptación del privilegio se asocia con la percepción de igualdad de oportunidades.
 
 | Hipótesis | Mecanismo | Predictor | Efecto esperado |
 |---|---|---|---|
@@ -90,7 +92,7 @@ A partir de los antecedentes se plantean cinco hipótesis, resumidas en la @tbl-
 | H4 | Internalización / ilustración | Ola (panel) | Positivo (internalización) / negativo (ilustración) |
 | H5a | Legitimación | Percepción de meritocracia | Positivo |
 | H5b | Reconocimiento del origen | Percepción de privilegio | Negativo |
-| H5c | Estándar normativo | Preferencia meritocrática | Negativo |
-| H5d | Legitimación del privilegio | Aceptación del privilegio | Positivo |
+| H5c | Exploratoria | Preferencia meritocrática | Sin dirección anticipada |
+| H5d | Exploratoria | Aceptación del privilegio | Sin dirección anticipada |
 
 : Resumen de hipótesis {#tbl-hipotesis}
