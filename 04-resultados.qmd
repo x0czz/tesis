@@ -134,57 +134,71 @@ Entre olas, la percepción de igualdad de oportunidades tiende a disminuir. El p
 
 ```{r}
 #| label: fig-p19-transiciones
-#| fig-cap: "Transiciones en la percepción de igualdad de oportunidades entre la ola 1 y la ola 2. Estudiantes que responden ambas olas; porcentajes sobre el total de esos estudiantes. Los flujos tienen el color de la respuesta en la ola 1."
+#| fig-cap: "Transiciones en la percepción de igualdad de oportunidades entre la ola 1 y la ola 2, en total y según cohorte. Estudiantes que responden ambas olas; porcentajes sobre el total de esos estudiantes en cada panel. Los flujos tienen el color de la respuesta en la ola 1."
 #| echo: false
-#| fig-width: 7
-#| fig-height: 5.5
+#| fig-width: 9
+#| fig-height: 10
+# Cohorte de cada estudiante según la ola 1 (un estudiante tiene un nivel inconsistente entre olas)
+w_coh <- w |>
+  left_join(datos_io |> filter(ola == 1) |> select(id_estudiante, cohorte_media), by = "id_estudiante") |>
+  mutate(cohorte = factor(cohorte_media, 0:1, c("Básica", "Media")))
+
 bw <- 0.34                               # ancho de las barras
 x1 <- 1 + bw / 2; x2 <- 2 - bw / 2       # extremos de los flujos
-
-# Flujos: cada combinación (respuesta ola 1 -> respuesta ola 2), apilada dentro de cada barra
-fl <- w |>
-  count(o1 = as.numeric(o1), o2 = as.numeric(o2)) |>
-  mutate(p = 100 * n / sum(n)) |>
-  arrange(o1, o2) |> mutate(y1max = cumsum(p), y1min = y1max - p) |>
-  arrange(o2, o1) |> mutate(y2max = cumsum(p), y2min = y2max - p)
-
 tt <- seq(0, 1, length.out = 60)
 s  <- (1 - cos(pi * tt)) / 2             # curva sigmoide
-cintas <- bind_rows(lapply(seq_len(nrow(fl)), function(i) {
-  r <- fl[i, ]
-  data.frame(id = i, o1 = as.numeric(r$o1),
-             x = c(x1 + (x2 - x1) * tt, rev(x1 + (x2 - x1) * tt)),
-             y = c(r$y1min + (r$y2min - r$y1min) * s, rev(r$y1max + (r$y2max - r$y1max) * s)))
-})) |>
-  mutate(cat = factor(cats[o1], cats))
 
-# Barras de cada ola
-barras <- bind_rows(
-  w |> count(o = o1) |> mutate(x = 1),
-  w |> count(o = o2) |> mutate(x = 2)
-) |>
-  group_by(x) |>
-  mutate(p = 100 * n / sum(n), ymax = cumsum(p), ymin = ymax - p) |>
-  ungroup() |>
-  mutate(cat = factor(cats[o], cats),
-         txt = ifelse(cat %in% c("Muy en desacuerdo", "Muy de acuerdo"), "white", "grey15"))
+aluvial <- function(d, titulo, leyenda = FALSE) {
+  # Flujos: cada combinación (respuesta ola 1 -> respuesta ola 2), apilada dentro de cada barra
+  fl <- d |>
+    count(o1 = as.numeric(o1), o2 = as.numeric(o2)) |>
+    mutate(p = 100 * n / sum(n)) |>
+    arrange(o1, o2) |> mutate(y1max = cumsum(p), y1min = y1max - p) |>
+    arrange(o2, o1) |> mutate(y2max = cumsum(p), y2min = y2max - p)
+  cintas <- bind_rows(lapply(seq_len(nrow(fl)), function(i) {
+    r <- fl[i, ]
+    data.frame(id = i, o1 = r$o1,
+               x = c(x1 + (x2 - x1) * tt, rev(x1 + (x2 - x1) * tt)),
+               y = c(r$y1min + (r$y2min - r$y1min) * s, rev(r$y1max + (r$y2max - r$y1max) * s)))
+  })) |>
+    mutate(cat = factor(cats[o1], cats))
+  # Barras de cada ola
+  barras <- bind_rows(d |> count(o = o1) |> mutate(x = 1), d |> count(o = o2) |> mutate(x = 2)) |>
+    group_by(x) |>
+    mutate(p = 100 * n / sum(n), ymax = cumsum(p), ymin = ymax - p) |>
+    ungroup() |>
+    mutate(cat = factor(cats[o], cats),
+           txt = ifelse(cat %in% c("Muy en desacuerdo", "Muy de acuerdo"), "white", "grey15"))
+  ggplot() +
+    geom_polygon(data = cintas, aes(x = x, y = y, group = id, fill = cat), alpha = 0.45, colour = NA) +
+    geom_rect(data = barras, aes(xmin = x - bw / 2, xmax = x + bw / 2, ymin = ymin, ymax = ymax, fill = cat),
+              colour = "white", linewidth = 0.6) +
+    geom_text(data = filter(barras, p >= 4), aes(x = x, y = (ymin + ymax) / 2, label = paste0(f1(p), "%"), colour = txt),
+              size = 3) +
+    scale_fill_manual(values = pal_p19, breaks = cats, name = NULL, drop = FALSE) +
+    scale_colour_identity() +
+    scale_x_continuous(breaks = 1:2, labels = c("Ola 1 (2023-2024)", "Ola 2 (2024)"), expand = expansion(add = 0.25)) +
+    scale_y_continuous(breaks = seq(0, 100, 25), labels = function(x) paste0(x, "%"), expand = expansion(mult = 0.01)) +
+    labs(x = NULL, y = NULL, title = paste0(titulo, " (n = ", nrow(d), ")")) +
+    theme_minimal(base_size = 11) +
+    theme(legend.position = if (leyenda) "top" else "none",
+          plot.title = element_text(face = "bold", size = 11, hjust = 0.5),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.grid.major.y = element_line(colour = "grey92"))
+}
 
-ggplot() +
-  geom_polygon(data = cintas, aes(x = x, y = y, group = id, fill = cat), alpha = 0.45, colour = NA) +
-  geom_rect(data = barras, aes(xmin = x - bw / 2, xmax = x + bw / 2, ymin = ymin, ymax = ymax, fill = cat),
-            colour = "white", linewidth = 0.6) +
-  geom_text(data = filter(barras, p >= 4), aes(x = x, y = (ymin + ymax) / 2, label = paste0(f1(p), "%"), colour = txt),
-            size = 3.3) +
-  scale_fill_manual(values = pal_p19, breaks = cats, name = NULL) +
-  scale_colour_identity() +
-  scale_x_continuous(breaks = 1:2, labels = c("Ola 1 (2023-2024)", "Ola 2 (2024)"), expand = expansion(add = 0.25)) +
-  scale_y_continuous(breaks = seq(0, 100, 25), labels = function(x) paste0(x, "%"), expand = expansion(mult = 0.01)) +
-  labs(x = NULL, y = NULL) +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "top",
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.y = element_line(colour = "grey92"))
+g_tot <- aluvial(w_coh, "Total", leyenda = TRUE)
+g_bas <- aluvial(filter(w_coh, cohorte == "Básica"), "Básica")
+g_med <- aluvial(filter(w_coh, cohorte == "Media"), "Media")
+
+# Grilla: total arriba (centrado), básica y media abajo
+grid::grid.newpage()
+grid::pushViewport(grid::viewport(layout = grid::grid.layout(2, 4, heights = grid::unit(c(1.12, 1), "null"))))
+en <- function(g, fila, cols) print(g, vp = grid::viewport(layout.pos.row = fila, layout.pos.col = cols))
+en(g_tot, 1, 2:3)
+en(g_bas, 2, 1:2)
+en(g_med, 2, 3:4)
 ```
 
 ### Variables independientes
@@ -204,28 +218,54 @@ vi <- c(p2_3 = "Meritocracia escolar percibida",
         extranjero = "Nacido/a en el extranjero",
         cohorte_media = "Cohorte de media")
 hip <- c("H1", "H2", "H3", "H5a", "H5b", "H5c", "H5d", "Control", "Control", "Control")
-rango <- c("1–4", "1,0–7,0", "0–1", "1–4", "1–4", "1–4", "1–4", "0–1", "0–1", "0–1")
 bin <- c("univ", "mujer_otro", "extranjero", "cohorte_media")
+
+items <- c(p1_1 = "Se recompensa el esfuerzo",
+           p1_2 = "Se recompensa la inteligencia y la habilidad",
+           p1_3 = "Les va mejor a quienes tienen padres ricos",
+           p1_4 = "Les va mejor a quienes tienen buenos contactos",
+           p1_5 = "Más esfuerzo debería tener más recompensa",
+           p1_6 = "Más talento debería tener más recompensa",
+           p1_7 = "Está bien que a quienes tienen padres ricos les vaya bien",
+           p1_8 = "Está bien que a quienes tienen buenos contactos les vaya bien")
+dim_items <- list(merit_soc = c("p1_1", "p1_2"), privilegio = c("p1_3", "p1_4"),
+                  pref_merit = c("p1_5", "p1_6"), pref_nomerit = c("p1_7", "p1_8"))
 
 ma <- na.omit(datos_io[, c("id_estudiante", "ola", "p1_9_ord", names(vi))])
 m2 <- ma[ma$ola == 2, ]                    # segunda ola de la muestra analítica
+m2 <- merge(m2, datos_io[datos_io$ola == 2, c("id_estudiante", names(items))], by = "id_estudiante")
 desc <- function(x, v) if (v %in% bin) paste0(f1(100 * mean(x)), "%") else paste0(f1(mean(x), 2), " (", f1(sd(x), 2), ")")
 mv <- function(v) mean(m2[[v]])
 ```
 
-La @tbl-independientes describe las variables independientes tal como ingresan a los modelos, es decir, con las cuatro dimensiones de la creencia meritocrática construidas como el promedio de sus dos ítems. Se presentan los datos de la segunda ola, considerando los `r nrow(m2)` estudiantes de esa ola que tienen información completa en todas las variables de los modelos.
+La @tbl-independientes describe las variables independientes tal como ingresan a los modelos, es decir, con las cuatro dimensiones de la creencia meritocrática construidas como el promedio de sus dos ítems. Para las variables ordinales se incluye además la distribución de las respuestas en sus cuatro categorías; en el caso de las dimensiones, esa distribución se presenta para cada uno de los ítems que las componen, ya que el promedio de dos ítems no conserva las categorías originales. Se presentan los datos de la segunda ola, considerando los `r nrow(m2)` estudiantes de esa ola que tienen información completa en todas las variables de los modelos.
 
 ```{r}
 #| label: tbl-independientes
-#| tbl-cap: "Descriptivos de las variables independientes. Ola 2. Media (desviación estándar) para las variables continuas y porcentaje para las dicotómicas. Casos completos en las variables de los modelos."
+#| tbl-cap: "Descriptivos de las variables independientes. Ola 2. Para las variables ordinales se presenta el porcentaje de respuestas en cada categoría; para las dimensiones de la creencia meritocrática, la distribución corresponde a cada uno de sus dos ítems. La última columna presenta la media (desviación estándar) de las variables continuas y ordinales, y el porcentaje de las dicotómicas. Casos completos en las variables de los modelos."
 #| echo: false
-tab_vi <- data.frame(
-  Variable = unname(vi), `Hipótesis` = hip, Rango = rango,
-  o2 = sapply(names(vi), function(v) desc(m2[[v]], v)),
-  check.names = FALSE, row.names = NULL)
-kable(tab_vi,
-      col.names = c("Variable", "Hipótesis", "Rango", paste0("Media (DE) / % (n = ", nrow(m2), ")")),
-      align = c("l", "l", "c", "r"))
+cats <- c("Muy en desacuerdo", "En desacuerdo", "De acuerdo", "Muy de acuerdo")
+pct <- function(x) { x <- x[!is.na(x)]; paste0(f1(100 * as.numeric(table(factor(x, levels = 1:4))) / length(x)), "%") }
+fila <- function(nombre, h, dist = rep("", 4), resumen = "")
+  setNames(as.data.frame(t(c(nombre, h, dist, resumen))), c("Variable", "Hipótesis", cats, "Resumen"))
+sangria <- "\u00a0\u00a0\u00a0\u00a0"
+filas <- list()
+for (i in seq_along(vi)) {
+  v <- names(vi)[i]
+  if (v == "p2_3") {
+    filas[[length(filas) + 1]] <- fila(vi[[v]], hip[i], pct(m2$p2_3), desc(m2$p2_3, v))
+  } else if (v %in% names(dim_items)) {
+    filas[[length(filas) + 1]] <- fila(paste0(vi[[v]], " (índice)"), hip[i], resumen = desc(m2[[v]], v))
+    for (it in dim_items[[v]])
+      filas[[length(filas) + 1]] <- fila(paste0(sangria, items[[it]]), "", pct(m2[[it]]))
+  } else {
+    filas[[length(filas) + 1]] <- fila(vi[[v]], hip[i], resumen = desc(m2[[v]], v))
+  }
+}
+tab_vi <- do.call(rbind, filas)
+kable(tab_vi, row.names = FALSE,
+      col.names = c("Variable", "Hipótesis", cats, "Media (DE) / %"),
+      align = c("l", "l", "r", "r", "r", "r", "r"))
 ```
 
 La meritocracia escolar percibida se ubica sobre el punto medio de la escala (`r f1(mv("p2_3"), 2)`): el `r f1(100 * mean(m2$p2_3 >= 3))`% de los estudiantes está de acuerdo o muy de acuerdo con que en su escuela se obtienen las notas que se merecen. El promedio de notas es de `r f1(mv("notas"), 1)` y el `r f1(100 * mv("univ"))`% de los estudiantes espera completar una carrera universitaria. Entre las dimensiones de la creencia meritocrática, la percepción de privilegio (`r f1(mv("privilegio"), 2)`) supera a la percepción de meritocracia (`r f1(mv("merit_soc"), 2)`): en promedio, los estudiantes ven a la sociedad chilena más como un lugar donde importan el origen y los contactos que como uno donde se recompensa el esfuerzo. En el plano normativo, la preferencia meritocrática (`r f1(mv("pref_merit"), 2)`) es más alta que la aceptación del privilegio (`r f1(mv("pref_nomerit"), 2)`).
