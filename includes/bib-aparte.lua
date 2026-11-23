@@ -22,7 +22,11 @@ local function procesar(div, doc_meta)
     -- Las citas quedan como texto (sin la clase "citation"), para que el libro no las recoja
     Cite = function(c) return pandoc.Span(c.content, pandoc.Attr("", { "cita-aparte" })) end,
     Div = function(d)
-      if d.identifier == "refs" then d.identifier = "lista-aparte" end
+      if d.identifier == "refs" then
+        d.identifier = "lista-aparte"
+        -- Sin la clase "references": includes/citefix.html oculta esos bloques en los capítulos
+        d.classes = d.classes:filter(function(c) return c ~= "references" end)
+      end
       return d
     end
   })
