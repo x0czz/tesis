@@ -130,14 +130,11 @@ ggplot(segs) +
         strip.text = element_text(face = "bold", hjust = 0))
 ```
 
-Entre olas, la percepción de igualdad de oportunidades tiende a disminuir. El porcentaje de acuerdo pasa de `r f1(ac(1))`% a `r f1(ac(2))`%, y la proporción que está muy en desacuerdo aumenta de `r f1(pct(1, "Muy en desacuerdo"))`% a `r f1(pct(2, "Muy en desacuerdo"))`%. Como la composición de ambas olas difiere por la atrición, el cambio se evalúa con los `r nrow(w)` estudiantes que responden en las dos mediciones (@fig-p19-transiciones). De ellos, el `r f1(cambio["igual"])`% mantiene la misma respuesta, el `r f1(cambio["baja"])`% se desplaza hacia el desacuerdo y el `r f1(cambio["sube"])`% hacia el acuerdo. La percepción es además relativamente inestable a nivel individual: el `r f1(cruza)`% de los estudiantes cambia de lado entre el acuerdo y el desacuerdo de una ola a otra. Este descenso es consistente con la hipótesis de ilustración (H5), que se evalúa formalmente en los modelos multivariados.
+Entre olas, la percepción de igualdad de oportunidades tiende a disminuir. El porcentaje de acuerdo pasa de `r f1(ac(1))`% a `r f1(ac(2))`%, y la proporción que está muy en desacuerdo aumenta de `r f1(pct(1, "Muy en desacuerdo"))`% a `r f1(pct(2, "Muy en desacuerdo"))`%. Como la composición de ambas olas difiere por la atrición, el cambio se evalúa con los `r nrow(w)` estudiantes que responden en las dos mediciones (@fig-p19-transiciones). De ellos, el `r f1(cambio["igual"])`% mantiene la misma respuesta, el `r f1(cambio["baja"])`% se desplaza hacia el desacuerdo y el `r f1(cambio["sube"])`% hacia el acuerdo. La percepción es además relativamente inestable a nivel individual: el `r f1(cruza)`% de los estudiantes cambia de lado entre el acuerdo y el desacuerdo de una ola a otra. Este descenso es consistente con la hipótesis de ilustración (H4), que se evalúa formalmente en los modelos multivariados.
 
 ```{r}
-#| label: fig-p19-transiciones
-#| fig-cap: "Transiciones en la percepción de igualdad de oportunidades entre la ola 1 y la ola 2, en total y según cohorte. Estudiantes que responden ambas olas; porcentajes sobre el total de esos estudiantes en cada panel. Los flujos tienen el color de la respuesta en la ola 1."
-#| echo: false
-#| fig-width: 9
-#| fig-height: 10
+#| label: setup-transiciones
+#| include: false
 # Cohorte de cada estudiante según la ola 1 (un estudiante tiene un nivel inconsistente entre olas)
 w_coh <- w |>
   left_join(datos_io |> filter(ola == 1) |> select(id_estudiante, cohorte_media), by = "id_estudiante") |>
@@ -148,58 +145,89 @@ x1 <- 1 + bw / 2; x2 <- 2 - bw / 2       # extremos de los flujos
 tt <- seq(0, 1, length.out = 60)
 s  <- (1 - cos(pi * tt)) / 2             # curva sigmoide
 
-aluvial <- function(d, titulo, leyenda = FALSE) {
-  # Flujos: cada combinación (respuesta ola 1 -> respuesta ola 2), apilada dentro de cada barra
+# Flujos (cintas) y barras de un diagrama aluvial; 'grupo' permite separar paneles
+aluvial_datos <- function(d) {
+  d <- d |> group_by(grupo)
   fl <- d |>
     count(o1 = as.numeric(o1), o2 = as.numeric(o2)) |>
     mutate(p = 100 * n / sum(n)) |>
-    arrange(o1, o2) |> mutate(y1max = cumsum(p), y1min = y1max - p) |>
-    arrange(o2, o1) |> mutate(y2max = cumsum(p), y2min = y2max - p)
+    arrange(o1, o2, .by_group = TRUE) |> mutate(y1max = cumsum(p), y1min = y1max - p) |>
+    arrange(o2, o1, .by_group = TRUE) |> mutate(y2max = cumsum(p), y2min = y2max - p) |>
+    ungroup()
   cintas <- bind_rows(lapply(seq_len(nrow(fl)), function(i) {
     r <- fl[i, ]
-    data.frame(id = i, o1 = r$o1,
+    data.frame(id = i, grupo = r$grupo, o1 = r$o1,
                x = c(x1 + (x2 - x1) * tt, rev(x1 + (x2 - x1) * tt)),
                y = c(r$y1min + (r$y2min - r$y1min) * s, rev(r$y1max + (r$y2max - r$y1max) * s)))
   })) |>
     mutate(cat = factor(cats[o1], cats))
-  # Barras de cada ola
   barras <- bind_rows(d |> count(o = o1) |> mutate(x = 1), d |> count(o = o2) |> mutate(x = 2)) |>
-    group_by(x) |>
+    group_by(grupo, x) |>
     mutate(p = 100 * n / sum(n), ymax = cumsum(p), ymin = ymax - p) |>
     ungroup() |>
     mutate(cat = factor(cats[o], cats),
            txt = ifelse(cat %in% c("Muy en desacuerdo", "Muy de acuerdo"), "white", "grey15"))
+  list(cintas = cintas, barras = barras)
+}
+
+# Indicadores de cambio por cohorte (estudiantes que responden ambas olas)
+coh_stats <- w_coh |>
+  group_by(cohorte) |>
+  summarise(ac1 = 100 * mean(o1 >= 3), ac2 = 100 * mean(o2 >= 3),
+            mda1 = 100 * mean(o1 == 1), mda2 = 100 * mean(o2 == 1),
+            mde1 = 100 * mean(o1 == 4), mde2 = 100 * mean(o2 == 4),
+            igual = 100 * mean(o1 == o2), baja = 100 * mean(o2 < o1), sube = 100 * mean(o2 > o1),
+            cruza = 100 * mean((o1 >= 3) != (o2 >= 3)))
+cs <- function(coh, v) f1(coh_stats[[v]][coh_stats$cohorte == coh])
+
+aluvial_plot <- function(a, etiquetas_x, tam_txt = 3.3) {
   ggplot() +
-    geom_polygon(data = cintas, aes(x = x, y = y, group = id, fill = cat), alpha = 0.45, colour = NA) +
-    geom_rect(data = barras, aes(xmin = x - bw / 2, xmax = x + bw / 2, ymin = ymin, ymax = ymax, fill = cat),
+    geom_polygon(data = a$cintas, aes(x = x, y = y, group = id, fill = cat), alpha = 0.45, colour = NA) +
+    geom_rect(data = a$barras, aes(xmin = x - bw / 2, xmax = x + bw / 2, ymin = ymin, ymax = ymax, fill = cat),
               colour = "white", linewidth = 0.6) +
-    geom_text(data = filter(barras, p >= 4), aes(x = x, y = (ymin + ymax) / 2, label = paste0(f1(p), "%"), colour = txt),
-              size = 3) +
-    scale_fill_manual(values = pal_p19, breaks = cats, name = NULL, drop = FALSE) +
+    geom_text(data = filter(a$barras, p >= 4), aes(x = x, y = (ymin + ymax) / 2, label = paste0(f1(p), "%"), colour = txt),
+              size = tam_txt) +
+    scale_fill_manual(values = pal_p19, breaks = cats, name = NULL) +
     scale_colour_identity() +
-    scale_x_continuous(breaks = 1:2, labels = c("Ola 1 (2023-2024)", "Ola 2 (2024)"), expand = expansion(add = 0.25)) +
+    scale_x_continuous(breaks = 1:2, labels = etiquetas_x, expand = expansion(add = 0.25)) +
     scale_y_continuous(breaks = seq(0, 100, 25), labels = function(x) paste0(x, "%"), expand = expansion(mult = 0.01)) +
-    labs(x = NULL, y = NULL, title = paste0(titulo, " (n = ", nrow(d), ")")) +
+    labs(x = NULL, y = NULL) +
     theme_minimal(base_size = 11) +
-    theme(legend.position = if (leyenda) "top" else "none",
-          plot.title = element_text(face = "bold", size = 11, hjust = 0.5),
+    theme(legend.position = "top",
           panel.grid.major.x = element_blank(),
           panel.grid.minor = element_blank(),
           panel.grid.major.y = element_line(colour = "grey92"))
 }
-
-g_tot <- aluvial(w_coh, "Total", leyenda = TRUE)
-g_bas <- aluvial(filter(w_coh, cohorte == "Básica"), "Básica")
-g_med <- aluvial(filter(w_coh, cohorte == "Media"), "Media")
-
-# Grilla: total arriba (centrado), básica y media abajo
-grid::grid.newpage()
-grid::pushViewport(grid::viewport(layout = grid::grid.layout(2, 4, heights = grid::unit(c(1.12, 1), "null"))))
-en <- function(g, fila, cols) print(g, vp = grid::viewport(layout.pos.row = fila, layout.pos.col = cols))
-en(g_tot, 1, 2:3)
-en(g_bas, 2, 1:2)
-en(g_med, 2, 3:4)
 ```
+
+```{r}
+#| label: fig-p19-transiciones
+#| fig-cap: "Transiciones en la percepción de igualdad de oportunidades entre la ola 1 y la ola 2. Estudiantes que responden ambas olas; porcentajes sobre el total de esos estudiantes. Los flujos tienen el color de la respuesta en la ola 1."
+#| echo: false
+#| fig-width: 7
+#| fig-height: 5.5
+aluvial_plot(aluvial_datos(mutate(w_coh, grupo = "Total")),
+             etiquetas_x = c("Ola 1 (2023-2024)", "Ola 2 (2024)"))
+```
+
+```{r}
+#| label: fig-p19-transiciones-cohorte
+#| fig-cap: "Transiciones en la percepción de igualdad de oportunidades entre la ola 1 y la ola 2, según cohorte. Estudiantes que responden ambas olas; porcentajes sobre el total de cada cohorte. Los flujos tienen el color de la respuesta en la ola 1."
+#| echo: false
+#| fig-width: 8
+#| fig-height: 4.2
+n_coh <- table(w_coh$cohorte)
+a_coh <- aluvial_datos(mutate(w_coh, grupo = factor(paste0(cohorte, " (n = ", n_coh[as.character(cohorte)], ")"),
+                                                    levels = paste0(names(n_coh), " (n = ", n_coh, ")"))))
+aluvial_plot(a_coh, etiquetas_x = c("Ola 1", "Ola 2"), tam_txt = 2.8) +
+  facet_wrap(~ grupo, nrow = 1) +
+  theme(strip.text = element_text(face = "bold", size = 10.5),
+        panel.spacing = unit(1.4, "lines"))
+```
+
+La @fig-p19-transiciones-cohorte separa estas transiciones por cohorte y muestra que ambas parten de lugares muy distintos y cambian de manera diferente. Los estudiantes de básica parten con una percepción mayoritariamente favorable: en la primera ola, el `r cs("B\u00e1sica", "ac1")`% está de acuerdo o muy de acuerdo con que en Chile todas las personas tienen las mismas oportunidades, y el `r cs("B\u00e1sica", "mde1")`% está muy de acuerdo. Entre olas, el acuerdo baja a `r cs("B\u00e1sica", "ac2")`%, y el cambio es más visible en los extremos: la proporción muy de acuerdo cae de `r cs("B\u00e1sica", "mde1")`% a `r cs("B\u00e1sica", "mde2")`% y la proporción muy en desacuerdo sube de `r cs("B\u00e1sica", "mda1")`% a `r cs("B\u00e1sica", "mda2")`%. A nivel individual, el `r cs("B\u00e1sica", "baja")`% de los estudiantes de básica se desplaza hacia el desacuerdo, frente a un `r cs("B\u00e1sica", "sube")`% que se desplaza hacia el acuerdo, y el `r cs("B\u00e1sica", "cruza")`% cambia de lado entre el acuerdo y el desacuerdo.
+
+Los estudiantes de media, en cambio, parten con una percepción mayoritariamente desfavorable: en la primera ola solo el `r cs("Media", "ac1")`% está de acuerdo, y esa proporción prácticamente no cambia en la segunda (`r cs("Media", "ac2")`%). Lo que aumenta es la intensidad del desacuerdo, ya que la proporción muy en desacuerdo pasa de `r cs("Media", "mda1")`% a `r cs("Media", "mda2")`%. En esta cohorte, casi la mitad de los estudiantes (`r cs("Media", "igual")`%) mantiene la misma respuesta, y los desplazamientos hacia el desacuerdo (`r cs("Media", "baja")`%) superan a los desplazamientos hacia el acuerdo (`r cs("Media", "sube")`%) por un margen menor que en básica. En conjunto, el descenso del acuerdo entre olas es más marcado en básica, mientras que en media el cambio se expresa sobre todo en una mayor intensidad del desacuerdo.
 
 ### Variables independientes
 
