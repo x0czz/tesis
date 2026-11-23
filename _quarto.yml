@@ -38,6 +38,7 @@ book:
     - 03-metodologia.qmd
     - 04-resultados.qmd
     - 05-discusion.qmd
+    - leftovers.qmd          # Nota personal; con bibliografía propia (refs/educ-opor.bib)
     - 06-conclusiones.qmd
     - references.qmd
     # Para agregar un nuevo capitulo duplica un archivo .qmd y agregalo aqui:
@@ -53,6 +54,8 @@ bibliography:
   - refs/refs_nuevas_igualdad_oportunidades.bib
   - refs/meritocracia_escolar_castillo.bib
 link-citations: true             # Enlaces desde el texto hacia la bibliografia
+filters:
+  - includes/bib-aparte.lua      # Bibliografía separada para bloques ::: {.bib-aparte} (capítulo Leftovers)
 reference-location: section      # Citas agrupadas al final de cada seccion
 
 format:

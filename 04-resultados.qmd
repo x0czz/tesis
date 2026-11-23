@@ -187,6 +187,49 @@ ggplot() +
         panel.grid.major.y = element_line(colour = "grey92"))
 ```
 
+### Variables independientes
+
+```{r}
+#| label: setup-independientes
+#| include: false
+# Muestra analítica: casos completos en todas las variables de los modelos
+vi <- c(p2_3 = "Meritocracia escolar percibida",
+        notas = "Promedio de notas",
+        univ = "Espera completar la universidad",
+        merit_soc = "Percepción de meritocracia",
+        privilegio = "Percepción de privilegio",
+        pref_merit = "Preferencia meritocrática",
+        pref_nomerit = "Aceptación del privilegio",
+        mujer_otro = "Mujer u otro género",
+        extranjero = "Nacido/a en el extranjero",
+        cohorte_media = "Cohorte de media")
+hip <- c("H1", "H2", "H3", "H5a", "H5b", "H5c", "H5d", "Control", "Control", "Control")
+rango <- c("1–4", "1,0–7,0", "0–1", "1–4", "1–4", "1–4", "1–4", "0–1", "0–1", "0–1")
+bin <- c("univ", "mujer_otro", "extranjero", "cohorte_media")
+
+ma <- na.omit(datos_io[, c("id_estudiante", "ola", "p1_9_ord", names(vi))])
+m2 <- ma[ma$ola == 2, ]                    # segunda ola de la muestra analítica
+desc <- function(x, v) if (v %in% bin) paste0(f1(100 * mean(x)), "%") else paste0(f1(mean(x), 2), " (", f1(sd(x), 2), ")")
+mv <- function(v) mean(m2[[v]])
+```
+
+La @tbl-independientes describe las variables independientes tal como ingresan a los modelos, es decir, con las cuatro dimensiones de la creencia meritocrática construidas como el promedio de sus dos ítems. Se presentan los datos de la segunda ola, considerando los `r nrow(m2)` estudiantes de esa ola que tienen información completa en todas las variables de los modelos.
+
+```{r}
+#| label: tbl-independientes
+#| tbl-cap: "Descriptivos de las variables independientes. Ola 2. Media (desviación estándar) para las variables continuas y porcentaje para las dicotómicas. Casos completos en las variables de los modelos."
+#| echo: false
+tab_vi <- data.frame(
+  Variable = unname(vi), `Hipótesis` = hip, Rango = rango,
+  o2 = sapply(names(vi), function(v) desc(m2[[v]], v)),
+  check.names = FALSE, row.names = NULL)
+kable(tab_vi,
+      col.names = c("Variable", "Hipótesis", "Rango", paste0("Media (DE) / % (n = ", nrow(m2), ")")),
+      align = c("l", "l", "c", "r"))
+```
+
+La meritocracia escolar percibida se ubica sobre el punto medio de la escala (`r f1(mv("p2_3"), 2)`): el `r f1(100 * mean(m2$p2_3 >= 3))`% de los estudiantes está de acuerdo o muy de acuerdo con que en su escuela se obtienen las notas que se merecen. El promedio de notas es de `r f1(mv("notas"), 1)` y el `r f1(100 * mv("univ"))`% de los estudiantes espera completar una carrera universitaria. Entre las dimensiones de la creencia meritocrática, la percepción de privilegio (`r f1(mv("privilegio"), 2)`) supera a la percepción de meritocracia (`r f1(mv("merit_soc"), 2)`): en promedio, los estudiantes ven a la sociedad chilena más como un lugar donde importan el origen y los contactos que como uno donde se recompensa el esfuerzo. En el plano normativo, la preferencia meritocrática (`r f1(mv("pref_merit"), 2)`) es más alta que la aceptación del privilegio (`r f1(mv("pref_nomerit"), 2)`).
+
 ### Relación con las creencias meritocráticas
 
 ```{r}
@@ -248,4 +291,4 @@ Las correlaciones de la igualdad de oportunidades con los demás ítems son, en 
 
 Las asociaciones con las dimensiones de privilegio siguen la dirección esperada en las hipótesis. La percepción de privilegio se relaciona negativamente con la igualdad de oportunidades (r = `r r("p1_9", "p1_3")` para los padres ricos y `r r("p1_9", "p1_4")` para los contactos), mientras que la aceptación del privilegio se relaciona positivamente (r = `r r("p1_9", "p1_7")` y `r r("p1_9", "p1_8")`). La preferencia meritocrática, en cambio, prácticamente no se asocia con la igualdad de oportunidades (r = `r r("p1_9", "p1_5")` y `r r("p1_9", "p1_6")`).
 
-La matriz reproduce, además, la estructura de la escala de meritocracia: los dos ítems de cada dimensión se correlacionan más entre sí (entre `r f1(min(rho["p1_5", "p1_6"], rho["p1_1", "p1_2"], rho["p1_3", "p1_4"], rho["p1_7", "p1_8"]), 2)` y `r f1(max(rho["p1_5", "p1_6"], rho["p1_1", "p1_2"], rho["p1_3", "p1_4"], rho["p1_7", "p1_8"]), 2)`) que con los de otras dimensiones, lo que es consistente con la estructura de cuatro factores validada en estos datos [@laffert_changes]. La percepción de meritocracia y la de privilegio se relacionan de forma débil y mayormente negativa, lo que muestra que los estudiantes no las tratan como polos opuestos de una misma creencia. Las correlaciones entre los ítems de cada dimensión son, además, similares a las que se desprenden del análisis factorial confirmatorio que Laffert et al. [-@laffert_changes] estimaron con estos mismos datos.
+La matriz reproduce, además, la estructura de la escala de meritocracia: los dos ítems de cada dimensión se correlacionan más entre sí (entre `r f1(min(rho["p1_5", "p1_6"], rho["p1_1", "p1_2"], rho["p1_3", "p1_4"], rho["p1_7", "p1_8"]), 2)` y `r f1(max(rho["p1_5", "p1_6"], rho["p1_1", "p1_2"], rho["p1_3", "p1_4"], rho["p1_7", "p1_8"]), 2)`) que con los de otras dimensiones, lo que es consistente con la estructura de cuatro factores validada en estos datos [@laffert_changes]. La percepción de meritocracia y la de privilegio se relacionan de forma débil y mayormente negativa, lo que muestra que los estudiantes no las tratan como polos opuestos de una misma creencia. Las correlaciones entre los ítems de cada dimensión son, además, similares a las que se desprenden del análisis factorial confirmatorio que Castillo et al. [-@laffert_changes] estimaron con estos mismos datos.
