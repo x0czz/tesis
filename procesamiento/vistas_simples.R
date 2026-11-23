@@ -1,8 +1,4 @@
-# ------------------------------------------------------------------------------
-# Versiones simplificadas de las tablas y figuras del capítulo de resultados.
-# Solo para mirar con el script abierto: no guarda nada ni se usa en el libro.
-# Ejecutar desde la raíz del proyecto (tesis/).
-# ------------------------------------------------------------------------------
+# Exploracion- graficos
 
 library(dplyr)
 library(tidyr)
@@ -13,10 +9,8 @@ load("input/datos_igualdad_oportunidades.RData")
 d <- datos_io
 
 
-# 1. Tabla: percepción de igualdad de oportunidades (p1_9) según ola ----------
-
-table(d$p1_9_ord, d$ola)                               # frecuencias
-round(100 * prop.table(table(d$p1_9_ord, d$ola), 2), 1) # % por ola
+table(d$p1_9_ord, d$ola)                              
+round(100 * prop.table(table(d$p1_9_ord, d$ola), 2), 1) 
 
 
 # 2. Figura: distribución de p1_9 según ola y cohorte -------------------------
@@ -29,15 +23,16 @@ ggplot(dplyr::filter(d, !is.na(p1_9_ord)), aes(x = factor(ola), fill = p1_9_ord)
 # 3. Datos de panel: estudiantes que responden ambas olas ---------------------
 
 w <- d |>
-  dplyr::select(id_estudiante, ola, p1_9) |>
+  select(id_estudiante, ola, p1_9) |>
   pivot_wider(names_from = ola, values_from = p1_9, names_prefix = "o") |>
-  dplyr::filter(!is.na(o1), !is.na(o2)) |>
-  left_join(dplyr::filter(d, ola == 1) |> dplyr::select(id_estudiante, cohorte_media), by = "id_estudiante")
-
+  filter(!is.na(o1), !is.na(o2)) |>
+  dplyr::left_join(dplyr::filter(d, ola == 1) |> select(id_estudiante, cohorte_media), by = "id_estudiante")
+  
 table(ola1 = w$o1, ola2 = w$o2)                        # matriz de transiciones
 
 
 # 4. Figura: aluvial de transiciones entre olas (total) -----------------------
+
 
 ggplot(count(w, o1, o2), aes(axis1 = factor(o1), axis2 = factor(o2), y = n)) +
   geom_alluvium() +
@@ -45,6 +40,7 @@ ggplot(count(w, o1, o2), aes(axis1 = factor(o1), axis2 = factor(o2), y = n)) +
 
 
 # 5. Figura: aluvial de transiciones según cohorte ----------------------------
+
 
 ggplot(count(w, cohorte_media, o1, o2), aes(axis1 = factor(o1), axis2 = factor(o2), y = n)) +
   geom_alluvium() +
@@ -56,19 +52,19 @@ ggplot(count(w, cohorte_media, o1, o2), aes(axis1 = factor(o1), axis2 = factor(o
 
 vi <- c("p2_3", "notas", "univ", "merit_soc", "privilegio", "pref_merit", "pref_nomerit",
         "mujer_otro", "extranjero", "cohorte_media")
-m2 <- na.omit(d[d$ola == 2, c("id_estudiante", "p1_9_ord", vi)])
+m2 <- na.omit(dplyr::filter(d, d$ola == 2)[, c("id_estudiante", "p1_9_ord", vi)])
 
 round(sapply(m2[vi], mean), 2)                         # medias (y % en las dicotómicas)
 round(sapply(m2[vi], sd), 2)                           # desviaciones estándar
 
 items <- c("p2_3", paste0("p1_", 1:8))                 # ordinales de 1 a 4
-m2i <- d[d$ola == 2 & d$id_estudiante %in% m2$id_estudiante, items]
+m2i <- dplyr::filter(d, d$ola == 2 & d$id_estudiante %in% m2$id_estudiante)[, items]
 round(100 * sapply(m2i, function(x) prop.table(table(factor(x, 1:4)))), 1)  # % por categoría
 
 
 # 7. Figura: correlaciones policóricas (ola 1) --------------------------------
 
-x_w1 <- d |> dplyr::filter(ola == 1) |> dplyr::select(p1_9, paste0("p1_", 1:8)) |> mutate(across(everything(), as.numeric))
+x_w1 <- d |> filter(ola == 1) |> select(p1_9, paste0("p1_", 1:8)) |> mutate(across(everything(), as.numeric))
 rho <- psych::polychoric(x_w1)$rho
 round(rho, 2)
 
