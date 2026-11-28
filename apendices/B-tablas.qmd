@@ -3,4 +3,142 @@ title: "Tablas adicionales"
 suppress-bibliography: true
 ---
 
-Tablas extendidas, tests de robustez, etc.
+```{r}
+#| label: setup-anexo
+#| include: false
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+
+load(if (file.exists("input/datos_igualdad_oportunidades.RData")) "input/datos_igualdad_oportunidades.RData" else "../input/datos_igualdad_oportunidades.RData")
+
+# Formato de números en español
+f1 <- function(x, d = 1) formatC(x, format = "f", digits = d, decimal.mark = ",", big.mark = ".")
+```
+
+Este anexo reúne versiones alternativas de los descriptivos del capítulo de resultados. En el capítulo, las variables independientes y sus correlaciones se presentan a nivel de estudiante, promediando sus respuestas en las dos olas; aquí se presentan los descriptivos de la segunda ola por separado y las correlaciones policóricas entre los ítems de la escala en la primera ola.
+
+## Variables independientes en la segunda ola
+
+```{r}
+#| label: setup-independientes-ola2
+#| include: false
+# Muestra analítica: casos completos en todas las variables de los modelos
+vi <- c(p2_3 = "Meritocracia escolar percibida",
+        notas = "Promedio de notas",
+        univ = "Espera completar la universidad",
+        merit_soc = "Percepción de meritocracia",
+        privilegio = "Percepción de privilegio",
+        pref_merit = "Preferencia meritocrática",
+        pref_nomerit = "Aceptación del privilegio",
+        mujer_otro = "Mujer u otro género",
+        extranjero = "Nacido/a en el extranjero",
+        cohorte_media = "Cohorte de media")
+hip <- c("H1", "H2", "H3", "H5a", "H5b", "H5c", "H5d", "Control", "Control", "Control")
+bin <- c("univ", "mujer_otro", "extranjero", "cohorte_media")
+
+items <- c(p1_1 = "Se recompensa el esfuerzo",
+           p1_2 = "Se recompensa la inteligencia y la habilidad",
+           p1_3 = "Les va mejor a quienes tienen padres ricos",
+           p1_4 = "Les va mejor a quienes tienen buenos contactos",
+           p1_5 = "Más esfuerzo debería tener más recompensa",
+           p1_6 = "Más talento debería tener más recompensa",
+           p1_7 = "Está bien que a quienes tienen padres ricos les vaya bien",
+           p1_8 = "Está bien que a quienes tienen buenos contactos les vaya bien")
+dim_items <- list(merit_soc = c("p1_1", "p1_2"), privilegio = c("p1_3", "p1_4"),
+                  pref_merit = c("p1_5", "p1_6"), pref_nomerit = c("p1_7", "p1_8"))
+
+ma <- na.omit(datos_io[, c("id_estudiante", "ola", "p1_9_ord", names(vi))])
+m2 <- ma[ma$ola == 2, ]                    # segunda ola de la muestra analítica
+m2 <- merge(m2, datos_io[datos_io$ola == 2, c("id_estudiante", names(items))], by = "id_estudiante")
+desc <- function(x, v) if (v %in% bin) paste0(f1(100 * mean(x)), "%") else paste0(f1(mean(x), 2), " (", f1(sd(x), 2), ")")
+mv <- function(v) mean(m2[[v]])
+```
+
+La tabla considera los `r nrow(m2)` estudiantes de la segunda ola que tienen información completa en todas las variables de los modelos.
+
+```{r}
+#| label: tbl-independientes-ola2
+#| tbl-cap: "Descriptivos de las variables independientes. Ola 2. Para las variables ordinales se presenta el porcentaje de respuestas en cada categoría; para las dimensiones de la creencia meritocrática, la distribución corresponde a cada uno de sus dos ítems. La última columna presenta la media (desviación estándar) de las variables continuas y ordinales, y el porcentaje de las dicotómicas. Casos completos en las variables de los modelos."
+#| echo: false
+cats <- c("Muy en desacuerdo", "En desacuerdo", "De acuerdo", "Muy de acuerdo")
+pct <- function(x) { x <- x[!is.na(x)]; paste0(f1(100 * as.numeric(table(factor(x, levels = 1:4))) / length(x)), "%") }
+fila <- function(nombre, h, dist = rep("", 4), resumen = "")
+  setNames(as.data.frame(t(c(nombre, h, dist, resumen))), c("Variable", "Hipótesis", cats, "Resumen"))
+sangria <- "\u00a0\u00a0\u00a0\u00a0"
+filas <- list()
+for (i in seq_along(vi)) {
+  v <- names(vi)[i]
+  if (v == "p2_3") {
+    filas[[length(filas) + 1]] <- fila(vi[[v]], hip[i], pct(m2$p2_3), desc(m2$p2_3, v))
+  } else if (v %in% names(dim_items)) {
+    filas[[length(filas) + 1]] <- fila(paste0(vi[[v]], " (índice)"), hip[i], resumen = desc(m2[[v]], v))
+    for (it in dim_items[[v]])
+      filas[[length(filas) + 1]] <- fila(paste0(sangria, items[[it]]), "", pct(m2[[it]]))
+  } else {
+    filas[[length(filas) + 1]] <- fila(vi[[v]], hip[i], resumen = desc(m2[[v]], v))
+  }
+}
+tab_vi <- do.call(rbind, filas)
+kable(tab_vi, row.names = FALSE,
+      col.names = c("Variable", "Hipótesis", cats, "Media (DE) / %"),
+      align = c("l", "l", "r", "r", "r", "r", "r"))
+```
+
+## Correlaciones entre los ítems en la primera ola
+
+```{r}
+#| label: setup-correlaciones-ola1
+#| include: false
+items_c <- c(p1_9 = "Igualdad de oportunidades",
+           p1_1 = "Percepción mérito: esfuerzo",
+           p1_2 = "Percepción mérito: inteligencia",
+           p1_3 = "Percepción privilegio: padres ricos",
+           p1_4 = "Percepción privilegio: contactos",
+           p1_5 = "Preferencia mérito: esfuerzo",
+           p1_6 = "Preferencia mérito: talento",
+           p1_7 = "Aceptación privilegio: padres ricos",
+           p1_8 = "Aceptación privilegio: contactos")
+
+x_w1 <- datos_io |>
+  filter(ola == 1) |>
+  select(all_of(names(items_c))) |>
+  mutate(across(everything(), as.numeric))
+
+rho <- psych::polychoric(x_w1)$rho
+n_par <- crossprod(!is.na(as.matrix(x_w1)))
+r <- function(a, b) f1(rho[a, b], 2)
+```
+
+```{r}
+#| label: fig-correlaciones-ola1
+#| fig-cap: "Correlaciones policóricas entre la percepción de igualdad de oportunidades y los ítems de la escala de percepciones y preferencias sobre la meritocracia. Ola 1. Datos perdidos tratados por pares (pairwise)."
+#| echo: false
+#| fig-width: 7.5
+#| fig-height: 6
+lab <- unname(items_c)
+cor_df <- as.data.frame(as.table(rho)) |>
+  setNames(c("v1", "v2", "r")) |>
+  mutate(i = match(v1, names(items_c)), j = match(v2, names(items_c))) |>
+  filter(i > j) |>
+  mutate(f = factor(lab[i], rev(lab)), c = factor(lab[j], lab),
+         txt = ifelse(abs(r) >= 0.45, "white", "grey15"))
+
+ggplot(cor_df, aes(x = c, y = f, fill = r)) +
+  geom_tile(colour = "white", linewidth = 0.8) +
+  geom_text(aes(label = f1(r, 2), colour = txt), size = 3) +
+  scale_fill_gradient2(low = "#4A4A4A", mid = "white", high = "#99000D", midpoint = 0,
+                       limits = c(-1, 1), breaks = seq(-1, 1, 0.5),
+                       labels = function(x) f1(x, 1), name = "r") +
+  scale_colour_identity() +
+  scale_x_discrete(position = "bottom") +
+  labs(x = NULL, y = NULL) +
+  coord_fixed() +
+  theme_minimal(base_size = 10) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.grid = element_blank(),
+        legend.position = "right")
+```
+
+Los dos ítems de cada dimensión se correlacionan más entre sí (entre `r f1(min(rho["p1_5", "p1_6"], rho["p1_1", "p1_2"], rho["p1_3", "p1_4"], rho["p1_7", "p1_8"]), 2)` y `r f1(max(rho["p1_5", "p1_6"], rho["p1_1", "p1_2"], rho["p1_3", "p1_4"], rho["p1_7", "p1_8"]), 2)`) que con los de otras dimensiones, lo que es consistente con la estructura de cuatro factores de la escala. La matriz considera los estudiantes que responden la primera ola (n entre `r min(n_par)` y `r max(n_par)` según el par de ítems).

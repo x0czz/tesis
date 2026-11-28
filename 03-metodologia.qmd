@@ -4,11 +4,11 @@ title: "Metodología"
 
 ## Datos
 
-Se utilizan datos de la Encuesta de Percepciones de Meritocracia y Formación Ciudadana, levantada en el marco del panel Educación y Meritocracia (EDUMER), proyecto FONDECYT N.º 1210847 [@edumer_manual]. Su objetivo es examinar las creencias, actitudes y comportamientos de estudiantes en edad escolar respecto de la meritocracia, la desigualdad y la ciudadanía [@laffert_changes]. El protocolo del estudio fue aprobado por un comité de ética, y se registró la autorización de un adulto para la participación de cada estudiante [@edumer_manual].
+Se utilizan datos de la Encuesta de Percepciones de Meritocracia y Formación Ciudadana, levantada en el marco del panel Educación y Meritocracia (EDUMER), proyecto FONDECYT N.º 1210847. La información sobre el diseño, la muestra y la aplicación de la encuesta que se presenta en esta sección proviene de su manual metodológico [@edumer_manual]. El objetivo de la encuesta es examinar las creencias, actitudes y comportamientos de estudiantes en edad escolar respecto de la meritocracia, la desigualdad y la ciudadanía. El protocolo del estudio fue aprobado por un comité de ética, y se registró la autorización de un adulto para la participación de cada estudiante.
 
-La encuesta es un panel de dos olas. La población objetivo son estudiantes de escuelas municipales y particulares subvencionadas de las regiones Metropolitana y de Valparaíso. Se encuestó a dos cohortes: estudiantes de 6.º básico y 1.º medio en la primera ola, que fueron seguidos en 7.º básico y 2.º medio en la segunda. Participaron nueve escuelas [@laffert_changes]. La muestra no es probabilística ni representativa por zona geográfica o dependencia administrativa [@edumer_manual].
+La encuesta es un panel de dos olas. La población objetivo son estudiantes de escuelas municipales y particulares subvencionadas de las regiones Metropolitana y de Valparaíso. Se encuestó a dos cohortes: estudiantes de 6.º básico y 1.º medio en la primera ola, que fueron seguidos en 7.º básico y 2.º medio en la segunda. Participaron nueve escuelas. La muestra no es probabilística ni representativa por zona geográfica o dependencia administrativa.
 
-El cuestionario fue autoadministrado en línea (CAWI) y respondido por los estudiantes en las salas de computación de sus escuelas, con una duración aproximada de 20 minutos. La primera ola se aplicó entre octubre de 2023 y mayo de 2024, y la segunda entre agosto y noviembre de 2024 [@edumer_manual]. La primera ola incluye 902 estudiantes y la segunda 674. De ellos, 639 participan en ambas olas, 263 solo en la primera y 35 solo en la segunda, lo que implica una atrición de 29,2% [@edumer_manual].
+El cuestionario fue autoadministrado en línea (CAWI) y respondido por los estudiantes en las salas de computación de sus escuelas, con una duración aproximada de 20 minutos. La primera ola se aplicó entre octubre de 2023 y mayo de 2024, y la segunda entre agosto y noviembre de 2024. La primera ola incluye 902 estudiantes y la segunda 674. De ellos, 639 participan en ambas olas, 263 solo en la primera y 35 solo en la segunda, lo que implica una atrición de 29,2%.
 
 Los análisis utilizan las observaciones de ambas olas, que suman 1.576 observaciones de 937 estudiantes. Los modelos se estiman con los casos completos en todas sus variables, lo que deja 1.461 observaciones de 878 estudiantes, de los cuales 583 aportan observaciones en ambas olas.
 
@@ -22,7 +22,7 @@ La primera ola incluyó, al inicio del cuestionario, un módulo experimental en 
 #| label: setup-consistencia
 #| include: false
 # Correlaciones policóricas entre los ítems que se promedian (ola 1, por pares),
-# la misma muestra de la matriz de correlaciones del capítulo de resultados.
+# la misma muestra de la matriz de correlaciones entre ítems del anexo.
 load("input/datos_igualdad_oportunidades.RData")
 f2c <- function(x) formatC(x, format = "f", digits = 2, decimal.mark = ",")
 rpol <- function(a, b) {
@@ -49,7 +49,7 @@ La cohorte distingue a los estudiantes que en la primera ola cursaban 6.º bási
 
 El estudio no incluye una medida del nivel socioeconómico. El cuestionario de estudiantes indaga la educación de la madre y del padre, pero cerca de un cuarto de las observaciones no reporta la de la madre, y la información de los apoderados solo puede vincularse a una fracción minoritaria de los estudiantes. Se optó por no utilizar indicadores con esa cobertura en lugar de introducir una medición poco confiable.
 
-### Modelos (notaciones genneradas cn IA; pediennte de confirmacion)
+### Modelos
 
 Las hipótesis se contrastan con un modelo de regresión logística ordinal que utiliza las observaciones de ambas olas. Como cada estudiante es observado hasta dos veces, se estima un modelo multinivel de dos niveles, en que las observaciones de cada ola (nivel 1) están anidadas en estudiantes (nivel 2), con un intercepto aleatorio por estudiante. Para el estudiante $i$ en la ola $t$:
 
@@ -71,4 +71,4 @@ El análisis se organiza en tres etapas.
 
 **Modelo panel (H1 a H5).** Las hipótesis se contrastarán con el modelo descrito (@eq-modelo). Se reportarán los coeficientes como razones de odds y la proporción de varianza explicada por los efectos fijos y por el intercepto del estudiante (R² marginal y condicional). Para distinguir la variación dentro de cada estudiante de las diferencias estables entre estudiantes, los predictores que cambian entre olas se descompondrán en su desviación respecto de la media del estudiante y en dicha media. El componente dentro del estudiante indica si los cambios de un mismo estudiante entre olas se asocian con cambios en su percepción de igualdad de oportunidades, y no está afectado por características estables no observadas.
 
-**Robustez.** Se probarán modelos lineales sobre la escala de 1 a 4 y modelos logísticos sobre la versión dicotómica de la variable dependiente; tambien se estimaran con difrerentes especificaciones de los controles y covariables.
+**Robustez.** Se probarán modelos lineales sobre la escala de 1 a 4 y modelos logísticos sobre la versión dicotómica de la variable dependiente; también se estimarán con diferentes especificaciones de los controles y covariables.
